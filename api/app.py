@@ -1,11 +1,22 @@
-from flask import Flask, jsonify
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import os
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
 
-@app.route('/api/data')
-def get_data():
-    data = {'key': 'value'}
-    return jsonify(data)
+@app.route('/', methods=['GET'])
+def index():
+    return 'This is an Index Page!'
+
+@app.route('/api/getDirectory', methods=['GET'])
+def get_directory():
+    file = request.files.get('file')
+    return jsonify({'directoryPath': file})
+    # if file:
+    #     # return jsonify({'directoryPath': os.path.dirname(file.filename)})
+    # else:
+    #     return jsonify({'error': 'File not found'}), 400
 
 if __name__ == '__main__':
-    app.run(port=8080)
+    app.run(debug=True)

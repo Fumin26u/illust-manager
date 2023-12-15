@@ -3,10 +3,11 @@
     "version": "0.1.0",
     "private": true,
     "scripts": {
-        "start": "",
+        "start": "concurrently \"npm run serve\" \"npm run start-flask\"",
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
-        "lint": "vue-cli-service lint"
+        "lint": "vue-cli-service lint",
+        "start-flask": "set FLASK_APP=api/app.py && python -m flask run --reload"
     },
     "dependencies": {
         "axios": "^1.6.2",
