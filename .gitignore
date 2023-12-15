@@ -23,5 +23,7 @@ pnpm-debug.log*
 *.sw?
 
 api/evaluate/models/*
-api/evaluate/retinaface_mbv2/*
-api/__pycache__/*
+api/evaluate/__pycache__/*
+api/evaluate/eval.jpg
+api/evaluate/images/*
+

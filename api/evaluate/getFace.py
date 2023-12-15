@@ -1,5 +1,5 @@
 import cv2, os
-from detect_anime_face import getFaceRect
+from api.evaluate.detect_anime_face import getFaceRect
 
 # 画像のロード
 def loadImage(imagePath): 
@@ -57,7 +57,7 @@ def displayFace(faces, image):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-BASE_PATH = './'
+BASE_PATH = 'api/evaluate/'
 # モデルのパス
 MODEL_PATH = BASE_PATH + 'opencv/lbpcascade_animeface.xml'
 

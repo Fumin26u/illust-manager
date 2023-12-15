@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 def getNowTime():
     return datetime.now().strftime("%Y_%m_%d_%H_%M")
-BASE_PATH = './'
+BASE_PATH = 'api/evaluate/'
 
 # 顔部分の切り抜き
 # 画像フォルダのパス
@@ -25,10 +25,6 @@ DROPOUT = 0.0
 # 画像の評価
 # 画像モデルのパス
 IMAGE_MODEL_PATH = BASE_PATH + 'opencv/lbpcascade_animeface.xml'
-# 評価する画像のパス
-EVALUATED_IMAGE_PATH = 'evals/kokomi.jpg'
-# 評価対象の画像の顔部分を切り抜いた画像のパス
-CROPPED_IMAGE_PATH = f'eval{os.path.splitext(EVALUATED_IMAGE_PATH)[1]}'
 
 # 各種モデル
 # 訓練に使用する顔素材のパス

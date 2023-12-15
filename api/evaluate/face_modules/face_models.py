@@ -2,7 +2,7 @@ import tensorflow as tf
 from keras import Model
 from keras.applications import MobileNetV2, ResNet50
 from keras.layers import Input, Conv2D, ReLU, LeakyReLU
-from face_modules.anchor import decode_tf, prior_box_tf
+from api.evaluate.face_modules.anchor import decode_tf, prior_box_tf
 
 
 def _regularizer(weights_decay):

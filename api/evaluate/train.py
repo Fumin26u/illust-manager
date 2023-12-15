@@ -2,9 +2,11 @@ import os
 import tensorflow as tf
 from tensorflow import keras
 from keras.preprocessing.image import ImageDataGenerator
-BASE_PATH = './'
+import numpy as np
 
-from cfg import BATCH_SIZE, EPOCHS, DROPOUT, RESIZE_RESOLUTION, FACE_MODEL_PATH
+BASE_PATH = 'api/evaluate/'
+
+from api.evaluate.cfg import BATCH_SIZE, EPOCHS, DROPOUT, RESIZE_RESOLUTION, FACE_MODEL_PATH
 
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
@@ -49,26 +51,28 @@ def createWeights(modelDir):
 
     return classWeights
 
-model = createModel(trainExtends)
-
-import numpy as np
-# 各クラスの重み
-classWeights = createWeights(FACE_MODEL_PATH)
-
-# コンパイル
-model.compile(
-    optimizer='adam', 
-    loss='categorical_crossentropy', 
-    metrics=['accuracy']
-)
-# 訓練
-model.fit(
-    trainExtends, 
-    epochs=EPOCHS, 
-    class_weight=classWeights
-)
-# 保存
 from datetime import datetime
 def getNowTime():
     return datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-model.save(f'{BASE_PATH}models/model-{getNowTime()}.h5')
+
+# 実行
+def main():
+    model = createModel(trainExtends)
+
+    # 各クラスの重み
+    classWeights = createWeights(FACE_MODEL_PATH)
+
+    # コンパイル
+    model.compile(
+        optimizer='adam', 
+        loss='categorical_crossentropy', 
+        metrics=['accuracy']
+    )
+    # 訓練
+    model.fit(
+        trainExtends, 
+        epochs=EPOCHS, 
+        class_weight=classWeights
+    )
+    model.save(f'{BASE_PATH}models/model-{getNowTime()}.h5')
+    

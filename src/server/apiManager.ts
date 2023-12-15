@@ -4,10 +4,11 @@ class ApiManager {
     // POST
     async post(
         url: string,
-        formData: any = {}
+        formData: any = {},
+        config: any = {}
     ): Promise<{ [key: string]: any }> {
         return await axios
-            .post(url, formData)
+            .post(url, formData, config)
             .then((response) => {
                 return response.data
             })

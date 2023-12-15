@@ -4,11 +4,13 @@ import cv2
 import os, sys
 import numpy as np
 
-from face_modules.face_models import RetinaFaceModel
-from face_modules.utils import (load_yaml, pad_input_image, recover_pad_output)
+from api.evaluate.face_modules.face_models import RetinaFaceModel
+from api.evaluate.face_modules.utils import (load_yaml, pad_input_image, recover_pad_output)
+
+currentDir = 'api/evaluate/'
 
 FLAGS = {
-    'cfg_path': './configs/retinaface_mbv2.yaml',
+    'cfg_path': f'{currentDir}configs/retinaface_mbv2.yaml',
     'iou_th': 0.4,
     'score_th': 0.5,
     'down_scale_factor': 1.0
@@ -29,15 +31,16 @@ model = RetinaFaceModel(cfg, training=False, iou_th=FLAGS['iou_th'],
                         score_th=FLAGS['score_th'])
 
 # load checkpoint
-checkpoint_dir = './checkpoints/' + cfg['sub_name']
-checkpoint = tf.train.Checkpoint(model=model)
-if tf.train.latest_checkpoint(checkpoint_dir):
-    checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))
-    print("[*] load ckpt from {}.".format(
-        tf.train.latest_checkpoint(checkpoint_dir)))
-else:
-    print("[*] Cannot find ckpt from {}.".format(checkpoint_dir))
-    exit()
+def load_checkpoint():
+    checkpoint_dir = f'{currentDir}checkpoints/' + cfg['sub_name']
+    checkpoint = tf.train.Checkpoint(model=model)
+    if tf.train.latest_checkpoint(checkpoint_dir):
+        checkpoint.restore(tf.train.latest_checkpoint(checkpoint_dir))
+        print("[*] load ckpt from {}.".format(
+            tf.train.latest_checkpoint(checkpoint_dir)))
+    else:
+        print("[*] Cannot find ckpt from {}.".format(checkpoint_dir))
+        exit()
 
 # if not os.path.exists(FLAGS['img_path']):
 #     print(f"cannot find image path from {FLAGS['img_path']}")
