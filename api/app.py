@@ -21,7 +21,7 @@ def evaluate():
     data = request.get_json()
     base64Images = data['imagePaths']
     scriptDir = os.path.dirname(os.path.abspath(__file__))
-    modelPath = os.path.join(scriptDir, 'evaluate', 'models', 'model-2023-12-16-12-01-04.h5')
+    modelPath = os.path.join(scriptDir, 'evaluate', 'models', 'model-2023-12-16-18-42-00.h5')
     
     eachResults = []
     load_checkpoint()
@@ -42,9 +42,14 @@ def save():
     # フロントから画像情報のjsonを取得
     data = request.get_json()
     imageInfo = data['imageInfo']
+    minConfidence = float(data['minConfidence'])
     
     for image in imageInfo:
-        saveImage.saveImage(image['className'], image['imagePath'], image['rawPath'])
+        confidence = float(image['confidence'].replace('%', ''))
+        if (confidence >= minConfidence) or image['isImportant']:
+            saveImage.saveImage(image['className'], image['imagePath'], image['rawPath'])
+        else:
+            saveImage.saveImage('others', image['imagePath'], image['rawPath'])
         
     return jsonify({'data': 'success'})
 

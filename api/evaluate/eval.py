@@ -18,16 +18,19 @@ def analyzeImage(model, imagePath):
     return model.predict(img_array)
 
 # 分析結果と一致度の表示
-def displayAnalyzeResult(predictions, generator):
-    result = dict()
-    
+def displayAnalyzeResult(predictions, generator):    
     classLabels = list(generator.class_indices.keys())  # クラスのラベル
-    predictedClass = np.argmax(predictions)  # 予測されたクラス
-    confidence = predictions[0][predictedClass]  # 一致度
-
-    result['class'] = classLabels[predictedClass]
-    result['confidence'] = str(confidence)
-    return result
+    
+    classPredictions = [
+        {'className': label, 'probability': predictions[0][i]} for i, label in enumerate(classLabels)
+    ]
+    
+    sorted_predictions = sorted(classPredictions, key=lambda x: x['probability'], reverse=True)
+    for prediction in sorted_predictions:
+        prediction['probability'] = format(prediction['probability'], '.4f')  # 小数第4位まで表示
+        prediction['probability'] = f"{float(prediction['probability']) * 100:.2f}%"  # パーセンテージ表記
+    
+    return sorted_predictions
 
 # 画像の削除
 def deleteImage(imagePath):
@@ -53,6 +56,9 @@ def main(
     image = resizeImage(evaluatedImage, 1280)
     
     faceRect = getFaceRect(image)
+    if len(faceRect) == 0:
+        print(evaluatedImage)
+        return [{'className': 'others', 'probability': 100.0}]
     saveFace([faceRect[0]], image, base_path, croppedImagePath, (224, 224))
 
     # モデルの分析

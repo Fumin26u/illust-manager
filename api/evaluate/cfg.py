@@ -28,7 +28,7 @@ IMAGE_MODEL_PATH = BASE_PATH + 'opencv/lbpcascade_animeface.xml'
 
 # 各種モデル
 # 訓練に使用する顔素材のパス
-FACE_MODEL_PATH = f"{IMAGE_PATH}faces_2023_12_03_22_43/"
+FACE_MODEL_PATH = f"{IMAGE_PATH}faces_2023_12_16_18_01/"
 # 評価に使用する訓練モデルのパス
-TRAIN_MODEL_PATH = f"{BASE_PATH}models/model-2023-12-16-12-01-04.h5"
+TRAIN_MODEL_PATH = f"{BASE_PATH}models/model-2023-12-16-18-42-00.h5"
 

@@ -8,16 +8,17 @@ def createDirectory(directoryPath):
         os.makedirs(directoryPath)
         
 def saveImage(className, base64Image, saveFileName):
-    # Create a folder for images
+    # 画像の保存先
     outputPath = os.path.join('api/save/', 'output')
     createDirectory(outputPath)
     
-    # Create a folder for each class
+    # 各クラスのフォルダが存在しない場合作成
     classPath = os.path.join(outputPath, className)
     createDirectory(classPath)
     
     # Convert base64 to image and save in the class folder
     image = base64.b64decode(base64Image.split(',')[1])
+    
     imagePath = os.path.join(classPath, saveFileName)
     with open(imagePath, 'wb') as f:
         f.write(image)

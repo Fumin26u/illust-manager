@@ -9,11 +9,20 @@ interface ImageInfo {
     rawPath: string
     imagePath: string
     className: string
-    confidence: string
+    confidence: string | undefined
+    isImportant: boolean
     index: number
 }
-const imageInfo = ref<ImageInfo[]>([])
+
+interface EvaluatedResult {
+    className: string
+    probability: string
+}
+
 const isEvaluated = ref<boolean>(false)
+const imageInfo = ref<ImageInfo[]>([])
+const evaluatedResult = ref<EvaluatedResult[][]>([])
+const minConfidence = ref<number>(50)
 
 // 指定されたディレクトリ内の画像ファイルから画像リンク一覧を取得
 const setImageInfo = (event: Event) => {
@@ -25,12 +34,15 @@ const setImageInfo = (event: Event) => {
     if (files.length === 0) return 'ファイルが空です。'
 
     imageInfo.value = []
+    isEvaluated.value = false
+
     Array.from(files).forEach((file, index) => {
         imageInfo.value.push({
             rawPath: file.name,
             imagePath: URL.createObjectURL(file),
             className: '',
             confidence: '',
+            isImportant: false,
             index: index,
         })
     })
@@ -53,13 +65,6 @@ const convertImageToBase64 = async (imagePath: string) => {
     }
 }
 
-// 信頼度をパーセンテージに変換
-function formatPercentage(value: string) {
-    const floatValue = parseFloat(value)
-    const roundedValue = Math.round(floatValue * 100000) / 100000
-    return (roundedValue * 100).toFixed(2) + '%'
-}
-
 const apiManager = new ApiManager()
 const base64Images = ref<unknown[]>([])
 // APIを介して画像を評価
@@ -78,12 +83,19 @@ const evaluateImage = async () => {
         const response = await apiManager.post(`${apiPath}/api/evaluate`, {
             imagePaths: base64Images.value,
         })
-        response.data.forEach((data: any, index: number) => {
-            imageInfo.value[index].className = data.class
-            imageInfo.value[index].confidence = formatPercentage(
-                data.confidence
-            )
-        })
+
+        response.data.forEach(
+            (result: EvaluatedResult[] | false, index: number) => {
+                if (result === false) {
+                    imageInfo.value.splice(index, 1)
+                } else {
+                    evaluatedResult.value.push(result)
+                    imageInfo.value[index].className = result[0].className
+                    imageInfo.value[index].confidence = result[0].probability
+                }
+            }
+        )
+
         isEvaluated.value = true
     } catch (error) {
         console.error(error)
@@ -107,6 +119,14 @@ const sortImageInfo = (method: string) => {
     }
 }
 
+const selectClass = (index: number) => {
+    const selectedClassName = imageInfo.value[index].className
+    imageInfo.value[index].confidence = evaluatedResult.value[index].find(
+        (result) => result.className === selectedClassName
+    )?.probability
+    console.log(imageInfo.value[index])
+}
+
 // 画像をキャラクター毎にフォルダ分けして保存
 const saveImage = async () => {
     const imageInfo_base64 = await Promise.all(
@@ -115,10 +135,10 @@ const saveImage = async () => {
             ...rest,
         }))
     )
-    console.log(imageInfo_base64)
 
     try {
         const response = await apiManager.post(`${apiPath}/api/save`, {
+            minConfidence: minConfidence.value,
             imageInfo: imageInfo_base64,
         })
         console.log(response)
@@ -161,23 +181,58 @@ const saveImage = async () => {
             >
                 元に戻す
             </button>
-            <button @click="saveImage()" v-if="isEvaluated" class="btn-common">
+            <button
+                @click="saveImage()"
+                v-if="isEvaluated"
+                class="btn-common green"
+            >
                 保存
             </button>
+        </div>
+        <div class="evaluated-detail" v-if="isEvaluated">
+            <p>
+                評価結果が正しくない場合、選択ボックスから正しいキャラクターを選択してください。
+            </p>
+            <input
+                type="number"
+                step="0.5"
+                min="10"
+                max="90"
+                v-model="minConfidence"
+            />
+            <span>
+                %以上の信頼度を保存
+                (それ以下の場合、その他フォルダに保存されます。)
+            </span>
         </div>
         <dl class="image-info-list">
             <div v-for="(info, index) in imageInfo" :key="index">
                 <dt>
-                    <p>
-                        結果:
-                        {{ info.className !== '' ? info.className : '未評価' }}
-                    </p>
-                    <p>
-                        信頼度:
-                        {{
-                            info.confidence !== '' ? info.confidence : '未評価'
-                        }}
-                    </p>
+                    <div v-if="isEvaluated">
+                        <select
+                            v-model="info.className"
+                            @change="selectClass(index)"
+                        >
+                            <option
+                                v-for="(evaluation, index_2) in evaluatedResult[
+                                    index
+                                ]"
+                                :key="index_2"
+                            >
+                                {{ evaluation.className }}
+                            </option>
+                        </select>
+                        <p>信頼度: {{ info.confidence }}</p>
+                        <input
+                            :id="`is-important-${index}`"
+                            type="checkbox"
+                            v-model="info.isImportant"
+                        />
+                        <label :for="`is-important-${index}`">
+                            確実に保存する
+                        </label>
+                    </div>
+                    <p v-else>未評価</p>
                 </dt>
                 <dd><img :src="info.imagePath" /></dd>
             </div>
