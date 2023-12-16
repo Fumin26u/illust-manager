@@ -26,4 +26,7 @@ api/evaluate/models/*
 api/evaluate/__pycache__/*
 api/evaluate/eval.jpg
 api/evaluate/images/*
+api/save/__pycache__/*
+api/save/save.jpg
+api/save/output/*
 

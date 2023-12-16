@@ -74,5 +74,4 @@ def main():
         epochs=EPOCHS, 
         class_weight=classWeights
     )
-    model.save(f'{BASE_PATH}models/model-{getNowTime()}.h5')
-    
+    model.save(f'{BASE_PATH}models/model-{getNowTime()}.h5')   

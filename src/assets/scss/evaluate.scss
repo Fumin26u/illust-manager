@@ -1,5 +1,30 @@
 @import "./style.scss";
 
+#page-evaluate {
+    margin: 1em auto;
+}
+
+.btn-common {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 1em;
+}
+
+.input-form {
+    border-bottom: 2px dashed #888;
+    > div {
+        padding: 1em 0;
+        > dt, dd {
+            vertical-align: middle;
+            display: inline-block;
+        }
+    }
+}
+
+.form-reference, .button-area {
+    margin: 1em auto;
+}
+
 .image-info-list {
     display: flex;
     flex-wrap: wrap;
@@ -7,8 +32,8 @@
     align-items: flex-start;
     margin: 0 auto;
     > div {
-        width: 30%;
-        margin: 1em auto;
+        width: 20%;
+        margin: 1em 1em;
         border-top: 1px dashed #888;
         > dt, > dd {
             width: 80%;
