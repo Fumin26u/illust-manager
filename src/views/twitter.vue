@@ -45,17 +45,15 @@ const getUserInfo = async () => {
 // APIから画像付きツイートを取得
 const tweetInfo = ref<TweetInfo[]>([])
 const isLoadImages = ref<boolean>(false)
-import predata from '@/views/predata'
 const getTweet = async () => {
     isLoadImages.value = true
     // 入力フォームのバリデーションを行いエラーがある場合は中断
     errorMessage.value = inputValidation()
     if (errorMessage.value !== '') return
 
-    // const response = await apiManager.post(`${apiPath}/twitter/getImages`, {
-    //     content: search.value,
-    // })
-    const response = predata
+    const response = await apiManager.post(`${apiPath}/twitter/getImages`, {
+        content: search.value,
+    })
     // それぞれの画像にDL可否判定の値を追加
     tweetInfo.value = response.map((tweet: TweetInfo) => {
         return {
