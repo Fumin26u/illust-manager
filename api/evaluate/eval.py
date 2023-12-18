@@ -8,7 +8,6 @@ from api.evaluate.detect_anime_face import getFaceRect, load_checkpoint
 BASE_PATH = ''
 
 from api.evaluate.cfg import TRAIN_MODEL_PATH
-from api.evaluate.train import trainExtends
 
 # 画像がどのキャラ(クラス)に近いか分析
 def analyzeImage(model, imagePath):
@@ -43,6 +42,7 @@ def deleteImage(imagePath):
 def main(
     evaluatedImage, 
     croppedImagePath, 
+    trainExtends,
     modelPath = TRAIN_MODEL_PATH, 
     base_path = BASE_PATH
 ):
@@ -56,9 +56,15 @@ def main(
     image = resizeImage(evaluatedImage, 1280)
     
     faceRect = getFaceRect(image)
+    # 顔認識がなされなかった場合、各クラス＋othersを設定し、othersを100%にする
     if len(faceRect) == 0:
         print(evaluatedImage)
-        return [{'className': 'others', 'probability': 100.0}]
+        return [
+            {'className': 'others', 'probability': '100.00%'},    
+        ] + [
+            {'className': label, 'probability': '0.00%'} for label in list(trainExtends.class_indices.keys())
+        ]
+
     saveFace([faceRect[0]], image, base_path, croppedImagePath, (224, 224))
 
     # モデルの分析

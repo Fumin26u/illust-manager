@@ -67,8 +67,11 @@ const evaluateImage = async () => {
     )
 
     try {
+        console.log(selectedModel.value, selectedImageDir.value)
         const response = await apiManager.post(`${apiPath}/api/evaluate`, {
             imagePaths: base64Images.value,
+            model: selectedModel.value,
+            imageDir: selectedImageDir.value,
         })
 
         response.data.forEach(
@@ -145,6 +148,11 @@ const saveImage = async () => {
                 title="画像フォルダを選択:"
                 @setImageInfo="setImageInfo"
             />
+        </dl>
+        <div
+            class="button-area input-form"
+            v-if="!isEvaluated && imageInfo.length > 0"
+        >
             <FileListComponent
                 title="モデルを選択:"
                 :type="'getModels'"
@@ -155,16 +163,13 @@ const saveImage = async () => {
                 :type="'getImageDirs'"
                 @setSelectedFile="setSelectedFile"
             />
-        </dl>
-        <div class="button-area" v-if="!isEvaluated">
             <ButtonComponent
                 @click="evaluateImage"
-                v-if="imageInfo.length > 0"
                 text="評価"
                 :buttonClass="'btn-common blue'"
             />
         </div>
-        <div v-else>
+        <div v-if="isEvaluated">
             <div class="evaluated-detail">
                 <p>
                     評価結果が正しくない場合、選択ボックスから正しいキャラクターを選択してください。

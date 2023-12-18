@@ -11,20 +11,6 @@ from api.evaluate.cfg import BATCH_SIZE, EPOCHS, DROPOUT, RESIZE_RESOLUTION, FAC
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 
-# データ拡張
-trainData = ImageDataGenerator(
-    rescale=1./255,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True
-)
-trainExtends = trainData.flow_from_directory(
-    FACE_MODEL_PATH,
-    target_size=RESIZE_RESOLUTION,
-    batch_size=BATCH_SIZE,
-    class_mode='categorical'
-)
-
 # モデルの構築
 def createModel(trainExtends):
     model = Sequential()
@@ -56,7 +42,7 @@ def getNowTime():
     return datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
 # 実行
-def main():
+def main(trainExtends):
     model = createModel(trainExtends)
 
     # 各クラスの重み

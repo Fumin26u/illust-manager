@@ -6,6 +6,8 @@ from io import BytesIO
 
 from api.evaluate.eval import main as image_evaluate
 from api.evaluate.detect_anime_face import load_checkpoint
+from api.evaluate.createTrainData import createTrainData
+from api.createPath import createPath
 import api.save.saveImage as saveImage
 
 app = Flask(__name__)
@@ -17,16 +19,12 @@ def index():
 
 @app.route('/api/getModels', methods=['GET'])
 def getModels():
-    scriptDir = os.path.dirname(os.path.abspath(__file__))
-    modelDir = os.path.join(scriptDir, 'evaluate', 'models')
-    modelNames = sorted(os.listdir(modelDir), reverse=True)
+    modelNames = sorted(os.listdir(createPath('evaluate', 'models')), reverse=True)
     return jsonify({'data': modelNames})
 
 @app.route('/api/getImageDirs', methods=['GET'])
 def getImageDirs():
-    scriptDir = os.path.dirname(os.path.abspath(__file__))
-    imageDir = os.path.join(scriptDir, 'evaluate', 'images')
-    imageNames = sorted(os.listdir(imageDir), reverse=True)
+    imageNames = sorted(os.listdir(createPath('evaluate', 'images')), reverse=True)
     return jsonify({'data': imageNames})
     
 @app.route('/api/evaluate', methods=['POST'])
@@ -34,8 +32,11 @@ def evaluate():
     # フロントから受け取ったjsonをbase64の配列に組み替え
     data = request.get_json()
     base64Images = data['imagePaths']
-    scriptDir = os.path.dirname(os.path.abspath(__file__))
-    modelPath = os.path.join(scriptDir, 'evaluate', 'models', 'model-2023-12-16-18-42-00.h5')
+    modelPath = createPath('evaluate', 'models', data['model'])
+    faceModelPath = createPath('evaluate', 'images', data['imageDir'])
+    trainExtends = createTrainData(faceModelPath = faceModelPath)
+    print(modelPath, faceModelPath)
+    print('-----------')
     
     eachResults = []
     load_checkpoint()
@@ -47,6 +48,7 @@ def evaluate():
         eachResults.append(image_evaluate(
             image, 
             'api/evaluate/eval.jpg', 
+            trainExtends,
             modelPath
         ))
     return jsonify({'data': eachResults})
