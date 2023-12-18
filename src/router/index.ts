@@ -3,7 +3,7 @@ import index from '../views/index.vue'
 import training from '../views/training.vue'
 import evaluate from '../views/evaluate.vue'
 import imagedler_twitter from '../views/imagedler/twitter.vue'
-import imagedler_pixiv from '../views/imagedler/pixiv.vue'
+import imagedler_pixiv from '../views/imagedler/pixiv_new.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -27,7 +27,7 @@ const routes: Array<RouteRecordRaw> = [
         component: imagedler_twitter,
     },
     {
-        path: '/imagedler/pixiv',
+        path: '/imagedler/pixiv_new',
         name: 'imagedler_pixiv',
         component: imagedler_pixiv,
     },

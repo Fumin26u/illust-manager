@@ -26,7 +26,18 @@ api/evaluate/models/*
 api/evaluate/__pycache__/*
 api/evaluate/eval.jpg
 api/evaluate/images/*
+
 api/save/__pycache__/*
 api/save/save.jpg
 api/save/output/*
+
+api/imagedler/pixiv/__pycache__/*
+api/imagedler/pixiv/images/*
+api/imagedler/pixiv/chromedriver.exe
+api/imagedler/pixiv/config.py
+api/imagedler/pixiv/pixiv_auth.py
+
+api/imagedler/twitter/__pycache__/*
+api/imagedler/twitter/images/*
+api/imagedler/twitter/chromedriver.exe
 

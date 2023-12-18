@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os, requests, base64, cv2, shutil, json
 import numpy as np
@@ -9,10 +9,14 @@ from api.evaluate.detect_anime_face import load_checkpoint
 from api.evaluate.createTrainData import createTrainData
 from api.account.accountManager import AccountManager
 from api.createPath import createPath
+from api.dlzip import makeZip
+from api.imagedler.pixiv.getImage import main as getPixivImage
+from api.imagedler.pixiv.dlImage import main as downloadPixivImage
 import api.save.saveImage as saveImage
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
+accountManager = AccountManager(createPath('account', 'userdata.json'))
 
 @app.route('/', methods=['GET'])
 def index():
@@ -20,10 +24,71 @@ def index():
 
 @app.route('/api/getAccount', methods=['GET'])
 def getAccount():
-    accountManager = AccountManager(createPath('account', 'userdata.json'))
-    username = accountManager.getUsername()
+    username = accountManager.getSingleData('user_name')
     return username
 
+@app.route('/api/getPixivInfo', methods=['GET'])
+def getPixivInfo():
+    pixivInfo = accountManager.getPixivInfo()
+    return pixivInfo
+
+@app.route('/api/getPixivImages', methods=['POST'])
+async def getPixivImages():
+    data = request.get_json()
+    searchQuery = data['content']
+    return await getPixivImage(searchQuery)
+
+@app.route('/api/downloadPixivImages', methods=['POST'])
+async def downloadPixivImages():
+    data = request.get_json()
+    illusts = data['content']
+    pixivPath = createPath('imagedler', 'pixiv')
+    savePath = createPath(pixivPath, 'images')
+    dlResult = await downloadPixivImage(savePath, illusts)
+    if dlResult['error']:
+        return jsonify({
+            'error': True,
+            'content': 'download failed'
+        })
+    else:
+        makeZip(pixivPath, 'images.zip')
+        return jsonify({
+            'error': False,
+            'content': 'download success'
+        })
+
+@app.route('/api/updatePixivInfo', methods=['POST'])
+def updatePixivInfo():
+    # 先に作成しているimagesフォルダとzipを削除
+    os.remove(createPath('imagedler', 'pixiv', 'images.zip'))
+    shutil.rmtree(createPath('imagedler', 'pixiv', 'images'))
+    
+    dlCount = accountManager.getSingleData('dl_count')
+    imagesCount = accountManager.getSingleData('images_count')
+    pixivAccounts = accountManager.getSingleData('pixiv')
+    
+    data = request.get_json()
+    imagesCount += int(data['imageCount'])
+    dlCount += 1
+    
+    isIdExists = False
+    for (i, pixivAccount) in enumerate(pixivAccounts):
+        if pixivAccount['id'] == data['pixUserID']:
+            pixivAccounts[i]['post'] = data['latestID']
+            isIdExists = True
+            
+    if not isIdExists:
+        pixivAccounts.append({
+            'id': data['pixUserID'],
+            'post': data['latestID']
+        })
+        
+    accountManager.update('dl_count', dlCount)
+    accountManager.update('images_count', imagesCount)
+    accountManager.update('pixiv', pixivAccounts)
+    
+    return jsonify({'data': 'success'})
+    
 @app.route('/api/getModels', methods=['GET'])
 def getModels():
     modelNames = sorted(os.listdir(createPath('evaluate', 'models')), reverse=True)
@@ -42,8 +107,6 @@ def evaluate():
     modelPath = createPath('evaluate', 'models', data['model'])
     faceModelPath = createPath('evaluate', 'images', data['imageDir'])
     trainExtends = createTrainData(faceModelPath = faceModelPath)
-    print(modelPath, faceModelPath)
-    print('-----------')
     
     eachResults = []
     load_checkpoint()

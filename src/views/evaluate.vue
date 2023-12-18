@@ -2,8 +2,7 @@
 import FileListComponent from '@/components/FileListComponent.vue'
 import FileSelectComponent from '@/components/FileSelectComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
-import InputLabelComponent from '@/components/InputLabelComponent.vue'
-import HeaderComponent_new from '@/components/HeaderComponent_new.vue'
+import HeaderComponent from '@/components/HeaderComponent.vue'
 
 import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
@@ -140,7 +139,7 @@ const saveImage = async () => {
 </script>
 
 <template>
-    <HeaderComponent_new />
+    <HeaderComponent />
     <main id="page-evaluate">
         <div class="title-area">
             <h1 class="title">画像の評価</h1>
@@ -224,12 +223,14 @@ const saveImage = async () => {
                             </option>
                         </select>
                         <p>信頼度: {{ info.confidence }}</p>
-                        <InputLabelComponent
-                            :text="'確実に保存する'"
-                            :idName="`is-important-${index}`"
-                            :type="'checkbox'"
+                        <input
+                            type="checkbox"
                             v-model="info.isImportant"
+                            :id="`is-important-${index}`"
                         />
+                        <label :for="`is-important-${index}`">
+                            確実に保存する
+                        </label>
                     </div>
                     <p v-else>未評価</p>
                 </dt>

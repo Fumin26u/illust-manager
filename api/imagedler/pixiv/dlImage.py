@@ -1,13 +1,8 @@
-import sys, json, os, random, string, time
+import sys, json, os, random, string, time, asyncio
 # pixivpy: pixivからデータを抽出するAPI
 from pixivpy3 import *
 # import APIkey
-import config
-
-illusts = sys.argv[1].split(',')
-GET_QUERY = dict()
-for index, illust in enumerate(illusts):
-    GET_QUERY[index] = illust
+import api.imagedler.pixiv.config as config
 
 # Auth接続
 aapi = AppPixivAPI()
@@ -18,22 +13,21 @@ def generateRandomString(strLength: int) -> str:
     strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]
     return ''.join(strArray)
 
-# 保存先のパス
-SAVE_PATH = './images'
-# 指定されたフォルダが存在しない場合新規作成
-if not os.path.exists(SAVE_PATH):
-    os.mkdir(SAVE_PATH)
-
-time.sleep(1)
-# ダウンロード処理
-for illust in illusts:
-    # ファイル名の設定
-    file_name = generateRandomString(12) + '.jpg'
+async def main(savePath, illusts):
+    # 指定されたフォルダが存在しない場合新規作成
+    if not os.path.exists(savePath):
+        os.mkdir(savePath)
+    await asyncio.sleep(1)
+    
     # ダウンロード処理
-    aapi.download(illust, path = SAVE_PATH, name = file_name)
-    time.sleep(1)
+    for illust in illusts:
+        # ファイル名の設定
+        file_name = generateRandomString(12) + '.jpg'
+        # ダウンロード処理
+        aapi.download(illust, path = savePath, name = file_name)
+        await asyncio.sleep(1)
 
-print(json.dumps({
-    'error': False,
-    'content': 'download success'
-}))
+    return {
+        'error': False,
+        'content': 'download success'
+    }

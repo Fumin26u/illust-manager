@@ -1,49 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
 import '@/assets/scss/imagedler/header.scss'
 
-interface Emits {
-    (e: 'getUserInfo', userId: string): string
-}
-const emit = defineEmits<Emits>()
-
-const router = useRouter()
-const userName = ref<string>('')
+const username = ref<string>('')
 // ログアウトリンクが押された場合APIに伝える
 const apiManager = new ApiManager()
-const execLogout = async () => {
-    await apiManager.post(apiPath + 'account/accountManager.php', {
-        method: 'logout',
-        user_name: userName.value,
-    })
-    router.push('./login')
-}
 
 const getUserInfo = async () => {
-    const response = await apiManager.post(
-        apiPath + 'account/accountManager.php',
-        {
-            method: 'getUserData',
-        }
-    )
-
-    // pixivdlerアクセス時の認証
-    if (
-        location.href.slice(-4) === '/pix' &&
-        response.user_name !== 'Fumiya0719'
-    ) {
-        router.push('./')
-    }
-    return response.user_name
+    const response = await apiManager.get(`${apiPath}/api/getAccount`)
+    return response.content
 }
 
 // 画面読み込み時にログインユーザーIDを取得
 onMounted(async () => {
-    userName.value = await getUserInfo()
-    emit('getUserInfo', userName.value)
+    username.value = await getUserInfo()
 })
 </script>
 
@@ -52,31 +24,23 @@ onMounted(async () => {
         <div class="header-left">
             <div class="title-area">
                 <a href="./">
-                    <h1>ImageDLer</h1>
-                    <p class="caption">Twitterの画像自動ダウンローダー</p>
+                    <h1>IllustManager(仮)</h1>
+                    <p class="caption">イラスト保存・管理統合ツール(仮)</p>
                 </a>
             </div>
             <nav class="header-nav">
-                <a href="./#/terms-of-use" class="btn-small blue">利用規約</a>
-                <a href="./#/privacy-policy" class="btn-small blue">
-                    プライバシーポリシー
-                </a>
-                <a href="./#/pix" class="btn-small blue">pixiv版</a>
+                <a href="./evaluate" class="btn-small blue">評価</a>
+                <a href="./training" class="btn-small blue">訓練</a>
+                <a href="./imagedler/twitter" class="btn-small blue">twitter</a>
+                <a href="./imagedler/pixiv_new" class="btn-small blue">pixiv</a>
+                <a href="./account" class="btn-small blue">アカウント管理</a>
             </nav>
         </div>
         <div class="header-account">
-            <div v-if="userName !== ''">
-                <p>{{ userName }}さん</p>
-                <a
-                    href="./#/login"
-                    class="btn-common blue"
-                    @click.prevent.stop="execLogout"
-                >
-                    ログアウト
-                </a>
+            <div v-if="username !== ''">
+                <p>{{ username }}さん</p>
             </div>
             <div v-else>
-                <a href="./#/login" class="btn-common blue">ログイン</a>
                 <a href="./#/register-pre" class="btn-common green">
                     アカウント登録
                 </a>
