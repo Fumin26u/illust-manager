@@ -3,6 +3,7 @@ import FileListComponent from '@/components/FileListComponent.vue'
 import FileSelectComponent from '@/components/FileSelectComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 import InputLabelComponent from '@/components/InputLabelComponent.vue'
+import HeaderComponent_new from '@/components/HeaderComponent_new.vue'
 
 import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
@@ -139,6 +140,7 @@ const saveImage = async () => {
 </script>
 
 <template>
+    <HeaderComponent_new />
     <main id="page-evaluate">
         <div class="title-area">
             <h1 class="title">画像の評価</h1>
