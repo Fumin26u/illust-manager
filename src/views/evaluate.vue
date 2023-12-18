@@ -67,24 +67,33 @@ const evaluateImage = async () => {
     )
 
     try {
-        console.log(selectedModel.value, selectedImageDir.value)
-        const response = await apiManager.post(`${apiPath}/api/evaluate`, {
-            imagePaths: base64Images.value,
-            model: selectedModel.value,
-            imageDir: selectedImageDir.value,
-        })
-
-        response.data.forEach(
-            (result: EvaluatedResult[] | false, index: number) => {
-                if (result === false) {
-                    imageInfo.value.splice(index, 1)
-                } else {
-                    evaluatedResult.value.push(result)
-                    imageInfo.value[index].className = result[0].className
-                    imageInfo.value[index].confidence = result[0].probability
+        const batchSize = 50
+        const imagePaths = base64Images.value
+        for (let i = 0; i < imagePaths.length; i += batchSize) {
+            const batch = imagePaths.slice(i, i + batchSize)
+            const response = await apiManager.post(
+                `${apiPath}/evaluate/evaluate`,
+                {
+                    imagePaths: batch,
+                    model: selectedModel.value,
+                    imageDir: selectedImageDir.value,
                 }
-            }
-        )
+            )
+
+            response.data.forEach(
+                (result: EvaluatedResult[] | false, index: number) => {
+                    index += i
+                    if (result === false) {
+                        imageInfo.value.splice(index, 1)
+                    } else {
+                        evaluatedResult.value.push(result)
+                        imageInfo.value[index].className = result[0].className
+                        imageInfo.value[index].confidence =
+                            result[0].probability
+                    }
+                }
+            )
+        }
 
         isEvaluated.value = true
     } catch (error) {
@@ -127,7 +136,7 @@ const saveImage = async () => {
     )
 
     try {
-        const response = await apiManager.post(`${apiPath}/api/save`, {
+        const response = await apiManager.post(`${apiPath}/evaluate/save`, {
             minConfidence: minConfidence.value,
             imageInfo: imageInfo_base64,
         })

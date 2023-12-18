@@ -10,17 +10,17 @@ import numpy as np
 
 evaluateRoutes = Blueprint('evaluateRoutes', __name__)
     
-@evaluateRoutes.route('/api/getModels', methods=['GET'])
+@evaluateRoutes.route('/evaluate/getModels', methods=['GET'])
 def getModels():
     modelNames = sorted(os.listdir(createPath('evaluate', 'models')), reverse=True)
     return jsonify({'data': modelNames})
 
-@evaluateRoutes.route('/api/getImageDirs', methods=['GET'])
+@evaluateRoutes.route('/evaluate/getImageDirs', methods=['GET'])
 def getImageDirs():
     imageNames = sorted(os.listdir(createPath('evaluate', 'images')), reverse=True)
     return jsonify({'data': imageNames})
 
-@evaluateRoutes.route('/api/evaluate', methods=['POST'])
+@evaluateRoutes.route('/evaluate/evaluate', methods=['POST'])
 def evaluate():
     # フロントから受け取ったjsonをbase64の配列に組み替え
     data = request.get_json()
@@ -44,7 +44,7 @@ def evaluate():
         ))
     return jsonify({'data': eachResults})
 
-@evaluateRoutes.route('/api/save', methods=['POST'])
+@evaluateRoutes.route('/evaluate/save', methods=['POST'])
 def save():
     # フロントから画像情報のjsonを取得
     data = request.get_json()

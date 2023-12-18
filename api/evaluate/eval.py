@@ -22,7 +22,7 @@ def displayAnalyzeResult(predictions, generator):
     
     classPredictions = [
         {'className': label, 'probability': predictions[0][i]} for i, label in enumerate(classLabels)
-    ]
+    ] + [{'className': 'others', 'probability': '0.0%'}]
     
     sorted_predictions = sorted(classPredictions, key=lambda x: x['probability'], reverse=True)
     for prediction in sorted_predictions:

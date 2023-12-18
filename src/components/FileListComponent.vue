@@ -12,7 +12,7 @@ const selected = ref<string>('')
 // APIを介して訓練モデル、画像フォルダ一覧を取得
 const apiManager = new ApiManager()
 const getFiles = async () => {
-    const response = await apiManager.get(`${apiPath}/api/${props.type}`)
+    const response = await apiManager.get(`${apiPath}/evaluate/${props.type}`)
     files.value = response.content.data
     selected.value = files.value[0]
 }
