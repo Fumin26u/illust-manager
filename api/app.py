@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, make_response
 from flask_cors import CORS
 import os, requests, base64, cv2, shutil, json
 import numpy as np
@@ -9,7 +9,7 @@ from api.evaluate.detect_anime_face import load_checkpoint
 from api.evaluate.createTrainData import createTrainData
 from api.account.accountManager import AccountManager
 from api.createPath import createPath
-from api.dlzip import makeZip
+from api.makeZip import makeZip
 from api.imagedler.pixiv.getImage import main as getPixivImage
 from api.imagedler.pixiv.dlImage import main as downloadPixivImage
 import api.save.saveImage as saveImage
@@ -38,31 +38,43 @@ async def getPixivImages():
     searchQuery = data['content']
     return await getPixivImage(searchQuery)
 
-@app.route('/api/downloadPixivImages', methods=['POST'])
+@app.route('/api/downloadPixivImages', methods=['GET', 'POST'])
 async def downloadPixivImages():
     data = request.get_json()
     illusts = data['content']
     pixivPath = createPath('imagedler', 'pixiv')
-    savePath = createPath(pixivPath, 'images')
-    dlResult = await downloadPixivImage(savePath, illusts)
+    imageDirPath = createPath(pixivPath, 'images')
+    
+    # 先に作成しているimagesフォルダを削除
+    if os.path.exists(imageDirPath):
+        shutil.rmtree(imageDirPath)
+    
+    dlResult = await downloadPixivImage(imageDirPath, illusts)
     if dlResult['error']:
         return jsonify({
             'error': True,
             'content': 'download failed'
         })
     else:
-        makeZip(pixivPath, 'images.zip')
+        zipFilePath = makeZip(imageDirPath, pixivPath)
         return jsonify({
             'error': False,
-            'content': 'download success'
+            'content': 'download Success'
         })
+    
+@app.route('/api/getZip', methods=['GET'])
+def getZip():
+    zip_path = createPath('imagedler', 'pixiv', 'images.zip')
+    
+    response = make_response()
+    response.headers['Content-Type'] = 'application/octet-stream'
+    response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zip_path)}'
+    response.data = open(zip_path, 'rb').read()
+
+    return response
 
 @app.route('/api/updatePixivInfo', methods=['POST'])
 def updatePixivInfo():
-    # 先に作成しているimagesフォルダとzipを削除
-    os.remove(createPath('imagedler', 'pixiv', 'images.zip'))
-    shutil.rmtree(createPath('imagedler', 'pixiv', 'images'))
-    
     dlCount = accountManager.getSingleData('dl_count')
     imagesCount = accountManager.getSingleData('images_count')
     pixivAccounts = accountManager.getSingleData('pixiv')
@@ -73,21 +85,21 @@ def updatePixivInfo():
     
     isIdExists = False
     for (i, pixivAccount) in enumerate(pixivAccounts):
-        if pixivAccount['id'] == data['pixUserID']:
-            pixivAccounts[i]['post'] = data['latestID']
+        if pixivAccount['id'] == str(data['pixUserID']):
+            pixivAccounts[i]['post'] = str(data['latestID'])
             isIdExists = True
             
     if not isIdExists:
         pixivAccounts.append({
-            'id': data['pixUserID'],
-            'post': data['latestID']
+            'id': str(data['pixUserID']),
+            'post': str(data['latestID'])
         })
         
     accountManager.update('dl_count', dlCount)
     accountManager.update('images_count', imagesCount)
-    accountManager.update('pixiv', pixivAccounts)
+    # accountManager.update('pixiv', pixivAccounts)
     
-    return jsonify({'data': 'success'})
+    return 'success'
     
 @app.route('/api/getModels', methods=['GET'])
 def getModels():
