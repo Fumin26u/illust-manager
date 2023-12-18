@@ -1,5 +1,11 @@
 @import "./style.scss";
 
+select {
+    font-size: 16px;
+    padding: 2px 4px;
+    margin: 8px 0;
+}
+
 #page-evaluate {
     margin: 1em auto;
 }
@@ -13,7 +19,7 @@
 .input-form {
     border-bottom: 2px dashed #888;
     > div {
-        padding: 1em 0;
+        margin: 0.5em auto;
         > dt, dd {
             vertical-align: middle;
             display: inline-block;
@@ -44,11 +50,6 @@
         }
         > dd > img {
             width: 100%;
-        }
-        select {
-            font-size: 16px;
-            padding: 2px 4px;
-            margin: 8px 0;
         }
     }
 }

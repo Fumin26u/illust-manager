@@ -9,11 +9,25 @@ from api.evaluate.detect_anime_face import load_checkpoint
 import api.save.saveImage as saveImage
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:8081"}})
 
 @app.route('/', methods=['GET'])
 def index():
     return 'This is an Index Page!'
+
+@app.route('/api/getModels', methods=['GET'])
+def getModels():
+    scriptDir = os.path.dirname(os.path.abspath(__file__))
+    modelDir = os.path.join(scriptDir, 'evaluate', 'models')
+    modelNames = sorted(os.listdir(modelDir), reverse=True)
+    return jsonify({'data': modelNames})
+
+@app.route('/api/getImageDirs', methods=['GET'])
+def getImageDirs():
+    scriptDir = os.path.dirname(os.path.abspath(__file__))
+    imageDir = os.path.join(scriptDir, 'evaluate', 'images')
+    imageNames = sorted(os.listdir(imageDir), reverse=True)
+    return jsonify({'data': imageNames})
     
 @app.route('/api/evaluate', methods=['POST'])
 def evaluate():
