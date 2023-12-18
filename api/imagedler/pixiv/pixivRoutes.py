@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, make_response
-from api.imagedler.pixiv.getImage import main as getPixivImage
-from api.imagedler.pixiv.dlImage import main as downloadPixivImage
+from api.imagedler.pixiv.getImage import main as getImage
+from api.imagedler.pixiv.dlImage import main as downloadImage
 from api.makeZip import makeZip
 from api.createPath import createPath
 
@@ -8,15 +8,14 @@ import os, shutil
 
 pixivRoutes = Blueprint('pixivRoutes', __name__)
 
-
-@pixivRoutes.route('/api/getPixivImages', methods=['POST'])
-async def getPixivImages():
+@pixivRoutes.route('/pixiv/getImages', methods=['POST'])
+async def getImages():
     data = request.get_json()
     searchQuery = data['content']
-    return await getPixivImage(searchQuery)
+    return await getImage(searchQuery)
 
-@pixivRoutes.route('/api/downloadPixivImages', methods=['GET', 'POST'])
-async def downloadPixivImages():
+@pixivRoutes.route('/pixiv/downloadImages', methods=['POST'])
+async def downloadImages():
     data = request.get_json()
     illusts = data['content']
     pixivPath = createPath('imagedler', 'pixiv')
@@ -26,7 +25,7 @@ async def downloadPixivImages():
     if os.path.exists(imageDirPath):
         shutil.rmtree(imageDirPath)
     
-    dlResult = await downloadPixivImage(imageDirPath, illusts)
+    dlResult = await downloadImage(imageDirPath, illusts)
     if dlResult['error']:
         return jsonify({
             'error': True,
@@ -39,7 +38,7 @@ async def downloadPixivImages():
             'content': 'download Success'
         })
     
-@pixivRoutes.route('/api/getZip', methods=['GET'])
+@pixivRoutes.route('/pixiv/getZip', methods=['GET'])
 def getZip():
     zip_path = createPath('imagedler', 'pixiv', 'images.zip')
     

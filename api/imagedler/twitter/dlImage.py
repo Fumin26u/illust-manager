@@ -1,5 +1,6 @@
-import sys, json, os, random, string, time
-import requests
+import sys, os, random, string
+import requests, asyncio, aiohttp, aiofiles
+from api.createPath import createPath
 
 def generateRandomString(strLength: int) -> str:
     strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]
@@ -26,31 +27,34 @@ def getFormatMethod(url):
     else:
         return False
 
-# 保存先のパス
-SAVE_PATH = './images'
-# 指定されたフォルダが存在しない場合新規作成
-if not os.path.exists(SAVE_PATH):
-    os.mkdir(SAVE_PATH)
+async def dlImage(session, illust, savePath):
+    try:
+        await asyncio.sleep(1)
+        async with session.get(illust, timeout=10, ssl=False) as response:
+            if response.status == 200:
+                fileName = generateRandomString(12) + '.' + getFormatMethod(illust)
+                filePath = createPath(savePath, fileName)
+                async with aiofiles.open(filePath, 'wb') as file:
+                    while True:
+                        chunk = await response.content.read(8192)
+                        if not chunk:
+                            break
+                        await file.write(chunk)
+                return {'error': False}
+            else:
+                print('画像の保存に失敗しました。')
+                return {'error': True}
+    except Exception as e:
+        print(f'画像の保存中にエラーが発生しました: {str(e)}')
+        return {'error': True}
 
-illustUrls = sys.argv[1].split(',')
-for illustUrl in illustUrls:
-    time.sleep(1)
-    # &が0AND0に変換されているので、元に戻す
-    undoUrl = illustUrl.replace('0AND0', '&')
-    response = requests.get(undoUrl, stream=True)
-    if response.status_code == 200:
-        file_name = generateRandomString(12) + '.' + getFormatMethod(undoUrl)
-        with open('./images/' + file_name, 'wb') as file:
-            for chunk in response.iter_content(chunk_size=8192):
-                file.write(chunk)
-    else:
-        print(json.dumps({
-            'error': True,
-            'content': '画像の保存に失敗しました。'
-        }))
-        sys.exit()
-
-print(json.dumps({
-    'error': False,
-    'content': sys.argv
-}))
+async def dlImages(savePath, illusts):
+    # 指定されたフォルダが存在しない場合新規作成
+    if not os.path.exists(savePath):
+        os.mkdir(savePath)
+    async with aiohttp.ClientSession() as session:
+        for illust in illusts:
+            response = await dlImage(session, illust, savePath)
+            if response['error']:
+                return {'error': True, 'content': 'download failed'}
+    return {'error': False, 'content': 'download success'}

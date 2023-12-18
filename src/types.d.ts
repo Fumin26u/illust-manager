@@ -33,6 +33,7 @@ export interface TwiSearch {
     getTweetType: 'liked_tweets' | 'tweets' | 'bookmarks'
     getNumberOfTweet: string
     isGetFromPreviousTweet: boolean
+    suspendID: string
 }
 
 export interface TweetImage {

@@ -52,7 +52,7 @@ const getImage = async () => {
     errorMessage.value = inputValidation()
     if (errorMessage.value !== '') return
 
-    const response = await apiManager.post(`${apiPath}/api/getPixivImages`, {
+    const response = await apiManager.post(`${apiPath}/pixiv/getImages`, {
         content: search.value,
     })
 
@@ -95,7 +95,7 @@ const dlImage = async () => {
 
     // 画像URL一覧をAPIに送り画像をDL
     const downloadResponse = await apiManager.post(
-        `${apiPath}/api/downloadPixivImages`,
+        `${apiPath}/pixiv/downloadImages`,
         {
             content: imagePaths,
         }
@@ -108,7 +108,7 @@ const dlImage = async () => {
     }
 
     const link = document.createElement('a')
-    link.href = `${apiPath}/api/getZip`
+    link.href = `${apiPath}/pixiv/getZip`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)

@@ -3,16 +3,18 @@ from flask_cors import CORS
 from api.account.accountRoutes import accountRoutes
 from api.evaluate.evaluateRoutes import evaluateRoutes
 from api.imagedler.pixiv.pixivRoutes import pixivRoutes
+from api.imagedler.twitter.twitterRoutes import twitterRoutes
 
 from api.account.accountManager import AccountManager
 from api.createPath import createPath
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
 
 app.register_blueprint(accountRoutes)
 app.register_blueprint(evaluateRoutes)
 app.register_blueprint(pixivRoutes)
+app.register_blueprint(twitterRoutes)
 
 accountManager = AccountManager(createPath('account', 'userdata.json'))
 

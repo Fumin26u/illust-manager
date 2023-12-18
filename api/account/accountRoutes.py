@@ -12,7 +12,7 @@ def getAccount():
 
 @accountRoutes.route('/api/getPixivInfo', methods=['GET'])
 def getPixivInfo():
-    pixivInfo = accountManager.getPixivInfo()
+    pixivInfo = accountManager.getSingleData('pixiv')
     return pixivInfo
 
 @accountRoutes.route('/api/updatePixivInfo', methods=['POST'])
@@ -39,6 +39,39 @@ def updatePixivInfo():
         
     accountManager.update('dl_count', dlCount)
     accountManager.update('images_count', imagesCount)
-    # accountManager.update('pixiv', pixivAccounts)
+    accountManager.update('pixiv', pixivAccounts)
+    
+    return 'success'
+
+@accountRoutes.route('/api/getTwitterInfo', methods=['GET'])
+def getTwitterInfo():
+    twitterInfo = accountManager.getSingleData('twitter')
+    return twitterInfo
+
+@accountRoutes.route('/api/updateTwitterInfo', methods=['POST'])
+def updateTwitterInfo():
+    dlCount = accountManager.getSingleData('dl_count')
+    imagesCount = accountManager.getSingleData('images_count')
+    twitterAccounts = accountManager.getSingleData('twitter')
+    
+    data = request.get_json()
+    imagesCount += int(data['imageCount'])
+    dlCount += 1
+    
+    isIdExists = False
+    for (i, twitterAccount) in enumerate(twitterAccounts):
+        if twitterAccount['id'] == str(data['twitterID']):
+            twitterAccounts[i]['post'] = str(data['latestID'])
+            isIdExists = True
+            
+    if not isIdExists:
+        twitterAccounts.append({
+            'id': str(data['twitterID']),
+            'post': str(data['latestID'])
+        })
+        
+    accountManager.update('dl_count', dlCount)
+    accountManager.update('images_count', imagesCount)
+    accountManager.update('twitter', twitterAccounts)
     
     return 'success'

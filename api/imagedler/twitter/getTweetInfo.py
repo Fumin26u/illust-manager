@@ -1,4 +1,4 @@
-import sys, json, random
+import sys, json, random, asyncio
 from time import sleep
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -7,36 +7,24 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
-import twitterPassword
-
 # Twitterのリンク
 TWITTER_PATH = 'https://twitter.com/'
 
-# PHPから送られてきたクエリ文字列から辞書を作成
-def makeDictFromQuery(query: str):
-    params = query.split(',')
-    query = dict()
-    for param in params:
-        array = param.split('=')
-        query[array[0]] = array[1]
-    query['isGetFromPreviousTweet'] = True if query['isGetFromPreviousTweet'] == 'true' else False
-    return query
-GET_QUERY = makeDictFromQuery(sys.argv[1])
-
 # ランダムな間隔(1~2秒)でタイムアウトを行う
-def randomSleep():
-    sleep(random.random() + 2)
+async def randomSleep(num = 1):
+    await asyncio.sleep(random.random() + num)
     
 # ドライバの設定
-options = Options()
-# options.add_argument('--headless')
-options.add_argument('--disable-gpu')
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-options.add_argument('--user-agent=' + USER_AGENT)
-driver = webdriver.Chrome('./chromedriver', options=options)
+def setDriver():
+    options = Options()
+    # options.add_argument('--headless')
+    options.add_argument('--disable-gpu')
+    USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+    options.add_argument('--user-agent=' + USER_AGENT)
+    return webdriver.Chrome('api/imagedler/twitter/chromedriver', options=options)
 
 # ドライバからTwitterにログイン
-def twitterLogin(userId, password):
+async def twitterLogin(driver, userId, password):
     initUrl = TWITTER_PATH + 'i/flow/login'
     driver.get(initUrl)
     # ユーザー名入力
@@ -45,30 +33,30 @@ def twitterLogin(userId, password):
     WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, inputClass)))
     # 表示されたらinputを取得してユーザー名を挿入
     userInput = driver.find_element(By.CLASS_NAME, inputClass)
-    randomSleep()
+    await randomSleep()
     userInput.send_keys(userId)
     # ボタンを取得
     # buttonSelector = '.css-18t94o4.css-1dbjc4n.r-sdzlij.r-1phboty.r-rs99b7.r-ywje51.r-usiww2.r-2yi16.r-1qi8awa.r-1ny4l3l.r-ymttw5.r-o7ynqc.r-6416eg.r-lrvibr.r-13qz1uu'
     buttonSelector = '.css-175oi2r.r-sdzlij.r-1phboty.r-rs99b7.r-lrvibr.r-ywje51.r-usiww2.r-13qz1uu.r-2yi16.r-1qi8awa.r-ymttw5.r-o7ynqc.r-6416eg.r-1ny4l3l'
     passwordSendButton = driver.find_element(By.CSS_SELECTOR, buttonSelector)
-    randomSleep()
+    await randomSleep()
     passwordSendButton.click()
 
     # パスワード入力
     inputSelector = '.r-30o5oe.r-1niwhzg.r-17gur6a.r-1yadl64.r-deolkf.r-homxoj.r-poiln3.r-7cikom.r-1ny4l3l.r-t60dpp.r-1dz5y72.r-fdjqy7.r-13qz1uu'
     WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, inputSelector)))
     passwordInput = driver.find_element(By.CSS_SELECTOR, inputSelector)
-    randomSleep()
+    await randomSleep()
     passwordInput.send_keys(password)
     # buttonSelector = '.css-18t94o4.css-1dbjc4n.r-sdzlij.r-1phboty.r-rs99b7.r-19yznuf.r-64el8z.r-1ny4l3l.r-1dye5f7.r-o7ynqc.r-6416eg.r-lrvibr'
     buttonSelector = '.css-175oi2r.r-sdzlij.r-1phboty.r-rs99b7.r-lrvibr.r-19yznuf.r-64el8z.r-1dye5f7.r-o7ynqc.r-6416eg.r-1ny4l3l'
     loginButton = driver.find_element(By.CSS_SELECTOR, buttonSelector)
-    randomSleep()
+    await randomSleep()
     loginButton.click()
 
 # ツイート情報の取得
-def getTweet(query):
-    randomSleep()
+async def getTweet(driver, query):
+    await randomSleep()
     # 初期リンク
     initUrl = TWITTER_PATH + query['twitterID']
     if query['getTweetType'] == 'liked_tweets':
@@ -86,14 +74,14 @@ def getTweet(query):
     # スクロールする位置
     scrollY = 4000
     while tweetRemains > 0:
-        sleep(3)
+        await randomSleep(2.5)
         articles = driver.find_elements(By.TAG_NAME, 'article')
-        randomSleep()
+        await randomSleep()
         for article in articles:
             # ツイートの取得数上限に達した場合は取得を中断
             if tweetRemains == 0:
                 return tweetInfo
-            result = getTweetInfo(article, query['isGetFromPreviousTweet'])
+            result = await getTweetInfo(query, article)
             # 取得が中断された場合、その時点でツイート情報一覧を返す
             if result == False:
                 return tweetInfo
@@ -115,7 +103,7 @@ def getTweet(query):
         scrollY += 4000
 
 # 個々のツイート情報を取得
-def getTweetInfo(article, isGetFromPreviousTweet):
+async def getTweetInfo(query, article):
     tweetInfo = dict()
     # 画像とツイート元リンクを取得 
     try:
@@ -123,7 +111,7 @@ def getTweetInfo(article, isGetFromPreviousTweet):
         imageBlock = article.find_element(By.CSS_SELECTOR, imageBlockSelector)
     except NoSuchElementException:
         # print('指定した要素が存在しません。')
-        sleep(3)
+        await randomSleep()
         return 'continue'
         
     # 画像のURLからツイート元のURLを作成
@@ -134,9 +122,9 @@ def getTweetInfo(article, isGetFromPreviousTweet):
     postID = tweetRelativePath.split('/')[-1]
     # 前回取得した画像以降を取得したい場合、この時点でツイートIDが前回取得した最後のツイートのIDだった場合falseを返してツイート取得終了
     if (
-        isGetFromPreviousTweet and
-        'suspendID' in GET_QUERY and
-        postID == GET_QUERY['suspendID']
+        query['isGetFromPreviousTweet'] and
+        'suspendID' in query and
+        postID == query['suspendID']
     ): 
         # print('前回取得した画像です。')
         return False 
@@ -155,7 +143,7 @@ def getTweetInfo(article, isGetFromPreviousTweet):
             largeImagePath = imagePath
         imagePaths.append(largeImagePath)
     tweetInfo['images'] = imagePaths
-    randomSleep()
+    await randomSleep()
         
     # ユーザー名取得
     userBlockSelector = '.css-175oi2r.r-zl2h9q'
@@ -180,10 +168,3 @@ def getTweetInfo(article, isGetFromPreviousTweet):
     tweetInfo['post_time'] = None
 
     return tweetInfo
-
-twitterLogin(GET_QUERY['twitterID'], twitterPassword.USER_PASSWORD)
-tweetInfo = getTweet(GET_QUERY)
-
-driver.quit()
-
-print(json.dumps(tweetInfo))
