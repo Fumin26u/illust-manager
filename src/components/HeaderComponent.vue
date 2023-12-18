@@ -31,8 +31,8 @@ onMounted(async () => {
             <nav class="header-nav">
                 <a href="./evaluate" class="btn-small blue">評価</a>
                 <a href="./training" class="btn-small blue">訓練</a>
-                <a href="./imagedler/twitter" class="btn-small blue">twitter</a>
-                <a href="./imagedler/pixiv_new" class="btn-small blue">pixiv</a>
+                <a href="./twitter" class="btn-small blue">twitter</a>
+                <a href="./pixiv" class="btn-small blue">pixiv</a>
                 <a href="./account" class="btn-small blue">アカウント管理</a>
             </nav>
         </div>
