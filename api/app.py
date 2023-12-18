@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os, requests, base64, cv2, shutil
+import os, requests, base64, cv2, shutil, json
 import numpy as np
 from io import BytesIO
 
 from api.evaluate.eval import main as image_evaluate
 from api.evaluate.detect_anime_face import load_checkpoint
 from api.evaluate.createTrainData import createTrainData
+from api.account.accountManager import AccountManager
 from api.createPath import createPath
 import api.save.saveImage as saveImage
 
@@ -16,6 +17,12 @@ CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
 @app.route('/', methods=['GET'])
 def index():
     return 'This is an Index Page!'
+
+@app.route('/api/getAccount', methods=['GET'])
+def getAccount():
+    accountManager = AccountManager(createPath('account', 'userdata.json'))
+    username = accountManager.getUsername()
+    return username
 
 @app.route('/api/getModels', methods=['GET'])
 def getModels():
