@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import '@/assets/scss/organisms/twiForm.scss'
-import ApiManager from '@/components/api/apiManager'
-import { TweetInfo, TweetImage } from '@/assets/interfaces/interfaces'
+import ApiManager from '@/server/apiManager'
+import { TweetInfo, TweetImage } from '@/types'
 import { twiUserData as search } from '@/assets/ts/userData'
-import apiPath from '@/assets/ts/apiPath'
-import versionLog from '@/assets/ts/versions'
+import { apiPath } from '@/assets/ts/paths'
+import '@/assets/scss/imagedler/twiForm.scss'
 
 const errorMessage = ref<string>('')
 // 入力フォームのバリデーション
@@ -248,18 +247,6 @@ const dlImage = async () => {
                     <a :href="tweet.url">ツイート元リンク</a>
                 </div>
             </div>
-        </section>
-        <section class="version">
-            <h3>更新履歴</h3>
-            <dl class="version-list">
-                <div v-for="(version, index) in versionLog" :key="index">
-                    <dt>{{ version.date }}</dt>
-                    <dd>
-                        <p class="version-number">Ver. {{ version.version }}</p>
-                        <p>{{ version.content }}</p>
-                    </dd>
-                </div>
-            </dl>
         </section>
     </main>
 </template>

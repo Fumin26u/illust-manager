@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import '@/assets/scss/organisms/header.scss'
-import ApiManager from '@/components/api/apiManager'
-import apiPath from '@/assets/ts/apiPath'
+import ApiManager from '@/server/apiManager'
+import { apiPath } from '@/assets/ts/paths'
+import '@/assets/scss/imagedler/header.scss'
 
 interface Emits {
     (e: 'getUserInfo', userId: string): string

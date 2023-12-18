@@ -11,7 +11,7 @@ from api.createPath import createPath
 import api.save.saveImage as saveImage
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:8081"}})
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}})
 
 @app.route('/', methods=['GET'])
 def index():

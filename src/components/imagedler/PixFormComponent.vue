@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import '@/assets/scss/organisms/pixForm.scss'
-import ApiManager from '@/components/api/apiManager'
-import { PixPostInfo, PixPostImage } from '@/assets/interfaces/interfaces'
+import ApiManager from '@/server/apiManager'
+import { PixPostInfo, PixPostImage } from '@/types'
 import { pixUserData as search } from '@/assets/ts/userData'
-import apiPath from '@/assets/ts/apiPath'
+import { apiPath } from '@/assets/ts/paths'
+import '@/assets/scss/imagedler/pixForm.scss'
 
 const errorMessage = ref<string>('')
 // 入力フォームのバリデーション
