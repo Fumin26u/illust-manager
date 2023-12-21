@@ -17,6 +17,9 @@ const getUserInfo = async () => {
 onMounted(async () => {
     username.value = await getUserInfo()
 })
+
+const isCharaMenuVisible = ref<boolean>(false)
+const isImageMenuVisible = ref<boolean>(false)
 </script>
 
 <template>
@@ -29,10 +32,27 @@ onMounted(async () => {
                 </a>
             </div>
             <nav class="header-nav">
-                <a href="./evaluate" class="btn-small blue">評価</a>
-                <a href="./training" class="btn-small blue">訓練</a>
-                <a href="./twitter" class="btn-small blue">twitter</a>
-                <a href="./pixiv" class="btn-small blue">pixiv</a>
+                <div
+                    @mouseover="isCharaMenuVisible = true"
+                    @mouseleave="isCharaMenuVisible = false"
+                >
+                    <p>キャラ分類</p>
+                    <div class="nav-menu" v-show="isCharaMenuVisible">
+                        <a href="./cropping" class="btn-small blue">加工</a>
+                        <a href="./evaluate" class="btn-small blue">評価</a>
+                        <a href="./training" class="btn-small blue">訓練</a>
+                    </div>
+                </div>
+                <div
+                    @mouseover="isImageMenuVisible = true"
+                    @mouseleave="isImageMenuVisible = false"
+                >
+                    <p>ImageDLer</p>
+                    <div class="nav-menu" v-show="isImageMenuVisible">
+                        <a href="./twitter" class="btn-small blue">twitter</a>
+                        <a href="./pixiv" class="btn-small blue">pixiv</a>
+                    </div>
+                </div>
                 <a href="./account" class="btn-small blue">アカウント管理</a>
             </nav>
         </div>

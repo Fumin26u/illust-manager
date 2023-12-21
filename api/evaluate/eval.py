@@ -48,9 +48,6 @@ def main(
 ):
     # モデルのロード
     model = load_model(modelPath) 
-
-    # 前回の評価画像・リサイズ画像が残っていれば削除
-    deleteImage(croppedImagePath)
     
     # 画像の顔部分を切り抜き保存 + 保存先のパス取得
     image = resizeImage(evaluatedImage, 1280)
@@ -69,6 +66,9 @@ def main(
 
     # モデルの分析
     predictions = analyzeImage(model, croppedImagePath)
+    
+    # 評価画像を削除
+    deleteImage(croppedImagePath)
 
     # 結果表示
     return displayAnalyzeResult(predictions, trainExtends)

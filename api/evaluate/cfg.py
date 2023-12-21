@@ -8,7 +8,7 @@ BASE_PATH = 'api/evaluate/'
 # 画像フォルダのパス
 IMAGE_PATH = f"{BASE_PATH}images/"
 # 元データのパス
-RAW_PATH = f"{IMAGE_PATH}rawdata/"
+RAW_PATH = f"{BASE_PATH}rawdata/"
 # 抜き出した顔画像の保存先
 SAVE_PATH = f"{IMAGE_PATH}faces_{getNowTime()}/"
 # リサイズ後の解像度

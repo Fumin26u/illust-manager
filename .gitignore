@@ -37,7 +37,7 @@ api/evaluate/models/*
 api/evaluate/images/*
 
 # Save
-api/save/save.jpg
+api/save/output/*
 
 # ImageDler - Pixiv
 api/imagedler/pixiv/images/

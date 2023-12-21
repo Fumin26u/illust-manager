@@ -58,17 +58,24 @@ const base64Images = ref<unknown[]>([])
 // APIを介して画像を評価
 const evaluateImage = async () => {
     // Extract only the imagePath from imageInfo and create a new array
-    const imagePaths = imageInfo.value.map((info) => info.imagePath)
-
-    // 画像を全てBASE64に変換
-    base64Images.value = await Promise.all(
-        imagePaths.map(
-            async (imagePath) => await convertImageToBase64(imagePath)
-        )
+    const imagePaths = await Promise.all(
+        imageInfo.value.map(async (info) => {
+            return {
+                imagePath: await convertImageToBase64(info.imagePath),
+                index: info.index,
+            }
+        })
     )
 
+    // 画像を全てBASE64に変換
+    // base64Images.value = await Promise.all(
+    //     imagePaths.map(async (imagePath) => return {
+    //         await convertImageToBase64(imagePath)
+    //     })
+    // )
+    console.log({ ...imagePaths })
+
     try {
-        const imagePaths = base64Images.value
         for (let i = 0; i < imagePaths.length; i += batchSize) {
             const batch = imagePaths.slice(i, i + batchSize)
             const response = await apiManager.post(

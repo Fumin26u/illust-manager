@@ -5,10 +5,15 @@ from api.evaluate.createTrainData import createTrainData
 from api.save.saveImage import saveImage
 from api.createPath import createPath
 
-import os, base64, cv2
+import os, base64, cv2, string, random, uuid
 import numpy as np
+import concurrent.futures
 
 evaluateRoutes = Blueprint('evaluateRoutes', __name__)
+
+def generateRandomString(strLength: int) -> str:
+    strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]
+    return ''.join(strArray)
     
 @evaluateRoutes.route('/evaluate/getModels', methods=['GET'])
 def getModels():
@@ -31,17 +36,28 @@ def evaluate():
     
     eachResults = []
     load_checkpoint()
-    # base64文字列を1つずつ画像に変換して評価
-    for base64Image in base64Images:
-        image_data = base64.b64decode(base64Image.split(',')[1])
-        image = cv2.imdecode(np.frombuffer(image_data, np.uint8), cv2.IMREAD_COLOR)
+    
+    def evaluateSingleImage(args):
+        i, base64Image = args['index'], args['imagePath']
+        print(i)
+        try:
+            image_data = base64.b64decode(base64Image.split(',')[1])
+            image = cv2.imdecode(np.frombuffer(image_data, np.uint8), cv2.IMREAD_COLOR)
+            uniqueID = str(uuid.uuid4())[:8]
+            result = image_evaluate(image, f'api/evaluate/{uniqueID}.jpg', trainExtends, modelPath)
+            return i, result
+        except Exception as e:
+            print(f"Error evaluating image: {str(e)}")
+            return i, []
         
-        eachResults.append(image_evaluate(
-            image, 
-            'api/evaluate/eval.jpg', 
-            trainExtends,
-            modelPath
-        ))
+    # base64文字列を1つずつ画像に変換して評価(並列処理)
+    with concurrent.futures.ThreadPoolExecutor() as executor: 
+        futures = [executor.submit(evaluateSingleImage, base64Image) for base64Image in base64Images]
+        
+    results = [future.result() for future in concurrent.futures.as_completed(futures)]
+    sorted_results = sorted(results, key=lambda x: x[0])  # インデックスでソート
+
+    eachResults = [result for _, result in sorted_results]
     return jsonify({'data': eachResults})
 
 @evaluateRoutes.route('/evaluate/save', methods=['POST'])
