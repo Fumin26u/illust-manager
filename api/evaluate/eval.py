@@ -17,7 +17,7 @@ def analyzeImage(model, imagePath):
     return model.predict(img_array)
 
 # 分析結果と一致度の表示
-def displayAnalyzeResult(predictions, generator):    
+def displayAnalyzeResult(predictions, generator, isMultipleFaces = False):    
     classLabels = list(generator.class_indices.keys())  # クラスのラベル
     
     classPredictions = [
@@ -29,7 +29,12 @@ def displayAnalyzeResult(predictions, generator):
         prediction['probability'] = format(prediction['probability'], '.4f')  # 小数第4位まで表示
         prediction['probability'] = f"{float(prediction['probability']) * 100:.2f}%"  # パーセンテージ表記
     
-    return sorted_predictions + [{'className': 'others', 'probability': '0.0%'}]
+    # othersを顔の認識数が2以上なら配列の頭に、1なら配列の末尾に追加
+    if isMultipleFaces:
+        print('multiple faces')
+        return [{'className': 'others', 'probability': '100.00%'}] + sorted_predictions
+    else:
+        return sorted_predictions + [{'className': 'others', 'probability': '100.00%'}]
 
 # 画像の削除
 def deleteImage(imagePath):
@@ -62,6 +67,9 @@ def main(
             {'className': label, 'probability': '0.00%'} for label in list(trainExtends.class_indices.keys())
         ]
 
+    # 顔の認識数が2以上かどうか
+    isMultipleFaces = len(faceRect) >= 2
+
     saveFace([faceRect[0]], image, base_path, croppedImagePath, (224, 224))
 
     # モデルの分析
@@ -71,4 +79,4 @@ def main(
     deleteImage(croppedImagePath)
 
     # 結果表示
-    return displayAnalyzeResult(predictions, trainExtends)
+    return displayAnalyzeResult(predictions, trainExtends, isMultipleFaces)

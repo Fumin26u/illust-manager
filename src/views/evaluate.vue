@@ -54,7 +54,6 @@ const convertImageToBase64 = async (imagePath: string) => {
 }
 
 const apiManager = new ApiManager()
-const base64Images = ref<unknown[]>([])
 // APIを介して画像を評価
 const evaluateImage = async () => {
     // Extract only the imagePath from imageInfo and create a new array
@@ -66,14 +65,6 @@ const evaluateImage = async () => {
             }
         })
     )
-
-    // 画像を全てBASE64に変換
-    // base64Images.value = await Promise.all(
-    //     imagePaths.map(async (imagePath) => return {
-    //         await convertImageToBase64(imagePath)
-    //     })
-    // )
-    console.log({ ...imagePaths })
 
     try {
         for (let i = 0; i < imagePaths.length; i += batchSize) {
@@ -112,24 +103,28 @@ const evaluateImage = async () => {
 const sortImageInfo = (method: string) => {
     if (method === 'name') {
         imageInfo.value.sort((a, b) => {
-            if (a.className < b.className) {
-                return -1
+            const compare = a.className.localeCompare(b.className)
+            if (compare !== 0) {
+                return compare
             }
-            if (a.className > b.className) {
-                return 1
-            }
-            return 0
+            return (
+                parseFloat(b.probability ?? '0') -
+                parseFloat(a.probability ?? '0')
+            )
         })
     } else if (method === 'index') {
         imageInfo.value.sort((a, b) => a.index - b.index)
     }
 }
 
+// 選択しているクラスが変更されたとき、信頼度を変更したものに更新
 const selectClass = (index: number) => {
     const selectedClassName = imageInfo.value[index].className
     imageInfo.value[index].probability = imageInfo.value[index].classList?.find(
         (result) => result.className === selectedClassName
     )?.probability
+    // 信頼度が変更された場合、確実に保存するチェックを付与
+    imageInfo.value[index].isImportant = true
 }
 
 // 画像をキャラクター毎にフォルダ分けして保存

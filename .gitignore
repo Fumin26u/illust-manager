@@ -35,6 +35,7 @@ api/account/userdata.json
 api/evaluate/eval.jpg
 api/evaluate/models/*
 api/evaluate/images/*
+api/evaluate/*.jpg
 
 # Save
 api/save/output/*
