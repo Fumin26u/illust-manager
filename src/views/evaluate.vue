@@ -2,7 +2,7 @@
 import FileListComponent from '@/components/FileListComponent.vue'
 import FileSelectComponent from '@/components/FileSelectComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
-import InputLabelComponent from '@/components/InputLabelComponent.vue'
+import HeaderComponent from '@/components/HeaderComponent.vue'
 
 import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
@@ -17,6 +17,8 @@ const minConfidence = ref<number>(50)
 
 const selectedModel = ref<string>('')
 const selectedImageDir = ref<string>('')
+// 1度にAPIに送るリクエスト数
+const batchSize = 50
 
 // ディレクトリ選択時、画像情報一覧を取得
 const setImageInfo = (selectedImageInfo: ImageInfo[]) => {
@@ -67,24 +69,32 @@ const evaluateImage = async () => {
     )
 
     try {
-        console.log(selectedModel.value, selectedImageDir.value)
-        const response = await apiManager.post(`${apiPath}/api/evaluate`, {
-            imagePaths: base64Images.value,
-            model: selectedModel.value,
-            imageDir: selectedImageDir.value,
-        })
-
-        response.data.forEach(
-            (result: EvaluatedResult[] | false, index: number) => {
-                if (result === false) {
-                    imageInfo.value.splice(index, 1)
-                } else {
-                    evaluatedResult.value.push(result)
-                    imageInfo.value[index].className = result[0].className
-                    imageInfo.value[index].confidence = result[0].probability
+        const imagePaths = base64Images.value
+        for (let i = 0; i < imagePaths.length; i += batchSize) {
+            const batch = imagePaths.slice(i, i + batchSize)
+            const response = await apiManager.post(
+                `${apiPath}/evaluate/evaluate`,
+                {
+                    imagePaths: batch,
+                    model: selectedModel.value,
+                    imageDir: selectedImageDir.value,
                 }
-            }
-        )
+            )
+
+            response.data.forEach(
+                (result: EvaluatedResult[] | false, index: number) => {
+                    index += i
+                    if (result === false) {
+                        imageInfo.value.splice(index, 1)
+                    } else {
+                        evaluatedResult.value.push(result)
+                        imageInfo.value[index].className = result[0].className
+                        imageInfo.value[index].confidence =
+                            result[0].probability
+                    }
+                }
+            )
+        }
 
         isEvaluated.value = true
     } catch (error) {
@@ -127,11 +137,13 @@ const saveImage = async () => {
     )
 
     try {
-        const response = await apiManager.post(`${apiPath}/api/save`, {
-            minConfidence: minConfidence.value,
-            imageInfo: imageInfo_base64,
-        })
-        console.log(response)
+        for (let i = 0; i < imageInfo_base64.length; i += batchSize) {
+            const batch = imageInfo_base64.slice(i, i + batchSize)
+            const response = await apiManager.post(`${apiPath}/evaluate/save`, {
+                minConfidence: minConfidence.value,
+                imageInfo: batch,
+            })
+        }
     } catch (error) {
         console.error(error)
     }
@@ -139,6 +151,7 @@ const saveImage = async () => {
 </script>
 
 <template>
+    <HeaderComponent />
     <main id="page-evaluate">
         <div class="title-area">
             <h1 class="title">画像の評価</h1>
@@ -222,12 +235,14 @@ const saveImage = async () => {
                             </option>
                         </select>
                         <p>信頼度: {{ info.confidence }}</p>
-                        <InputLabelComponent
-                            :text="'確実に保存する'"
-                            :idName="`is-important-${index}`"
-                            :type="'checkbox'"
+                        <input
+                            type="checkbox"
                             v-model="info.isImportant"
+                            :id="`is-important-${index}`"
                         />
+                        <label :for="`is-important-${index}`">
+                            確実に保存する
+                        </label>
                     </div>
                     <p v-else>未評価</p>
                 </dt>

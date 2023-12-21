@@ -22,11 +22,31 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-api/evaluate/models/*
-api/evaluate/__pycache__/*
+chromedriver.exe
+
+# Python
+__pycache__/
+*.pyc
+
+# Account
+api/account/userdata.json
+
+# Evaluate
 api/evaluate/eval.jpg
+api/evaluate/models/*
 api/evaluate/images/*
-api/save/__pycache__/*
+
+# Save
 api/save/save.jpg
-api/save/output/*
+
+# ImageDler - Pixiv
+api/imagedler/pixiv/images/
+api/imagedler/pixiv/images.zip
+api/imagedler/pixiv/config.py
+api/imagedler/pixiv/pixiv_auth.py
+
+# ImageDler - Twitter
+api/imagedler/twitter/images/
+api/imagedler/twitter/images.zip
+api/imagedler/twitter/twitterPassword.py
 
