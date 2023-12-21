@@ -17,6 +17,8 @@ const minConfidence = ref<number>(50)
 
 const selectedModel = ref<string>('')
 const selectedImageDir = ref<string>('')
+// 1度にAPIに送るリクエスト数
+const batchSize = 50
 
 // ディレクトリ選択時、画像情報一覧を取得
 const setImageInfo = (selectedImageInfo: ImageInfo[]) => {
@@ -67,7 +69,6 @@ const evaluateImage = async () => {
     )
 
     try {
-        const batchSize = 50
         const imagePaths = base64Images.value
         for (let i = 0; i < imagePaths.length; i += batchSize) {
             const batch = imagePaths.slice(i, i + batchSize)
@@ -136,11 +137,13 @@ const saveImage = async () => {
     )
 
     try {
-        const response = await apiManager.post(`${apiPath}/evaluate/save`, {
-            minConfidence: minConfidence.value,
-            imageInfo: imageInfo_base64,
-        })
-        console.log(response)
+        for (let i = 0; i < imageInfo_base64.length; i += batchSize) {
+            const batch = imageInfo_base64.slice(i, i + batchSize)
+            const response = await apiManager.post(`${apiPath}/evaluate/save`, {
+                minConfidence: minConfidence.value,
+                imageInfo: batch,
+            })
+        }
     } catch (error) {
         console.error(error)
     }

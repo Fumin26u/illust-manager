@@ -22,14 +22,14 @@ def displayAnalyzeResult(predictions, generator):
     
     classPredictions = [
         {'className': label, 'probability': predictions[0][i]} for i, label in enumerate(classLabels)
-    ] + [{'className': 'others', 'probability': '0.0%'}]
+    ] 
     
     sorted_predictions = sorted(classPredictions, key=lambda x: x['probability'], reverse=True)
     for prediction in sorted_predictions:
         prediction['probability'] = format(prediction['probability'], '.4f')  # 小数第4位まで表示
         prediction['probability'] = f"{float(prediction['probability']) * 100:.2f}%"  # パーセンテージ表記
     
-    return sorted_predictions
+    return sorted_predictions + [{'className': 'others', 'probability': '0.0%'}]
 
 # 画像の削除
 def deleteImage(imagePath):
