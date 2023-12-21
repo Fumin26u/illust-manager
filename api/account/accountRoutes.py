@@ -25,17 +25,32 @@ def updatePixivInfo():
     imagesCount += int(data['imageCount'])
     dlCount += 1
     
-    isIdExists = False
-    for (i, pixivAccount) in enumerate(pixivAccounts):
-        if pixivAccount['id'] == str(data['pixUserID']):
-            pixivAccounts[i]['post'] = str(data['latestID'])
-            isIdExists = True
-            
-    if not isIdExists:
-        pixivAccounts.append({
-            'id': str(data['pixUserID']),
-            'post': str(data['latestID'])
-        })
+    if data['getPostType'] == 'tag':
+        isTagExists = False
+        for (i, pixivAccount) in enumerate(pixivAccounts):
+            if pixivAccount['tag'] == data['tag']:
+                pixivAccounts[i]['post'] = str(data['latestID'])
+                isIdExists = True
+                
+        if not isTagExists:
+            pixivAccounts.append({
+                'tag': data['tag'],
+                'post': str(data['latestID']),
+                'id': ''
+            })
+    else:
+        isIdExists = False
+        for (i, pixivAccount) in enumerate(pixivAccounts):
+            if pixivAccount['id'] == str(data['pixUserID']):
+                pixivAccounts[i]['post'] = str(data['latestID'])
+                isIdExists = True
+                
+        if not isIdExists:
+            pixivAccounts.append({
+                'id': str(data['pixUserID']),
+                'post': str(data['latestID']),
+                'tag': ''
+            })
         
     accountManager.update('dl_count', dlCount)
     accountManager.update('images_count', imagesCount)

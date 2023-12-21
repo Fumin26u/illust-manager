@@ -49,11 +49,11 @@ def save():
     # フロントから画像情報のjsonを取得
     data = request.get_json()
     imageInfo = data['imageInfo']
-    minConfidence = float(data['minConfidence'])
+    minProbability = float(data['minProbability'])
     
     for image in imageInfo:
-        confidence = float(image['confidence'].replace('%', ''))
-        if (confidence >= minConfidence) or image['isImportant']:
+        probability = float(image['probability'].replace('%', ''))
+        if (probability >= minProbability) or image['isImportant']:
             saveImage(image['className'], image['imagePath'], image['rawPath'])
         else:
             saveImage('others', image['imagePath'], image['rawPath'])

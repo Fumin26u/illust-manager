@@ -12,8 +12,7 @@ import '@/assets/scss/evaluate.scss'
 
 const isEvaluated = ref<boolean>(false)
 const imageInfo = ref<ImageInfo[]>([])
-const evaluatedResult = ref<EvaluatedResult[][]>([])
-const minConfidence = ref<number>(50)
+const minProbability = ref<number>(50)
 
 const selectedModel = ref<string>('')
 const selectedImageDir = ref<string>('')
@@ -84,12 +83,12 @@ const evaluateImage = async () => {
             response.data.forEach(
                 (result: EvaluatedResult[] | false, index: number) => {
                     index += i
-                    if (result === false) {
+                    if (result === false || result === undefined) {
                         imageInfo.value.splice(index, 1)
                     } else {
-                        evaluatedResult.value.push(result)
+                        imageInfo.value[index].classList = result
                         imageInfo.value[index].className = result[0].className
-                        imageInfo.value[index].confidence =
+                        imageInfo.value[index].probability =
                             result[0].probability
                     }
                 }
@@ -121,7 +120,7 @@ const sortImageInfo = (method: string) => {
 
 const selectClass = (index: number) => {
     const selectedClassName = imageInfo.value[index].className
-    imageInfo.value[index].confidence = evaluatedResult.value[index].find(
+    imageInfo.value[index].probability = imageInfo.value[index].classList?.find(
         (result) => result.className === selectedClassName
     )?.probability
 }
@@ -139,7 +138,7 @@ const saveImage = async () => {
         for (let i = 0; i < imageInfo_base64.length; i += batchSize) {
             const batch = imageInfo_base64.slice(i, i + batchSize)
             const response = await apiManager.post(`${apiPath}/evaluate/save`, {
-                minConfidence: minConfidence.value,
+                minProbability: minProbability.value,
                 imageInfo: batch,
             })
         }
@@ -191,7 +190,7 @@ const saveImage = async () => {
                     step="0.5"
                     min="10"
                     max="90"
-                    v-model="minConfidence"
+                    v-model="minProbability"
                 />
                 <span>
                     %以上の信頼度を保存
@@ -225,15 +224,15 @@ const saveImage = async () => {
                             @change="selectClass(index)"
                         >
                             <option
-                                v-for="(evaluation, index_2) in evaluatedResult[
-                                    index
-                                ]"
-                                :key="index_2"
+                                v-for="(
+                                    character, characterIndex
+                                ) in info.classList"
+                                :key="characterIndex"
                             >
-                                {{ evaluation.className }}
+                                {{ character.className }}
                             </option>
                         </select>
-                        <p>信頼度: {{ info.confidence }}</p>
+                        <p>信頼度: {{ info.probability }}</p>
                         <input
                             type="checkbox"
                             v-model="info.isImportant"

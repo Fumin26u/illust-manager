@@ -12,9 +12,11 @@ import '@/assets/scss/imagedler/pixForm.scss'
 
 const errorMessage = ref<string>('')
 const search = ref<PixSearch>({
-    userID: 0,
+    userID: 13936467,
+    tag: '',
     getPostType: 'bookmark',
-    getNumberOfPost: '150',
+    getNumberOfPost: '200',
+    minBookmarks: 2000,
     isGetFromPreviousPost: true,
     includeTags: false,
     suspendID: '',
@@ -55,6 +57,7 @@ const getImage = async () => {
     const response = await apiManager.post(`${apiPath}/pixiv/getImages`, {
         content: search.value,
     })
+    console.log(response)
 
     pixPostInfo.value = response.map((post: PixPostInfo) => {
         return {
@@ -113,12 +116,19 @@ const dlImage = async () => {
     link.click()
     document.body.removeChild(link)
 
-    // DL完了時、DL回数・枚数と最新DL画像の投稿IDを更新
-    await apiManager.post(`${apiPath}/api/updatePixivInfo`, {
+    const posts = {
         imageCount: imagePaths.length,
-        latestID: pixPostInfo.value[0].postID,
+        latestID:
+            search.value.getPostType === 'tag'
+                ? pixPostInfo.value[pixPostInfo.value.length - 1].postID
+                : pixPostInfo.value[0].postID,
+        getPostType: search.value.getPostType,
+        tag: search.value.tag,
         pixUserID: search.value.userID,
-    })
+    }
+
+    // DL完了時、DL回数・枚数と最新DL画像の投稿IDを更新
+    await apiManager.post(`${apiPath}/api/updatePixivInfo`, posts)
     isLoadImages.value = false
 }
 
@@ -133,16 +143,6 @@ onMounted(async () => {
     <main class="main-container twi-template">
         <section class="common-form">
             <dl class="form-box">
-                <div>
-                    <dt>ユーザーID</dt>
-                    <dd>
-                        <input
-                            type="number"
-                            id="user-id"
-                            v-model="search.userID"
-                        />
-                    </dd>
-                </div>
                 <div>
                     <dt>
                         取得内容
@@ -167,6 +167,41 @@ onMounted(async () => {
                             />
                             <label for="get-post">作品</label>
                         </div>
+                        <div>
+                            <input
+                                id="get-keyword"
+                                v-model="search.getPostType"
+                                type="radio"
+                                value="tag"
+                            />
+                            <label for="get-keyword">タグ</label>
+                        </div>
+                    </dd>
+                </div>
+                <div v-if="search.getPostType === 'tag'">
+                    <dt>タグキーワード</dt>
+                    <dd>
+                        <input type="text" id="tag" v-model="search.tag" />
+                    </dd>
+                </div>
+                <div v-if="search.getPostType === 'tag'">
+                    <dt>ブックマーク数下限</dt>
+                    <dd>
+                        <input
+                            type="number"
+                            id="min-bookmark"
+                            v-model="search.minBookmarks"
+                        />
+                    </dd>
+                </div>
+                <div v-else>
+                    <dt>ユーザーID</dt>
+                    <dd>
+                        <input
+                            type="number"
+                            id="user-id"
+                            v-model="search.userID"
+                        />
                     </dd>
                 </div>
                 <div>

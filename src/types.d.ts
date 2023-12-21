@@ -1,15 +1,16 @@
-export interface ImageInfo {
-    rawPath: string
-    imagePath: string
-    className: string
-    confidence: string | undefined
-    isImportant: boolean
-    index: number
-}
-
 export interface EvaluatedResult {
     className: string
     probability: string
+}
+
+export interface ImageInfo {
+    rawPath: string
+    imagePath: string
+    classList?: EvaluatedResult[]
+    className: string
+    probability?: string
+    isImportant: boolean
+    index: number
 }
 
 type AccountPostMethod = 'logout' | 'login' | 'register'
@@ -54,8 +55,10 @@ export interface TweetInfo {
 // pixiv関連
 export interface PixSearch {
     userID: number
-    getPostType: string
+    tag: string
+    getPostType: 'bookmark' | 'post' | 'tag'
     getNumberOfPost: string
+    minBookmarks: number
     isGetFromPreviousPost: boolean
     includeTags: boolean
     suspendID: string

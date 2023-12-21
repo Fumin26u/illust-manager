@@ -26,7 +26,7 @@ class AccountManager:
         
     def saveAccount(self):
         with open(self.jsonPath, 'w') as file:
-            json.dump(self.account.toDict(), file, indent=4)
+            json.dump(self.account.toDict(), file, indent=4, ensure_ascii=False)
         
     def getSingleData(self, key):
         return self.account.toDict().get(key) if hasattr(self.account, 'toDict') else None

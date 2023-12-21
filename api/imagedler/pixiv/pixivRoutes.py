@@ -13,6 +13,7 @@ async def getImages():
     data = request.get_json()
     searchQuery = data['content']
     return await getImage(searchQuery)
+    # return searchQuery
 
 @pixivRoutes.route('/pixiv/downloadImages', methods=['POST'])
 async def downloadImages():
