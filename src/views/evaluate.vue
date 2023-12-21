@@ -124,7 +124,6 @@ const selectClass = (index: number) => {
     imageInfo.value[index].confidence = evaluatedResult.value[index].find(
         (result) => result.className === selectedClassName
     )?.probability
-    console.log(imageInfo.value[index])
 }
 
 // 画像をキャラクター毎にフォルダ分けして保存
