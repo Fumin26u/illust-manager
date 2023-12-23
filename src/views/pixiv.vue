@@ -12,7 +12,7 @@ import '@/assets/scss/imagedler/pixForm.scss'
 
 const errorMessage = ref<string>('')
 const search = ref<PixSearch>({
-    userID: 13936467,
+    userID: 0,
     tag: '',
     getPostType: 'bookmark',
     getNumberOfPost: '200',

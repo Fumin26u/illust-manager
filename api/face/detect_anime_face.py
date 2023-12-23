@@ -62,9 +62,6 @@ def draw_bbox(img, ann, img_height, img_width):
 def getFaceRect(img_data):
     FLAGS['img_data'] = img_data
 
-    # print("[*] Processing on single image {}".format(FLAGS['img_path']))
-
-    # img_raw = cv2.imread(FLAGS['img_data'])
     img_raw = FLAGS['img_data']
     img_height_raw, img_width_raw, _ = img_raw.shape
     img = np.float32(img_raw.copy())
@@ -92,6 +89,3 @@ def getFaceRect(img_data):
                         img_width_raw))
         
     return rects
-        
-    # cv2.imwrite(save_img_path, img_raw)
-    # print(f"[*] save result at {save_img_path}")

@@ -11,7 +11,6 @@ const directoryPath = ref<string | null>(null)
 const selectFile = (event: Event) => {
     const input = event.target as HTMLInputElement
     const files = input.files
-    // console.log(files[0].webkitRelativePath.split('/'))
 
     // バリデーション
     if (!files) return 'ファイルが選択されていません。'

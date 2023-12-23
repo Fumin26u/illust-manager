@@ -74,7 +74,6 @@ def cropImageToFace(
 ):
     resizedImage = resizeImage(image, 1500)
     faces = getFaceRect(resizedImage) if not usingOldModel else detectFace(resizedImage, oldModelPath)
-    print(oldModelPath, faces)
     if len(faces) == 0:
         print(f"no faces detected")
     elif len(faces) > 1:

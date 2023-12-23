@@ -6,7 +6,6 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
-import getCurrentTime from '@/assets/ts/getCurrentTime'
 
 const selectedModel = ref<string>('')
 const selectedImageDir = ref<string>('')

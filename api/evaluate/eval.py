@@ -59,7 +59,6 @@ def main(
     faceRect = getFaceRect(image)
     # 顔認識がなされなかった場合、各クラス＋othersを設定し、othersを100%にする
     if len(faceRect) == 0:
-        print(evaluatedImage)
         return [
             {'className': 'others', 'probability': '100.00%'},    
         ] + [

@@ -11,7 +11,7 @@ import '@/assets/scss/imagedler/twiForm.scss'
 
 const errorMessage = ref<string>('')
 const search = ref<TwiSearch>({
-    twitterID: 'fumin_ci',
+    twitterID: '',
     getTweetType: 'liked_tweets',
     getNumberOfTweet: '150',
     isGetFromPreviousTweet: true,

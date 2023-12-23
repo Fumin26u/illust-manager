@@ -39,9 +39,6 @@ def createWeights(modelDir):
 # 実行
 def main(trainExtends, faceModelPath, savePath):
     model = createModel(trainExtends)
-    print(faceModelPath)
-    print(savePath)
-    print('-------------------')
 
     # 各クラスの重み
     classWeights = createWeights(faceModelPath)

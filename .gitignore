@@ -51,3 +51,4 @@ api/imagedler/pixiv/config.py
 
 # api/imagedler/twitter
 api/imagedler/twitter/twitterPassword.py
+api/imagedler/twitter/getTweetInfo.py
