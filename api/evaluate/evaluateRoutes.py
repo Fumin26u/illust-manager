@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from api.evaluate.eval import main as image_evaluate
-from api.evaluate.detect_anime_face import load_checkpoint
+from api.face.detect_anime_face import load_checkpoint
 from api.evaluate.createTrainData import createTrainData
 from api.save.saveImage import saveImage
 from api.createPath import createPath

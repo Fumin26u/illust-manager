@@ -1,5 +1,5 @@
 import cv2, os
-from api.evaluate.detect_anime_face import getFaceRect
+from api.face.detect_anime_face import getFaceRect
 
 # 画像のロード
 def loadImage(imagePath): 

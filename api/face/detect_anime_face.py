@@ -4,10 +4,10 @@ import cv2
 import os, sys
 import numpy as np
 
-from api.evaluate.face_modules.face_models import RetinaFaceModel
-from api.evaluate.face_modules.utils import (load_yaml, pad_input_image, recover_pad_output)
+from api.face.face_modules.face_models import RetinaFaceModel
+from api.face.face_modules.utils import (load_yaml, pad_input_image, recover_pad_output)
 
-currentDir = 'api/evaluate/'
+currentDir = 'api/face/'
 
 FLAGS = {
     'cfg_path': f'{currentDir}configs/retinaface_mbv2.yaml',

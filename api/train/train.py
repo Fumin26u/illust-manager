@@ -6,8 +6,6 @@ import numpy as np
 
 BASE_PATH = 'api/evaluate/'
 
-from api.evaluate.cfg import BATCH_SIZE, EPOCHS, DROPOUT, RESIZE_RESOLUTION, FACE_MODEL_PATH
-
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 
@@ -18,7 +16,7 @@ def createModel(trainExtends):
     model.add(MaxPooling2D(pool_size=(2, 2)))
     model.add(Flatten())
     model.add(Dense(units=128, activation='relu'))
-    model.add(Dropout(DROPOUT))
+    model.add(Dropout(0.0))
     model.add(Dense(units=len(trainExtends.class_indices), activation='softmax'))
     return model
 
@@ -42,11 +40,11 @@ def getNowTime():
     return datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
 # 実行
-def main(trainExtends):
+def main(trainExtends, faceModelPath):
     model = createModel(trainExtends)
 
     # 各クラスの重み
-    classWeights = createWeights(FACE_MODEL_PATH)
+    classWeights = createWeights(faceModelPath)
 
     # コンパイル
     model.compile(
@@ -57,7 +55,7 @@ def main(trainExtends):
     # 訓練
     model.fit(
         trainExtends, 
-        epochs=EPOCHS, 
+        epochs=12, 
         class_weight=classWeights
     )
     model.save(f'{BASE_PATH}models/model-{getNowTime()}.h5')   

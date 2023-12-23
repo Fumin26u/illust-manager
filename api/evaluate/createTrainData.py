@@ -1,14 +1,14 @@
 from tensorflow import keras
 from keras.preprocessing.image import ImageDataGenerator
 
-from api.evaluate.cfg import FACE_MODEL_PATH, RESIZE_RESOLUTION, BATCH_SIZE
-
 def createTrainData(
-    faceModelPath = FACE_MODEL_PATH,
+    faceModelPath,
     rescale = 1./255,
     shear_range = 0.2,
     zoom_range = 0.2,
-    horizontal_flip = True
+    horizontal_flip = True,
+    resize_resolution = (224, 224),
+    batch_size = 32
 ):
     trainData = ImageDataGenerator(
         rescale=rescale,
@@ -19,7 +19,7 @@ def createTrainData(
     
     return trainData.flow_from_directory(
         faceModelPath,
-        target_size=RESIZE_RESOLUTION,
-        batch_size=BATCH_SIZE,
+        target_size=resize_resolution,
+        batch_size=batch_size,
         class_mode='categorical'
     )

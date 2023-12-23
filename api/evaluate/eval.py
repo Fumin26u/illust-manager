@@ -3,11 +3,9 @@ import numpy as np
 from tensorflow import keras
 from keras.models import load_model
 from keras.preprocessing import image
-from api.evaluate.getFace import loadImage, detectFace, saveFace, resizeImage
-from api.evaluate.detect_anime_face import getFaceRect, load_checkpoint
+from api.face.getFace import loadImage, detectFace, saveFace, resizeImage
+from api.face.detect_anime_face import getFaceRect, load_checkpoint
 BASE_PATH = ''
-
-from api.evaluate.cfg import TRAIN_MODEL_PATH
 
 # 画像がどのキャラ(クラス)に近いか分析
 def analyzeImage(model, imagePath):
@@ -48,7 +46,7 @@ def main(
     evaluatedImage, 
     croppedImagePath, 
     trainExtends,
-    modelPath = TRAIN_MODEL_PATH, 
+    modelPath, 
     base_path = BASE_PATH
 ):
     # モデルのロード
