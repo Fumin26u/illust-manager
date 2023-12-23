@@ -34,16 +34,18 @@ def cropImage():
                 os.mkdir(savePath)
             
             faces = cropImageToFace(image, extension=extension)
-            for face in faces:
-                saveFileName = f'{savePath}\\{createUuid(8)}{extension}'
-                print(saveFileName)
-                with open(saveFileName, 'wb') as f:
-                    f.write(face)
+            saveFileName = f'{savePath}\\{createUuid(8)}{extension}'
+            with open(saveFileName, 'wb') as f:
+                f.write(faces[0])
+            # for face in faces:
+            #     saveFileName = f'{savePath}\\{createUuid(8)}{extension}'
+            #     with open(saveFileName, 'wb') as f:
+            #         f.write(face)
         
         with concurrent.futures.ThreadPoolExecutor() as executor:
             executor.map(cropSingleImage, base64Images)
         
-        return jsonify({'error': False, 'content': 'done'})
+        return jsonify({'error': False, 'content': f'success, save path: {savePath_parent}'})
     except Exception as e:
         print(f"Error cropping image: {str(e)}")
         return jsonify({'error': True, 'content': {str(e)}})

@@ -9,7 +9,7 @@ def createDirectory(directoryPath):
         
 def saveImage(className, base64Image, saveFileName):
     # 画像の保存先
-    outputPath = os.path.join('api/save/', 'output')
+    outputPath = os.path.join('api/save/', 'classificated_images')
     createDirectory(outputPath)
     
     # 各クラスのフォルダが存在しない場合作成

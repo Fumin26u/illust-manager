@@ -5,7 +5,7 @@ from api.face.detect_anime_face import load_checkpoint
 from api.evaluate.createTrainData import createTrainData
 from api.save.saveImage import saveImage
 from api.utils.createPath import createPath
-from api.utils.base64ToImage import base64ToImage
+from api.utils.base64ToImage import base64ToImage, getImageExtension
 from api.utils.createUuid import createUuid
 
 import os, string, random
@@ -19,12 +19,12 @@ def generateRandomString(strLength: int) -> str:
     
 @evaluateRoutes.route('/evaluate/getModels', methods=['GET'])
 def getModels():
-    modelNames = sorted(os.listdir(createPath('evaluate', 'models')), reverse=True)
+    modelNames = sorted(os.listdir(createPath('save', 'train_face_models')), reverse=True)
     return jsonify({'data': modelNames})
 
 @evaluateRoutes.route('/evaluate/getImageDirs', methods=['GET'])
 def getImageDirs():
-    imageNames = sorted(os.listdir(createPath('evaluate', 'images')), reverse=True)
+    imageNames = sorted(os.listdir(createPath('save', 'face_images')), reverse=True)
     return jsonify({'data': imageNames})
 
 @evaluateRoutes.route('/evaluate/evaluate', methods=['POST'])
@@ -32,8 +32,8 @@ def evaluate():
     # フロントから受け取ったjsonをbase64の配列に組み替え
     data = request.get_json()
     base64Images = data['imagePaths']
-    modelPath = createPath('evaluate', 'models', data['model'])
-    faceModelPath = createPath('evaluate', 'images', data['imageDir'])
+    modelPath = createPath('save', 'train_face_models', data['model'])
+    faceModelPath = createPath('save', 'face_images', data['imageDir'])
     trainExtends = createTrainData(faceModelPath = faceModelPath)
     
     eachResults = []
@@ -41,10 +41,10 @@ def evaluate():
     
     def evaluateSingleImage(args):
         i, base64Image = args['index'], args['imagePath']
-        print(i)
         try:
             image = base64ToImage(base64Image)
-            result = image_evaluate(image, f'api/evaluate/{createUuid(8)}.jpg', trainExtends, modelPath)
+            extension = '.' + getImageExtension(base64Image)
+            result = image_evaluate(image, f'api/evaluate/{createUuid(8)}.jpg', trainExtends, modelPath, extension=extension)
             return i, result
         except Exception as e:
             print(f"Error evaluating image: {str(e)}")

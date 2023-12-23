@@ -47,7 +47,8 @@ def main(
     croppedImagePath, 
     trainExtends,
     modelPath, 
-    base_path = BASE_PATH
+    base_path = BASE_PATH,
+    extension = '.jpg'
 ):
     # モデルのロード
     model = load_model(modelPath) 
@@ -68,7 +69,7 @@ def main(
     # 顔の認識数が2以上かどうか
     isMultipleFaces = len(faceRect) >= 2
 
-    face = cropFace([faceRect[0]], image, (224, 224))[0]
+    face = cropFace([faceRect[0]], image, (224, 224), extension)[0]
     with open(croppedImagePath, 'wb') as f:
         f.write(face)
         
