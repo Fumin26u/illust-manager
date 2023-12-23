@@ -5,6 +5,7 @@ from api.evaluate.evaluateRoutes import evaluateRoutes
 from api.imagedler.pixiv.pixivRoutes import pixivRoutes
 from api.imagedler.twitter.twitterRoutes import twitterRoutes
 from api.crop.cropRoutes import cropRoutes
+from api.train.trainRoutes import trainRoutes
 
 from api.account.accountManager import AccountManager
 from api.utils.createPath import createPath
@@ -17,6 +18,7 @@ app.register_blueprint(evaluateRoutes)
 app.register_blueprint(pixivRoutes)
 app.register_blueprint(twitterRoutes)
 app.register_blueprint(cropRoutes)
+app.register_blueprint(trainRoutes)
 
 accountManager = AccountManager(createPath('account', 'userdata.json'))
 

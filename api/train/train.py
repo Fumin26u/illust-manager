@@ -4,8 +4,6 @@ from tensorflow import keras
 from keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 
-BASE_PATH = 'api/evaluate/'
-
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 
@@ -39,8 +37,11 @@ def createWeights(modelDir):
 
 
 # 実行
-def main(trainExtends, faceModelPath):
+def main(trainExtends, faceModelPath, savePath):
     model = createModel(trainExtends)
+    print(faceModelPath)
+    print(savePath)
+    print('-------------------')
 
     # 各クラスの重み
     classWeights = createWeights(faceModelPath)
@@ -57,4 +58,4 @@ def main(trainExtends, faceModelPath):
         epochs=12, 
         class_weight=classWeights
     )
-    model.save(f'{BASE_PATH}models/model-{getNowTime()}.h5')   
+    model.save(savePath)   

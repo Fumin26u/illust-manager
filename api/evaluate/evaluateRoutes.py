@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from api.evaluate.eval import main as image_evaluate
 from api.face.detect_anime_face import load_checkpoint
-from api.evaluate.createTrainData import createTrainData
+from api.utils.createTrainData import createTrainData
 from api.save.saveImage import saveImage
 from api.utils.createPath import createPath
 from api.utils.base64ToImage import base64ToImage, getImageExtension

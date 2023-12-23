@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import crop from '../views/crop.vue'
-import training from '../views/training.vue'
+import train from '../views/train.vue'
 import evaluate from '../views/evaluate.vue'
 import twitter from '../views/twitter.vue'
 import pixiv from '../views/pixiv.vue'
@@ -17,9 +17,9 @@ const routes: Array<RouteRecordRaw> = [
         component: crop,
     },
     {
-        path: '/training',
-        name: 'training',
-        component: training,
+        path: '/train',
+        name: 'train',
+        component: train,
     },
     {
         path: '/evaluate',
