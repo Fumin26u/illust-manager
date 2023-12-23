@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import index from '../views/index.vue'
+import crop from '../views/crop.vue'
 import training from '../views/training.vue'
 import evaluate from '../views/evaluate.vue'
 import twitter from '../views/twitter.vue'
@@ -9,7 +9,12 @@ const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
         name: 'index',
-        component: index,
+        component: evaluate,
+    },
+    {
+        path: '/crop',
+        name: 'crop',
+        component: crop,
     },
     {
         path: '/training',

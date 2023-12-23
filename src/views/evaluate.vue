@@ -36,7 +36,7 @@ const setSelectedFile = (
     }
 }
 
-// blogの画像リンクをBASE64に変換
+// blobの画像リンクをBASE64に変換
 const convertImageToBase64 = async (imagePath: string) => {
     try {
         const response = await fetch(imagePath)

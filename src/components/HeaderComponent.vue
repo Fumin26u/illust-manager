@@ -38,7 +38,7 @@ const isImageMenuVisible = ref<boolean>(false)
                 >
                     <p>キャラ分類</p>
                     <div class="nav-menu" v-show="isCharaMenuVisible">
-                        <a href="./cropping" class="btn-small blue">加工</a>
+                        <a href="./crop" class="btn-small blue">加工</a>
                         <a href="./evaluate" class="btn-small blue">評価</a>
                         <a href="./training" class="btn-small blue">訓練</a>
                     </div>
