@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, make_response
 from api.imagedler.pixiv.getImage import main as getImage
 from api.imagedler.pixiv.dlImage import main as downloadImage
-from api.makeZip import makeZip
-from api.createPath import createPath
+from api.utils.makeZip import makeZip
+from api.utils.createPath import createPath
 
 import os, shutil
 

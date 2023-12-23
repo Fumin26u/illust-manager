@@ -6,6 +6,7 @@ export interface EvaluatedResult {
 export interface ImageInfo {
     rawPath: string
     imagePath: string
+    childDir: string
     classList?: EvaluatedResult[]
     className: string
     probability?: string

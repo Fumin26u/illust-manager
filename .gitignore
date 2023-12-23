@@ -1,7 +1,8 @@
 .DS_Store
 node_modules
 /dist
-
+.VSCodeCounter/*
+.VSCodeCounter/
 
 # local env files
 .env.local
@@ -22,32 +23,32 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-chromedriver.exe
+# common
+api/**/*images*/*
+api/**/*.h5
+api/**/chromedriver.exe
+images.zip
 
 # Python
 __pycache__/
 *.pyc
 
-# Account
+# api/account
 api/account/userdata.json
 
-# Evaluate
-api/evaluate/eval.jpg
-api/evaluate/models/*
-api/evaluate/images/*
+# api/crop
+
+# api/evaluate
 api/evaluate/*.jpg
 
-# Save
-api/save/output/*
+#api/face
+api/face/checkpoints/retinaface_mbv2/*
 
-# ImageDler - Pixiv
-api/imagedler/pixiv/images/
-api/imagedler/pixiv/images.zip
+# api/imagedler/pixiv
 api/imagedler/pixiv/config.py
-api/imagedler/pixiv/pixiv_auth.py
 
-# ImageDler - Twitter
-api/imagedler/twitter/images/
-api/imagedler/twitter/images.zip
+# api/imagedler/twitter
 api/imagedler/twitter/twitterPassword.py
+
+
 

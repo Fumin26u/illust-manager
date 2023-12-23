@@ -3,8 +3,8 @@ import os, shutil
 from api.imagedler.twitter.getTweetInfo import setDriver, twitterLogin, getTweet
 from api.imagedler.twitter.twitterPassword import USER_PASSWORD
 from api.imagedler.twitter.dlImage import dlImages
-from api.createPath import createPath
-from api.makeZip import makeZip 
+from api.utils.createPath import createPath
+from api.utils.makeZip import makeZip 
 
 twitterRoutes = Blueprint('twitterRoutes', __name__)
 

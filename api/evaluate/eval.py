@@ -3,11 +3,9 @@ import numpy as np
 from tensorflow import keras
 from keras.models import load_model
 from keras.preprocessing import image
-from api.evaluate.getFace import loadImage, detectFace, saveFace, resizeImage
-from api.evaluate.detect_anime_face import getFaceRect, load_checkpoint
+from api.face.getFace import loadImage, detectFace, cropFace, resizeImage
+from api.face.detect_anime_face import getFaceRect, load_checkpoint
 BASE_PATH = ''
-
-from api.evaluate.cfg import TRAIN_MODEL_PATH
 
 # 画像がどのキャラ(クラス)に近いか分析
 def analyzeImage(model, imagePath):
@@ -48,8 +46,9 @@ def main(
     evaluatedImage, 
     croppedImagePath, 
     trainExtends,
-    modelPath = TRAIN_MODEL_PATH, 
-    base_path = BASE_PATH
+    modelPath, 
+    base_path = BASE_PATH,
+    extension = '.jpg'
 ):
     # モデルのロード
     model = load_model(modelPath) 
@@ -70,8 +69,10 @@ def main(
     # 顔の認識数が2以上かどうか
     isMultipleFaces = len(faceRect) >= 2
 
-    saveFace([faceRect[0]], image, base_path, croppedImagePath, (224, 224))
-
+    face = cropFace([faceRect[0]], image, (224, 224), extension)[0]
+    with open(croppedImagePath, 'wb') as f:
+        f.write(face)
+        
     # モデルの分析
     predictions = analyzeImage(model, croppedImagePath)
     
