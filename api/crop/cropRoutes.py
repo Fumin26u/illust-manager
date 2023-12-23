@@ -32,6 +32,7 @@ def cropImage():
             savePath = createPath(savePath_parent, childDir)
             
             if not os.path.exists(savePath):
+                print(f'create new dir: {savePath}')
                 os.mkdir(savePath)
             
             faces = cropImageToFace(image, extension=extension, usingOldModel=usingOldModel)
