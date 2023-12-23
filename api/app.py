@@ -7,7 +7,7 @@ from api.imagedler.twitter.twitterRoutes import twitterRoutes
 from api.crop.cropRoutes import cropRoutes
 
 from api.account.accountManager import AccountManager
-from api.createPath import createPath
+from api.utils.createPath import createPath
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})

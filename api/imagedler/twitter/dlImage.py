@@ -1,6 +1,6 @@
 import sys, os, random, string
 import requests, asyncio, aiohttp, aiofiles
-from api.createPath import createPath
+from api.utils.createPath import createPath
 
 def generateRandomString(strLength: int) -> str:
     strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]

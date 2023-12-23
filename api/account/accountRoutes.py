@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from api.account.accountManager import AccountManager
-from api.createPath import createPath
+from api.utils.createPath import createPath
 
 accountRoutes = Blueprint('accountRoutes', __name__)
 accountManager = AccountManager(createPath('account', 'userdata.json'))
