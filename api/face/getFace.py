@@ -62,7 +62,7 @@ BASE_PATH = 'api/evaluate/'
 MODEL_PATH = BASE_PATH + 'opencv/lbpcascade_animeface.xml'
 
 # 元画像から顔を抜き出し保存
-def clipImageToFace(rawPath, savePath, resizeResolution = (int, int)):
+def clipImageToFace2(rawPath, savePath, resizeResolution = (int, int)):
     for filename in os.listdir(rawPath):
         try:
             if filename.endswith(('.jpg', '.jpeg', '.png', '.webp')):
@@ -80,4 +80,13 @@ def clipImageToFace(rawPath, savePath, resizeResolution = (int, int)):
         except Exception as e:
             print(f"error: {e}")
             pass
+        
+def cropImageToFace(image, savePath, filename, resizeResolution = (224, 224)):
+    resizedImage = resizeImage(image, 1500)
+    faces = getFaceRect(resizedImage)
+    if len(faces) == 0:
+        print(f"no faces detected")
+    elif len(faces) > 1:
+        print(f"detected {len(faces)} faces")
+    saveFace(faces, resizedImage, savePath, filename, resizeResolution)
 

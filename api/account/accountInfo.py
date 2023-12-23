@@ -20,7 +20,7 @@ class AccountInfo:
     def toDict(self):
         return {
             'user_name': self.user_name,
-            'created_at': datetime.strftime(self.created_at, '%Y-%m-%d %H:%M:%S'),
+            'created_at': datetime.strptime(self.created_at, '%Y-%m-%d %H:%M:%S'),
             'dl_count': self.dl_count,
             'images_count': self.images_count,
             'twitter': self.twitter,

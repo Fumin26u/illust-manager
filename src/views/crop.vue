@@ -38,9 +38,12 @@ const convertImageToBase64 = async (imagePath: string) => {
 const apiManager = new ApiManager()
 const cropImage = async () => {
     const imagePaths = await Promise.all(
-        imageInfo.value.map(
-            async (info) => await convertImageToBase64(info.imagePath)
-        )
+        imageInfo.value.map(async (info) => {
+            return {
+                childDir: info.childDir,
+                imageInfo: await convertImageToBase64(info.imagePath),
+            }
+        })
     )
 
     try {
@@ -49,9 +52,10 @@ const cropImage = async () => {
             const response = await apiManager.post(
                 `${apiPath}/crop/cropImage`,
                 {
-                    imagePaths: batch,
+                    content: batch,
                 }
             )
+            console.log(response, `${i + batchSize}`)
         }
     } catch (error) {
         console.error(error)

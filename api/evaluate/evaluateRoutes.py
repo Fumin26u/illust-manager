@@ -1,12 +1,14 @@
 from flask import Blueprint, request, jsonify
+
 from api.evaluate.eval import main as image_evaluate
 from api.face.detect_anime_face import load_checkpoint
 from api.evaluate.createTrainData import createTrainData
 from api.save.saveImage import saveImage
 from api.utils.createPath import createPath
+from api.utils.base64ToImage import base64ToImage
+from api.utils.createUuid import createUuid
 
-import os, base64, cv2, string, random, uuid
-import numpy as np
+import os, string, random
 import concurrent.futures
 
 evaluateRoutes = Blueprint('evaluateRoutes', __name__)
@@ -41,10 +43,8 @@ def evaluate():
         i, base64Image = args['index'], args['imagePath']
         print(i)
         try:
-            image_data = base64.b64decode(base64Image.split(',')[1])
-            image = cv2.imdecode(np.frombuffer(image_data, np.uint8), cv2.IMREAD_COLOR)
-            uniqueID = str(uuid.uuid4())[:8]
-            result = image_evaluate(image, f'api/evaluate/{uniqueID}.jpg', trainExtends, modelPath)
+            image = base64ToImage(base64Image)
+            result = image_evaluate(image, f'api/evaluate/{createUuid(8)}.jpg', trainExtends, modelPath)
             return i, result
         except Exception as e:
             print(f"Error evaluating image: {str(e)}")

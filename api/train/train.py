@@ -9,6 +9,8 @@ BASE_PATH = 'api/evaluate/'
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 
+from api.utils.getNowTime import getNowTime
+
 # モデルの構築
 def createModel(trainExtends):
     model = Sequential()
@@ -35,9 +37,6 @@ def createWeights(modelDir):
 
     return classWeights
 
-from datetime import datetime
-def getNowTime():
-    return datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
 # 実行
 def main(trainExtends, faceModelPath):
