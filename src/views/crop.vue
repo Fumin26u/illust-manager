@@ -12,6 +12,7 @@ import { ImageInfo } from '@/types'
 const imageInfo = ref<ImageInfo[]>([])
 // 1度にAPIに送るリクエスト数
 const batchSize = 50
+const usingOldModel = ref<boolean>(false)
 
 // ディレクトリ選択時、画像情報一覧を取得
 const setImageInfo = (selectedImageInfo: ImageInfo[]) => {
@@ -48,7 +49,6 @@ const cropImage = async () => {
     )
 
     const currentTime = getCurrentTime()
-    console.log(currentTime)
     try {
         for (let i = 0; i < imagePaths.length; i += batchSize) {
             const batch = imagePaths.slice(i, i + batchSize)
@@ -57,9 +57,9 @@ const cropImage = async () => {
                 {
                     content: batch,
                     currentTime: currentTime,
+                    usingOldModel: usingOldModel.value,
                 }
             )
-            console.log(response.data)
         }
     } catch (error) {
         console.error(error)
@@ -78,6 +78,12 @@ const cropImage = async () => {
                 title="画像フォルダを選択:"
                 @setImageInfo="setImageInfo"
             />
+            <div>
+                <dt>旧モデルを使用</dt>
+                <dd>
+                    <input type="checkbox" v-model="usingOldModel" />
+                </dd>
+            </div>
         </dl>
         <div class="button-area input-form" v-if="imageInfo.length > 0">
             <ButtonComponent

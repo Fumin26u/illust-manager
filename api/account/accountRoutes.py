@@ -4,7 +4,6 @@ from api.utils.createPath import createPath
 
 accountRoutes = Blueprint('accountRoutes', __name__)
 accountManager = AccountManager(createPath('account', 'userdata.json'))
-print(createPath('account', 'userdata.json'))
 
 @accountRoutes.route('/api/getAccount', methods=['GET'])
 def getAccount():

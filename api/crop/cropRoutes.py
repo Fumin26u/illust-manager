@@ -18,6 +18,7 @@ def cropImage():
     data = request.get_json()
     base64Images = data.get('content', [])
     currentTime = data.get('currentTime', getNowTime())
+    usingOldModel = data.get('usingOldModel', False)
     savePath_parent = createPath('save', 'face_images', f'faces_{currentTime}')
     if not os.path.exists(savePath_parent):
         os.mkdir(savePath_parent)
@@ -33,7 +34,7 @@ def cropImage():
             if not os.path.exists(savePath):
                 os.mkdir(savePath)
             
-            faces = cropImageToFace(image, extension=extension)
+            faces = cropImageToFace(image, extension=extension, usingOldModel=usingOldModel)
             saveFileName = f'{savePath}\\{createUuid(8)}{extension}'
             with open(saveFileName, 'wb') as f:
                 f.write(faces[0])

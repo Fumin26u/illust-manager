@@ -57,7 +57,6 @@ const getImage = async () => {
     const response = await apiManager.post(`${apiPath}/pixiv/getImages`, {
         content: search.value,
     })
-    console.log(response)
 
     pixPostInfo.value = response.map((post: PixPostInfo) => {
         return {

@@ -1,5 +1,6 @@
 import cv2, os
 from api.face.detect_anime_face import getFaceRect
+from api.utils.createPath import createPath
 
 # 画像のロード
 def loadImage(imagePath): 
@@ -18,7 +19,7 @@ def detectFace(image, modelPath):
     # モデルのロード
     FACE_MODEL = cv2.CascadeClassifier(modelPath)
     # 画像のグレースケール変換
-    GRAY_IMAGE = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    GRAY_IMAGE = cv2.cvtColor(resizeImage(image, 1500), cv2.COLOR_BGR2GRAY)
     # 顔検出
     return FACE_MODEL.detectMultiScale(GRAY_IMAGE, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
@@ -53,9 +54,6 @@ def cropFace(faces, image, resizeResolution, extension):
             resizedFaces.append(encodedFace)
         else:
             print(f"failed to encode image: {resizedFace}")
-        # resized_face = cv2.resize(face, resizeResolution)
-        # print(savePath)
-        # cv2.imwrite(savePath, resized_face)
     return resizedFaces
 
 # 画像の表示
@@ -67,9 +65,16 @@ def displayFace(faces, image):
     cv2.destroyAllWindows()
 
 # 元画像から顔を抜き出し保存        
-def cropImageToFace(image, resizeResolution = (224, 224), extension = '.jpg'):
+def cropImageToFace(
+    image, 
+    resizeResolution = (224, 224), 
+    extension = '.jpg',
+    usingOldModel = False,
+    oldModelPath = createPath('face', 'lbpcascade_animeface.xml')
+):
     resizedImage = resizeImage(image, 1500)
-    faces = getFaceRect(resizedImage)
+    faces = getFaceRect(resizedImage) if not usingOldModel else detectFace(resizedImage, oldModelPath)
+    print(oldModelPath, faces)
     if len(faces) == 0:
         print(f"no faces detected")
     elif len(faces) > 1:
