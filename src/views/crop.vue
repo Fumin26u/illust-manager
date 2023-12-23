@@ -6,6 +6,7 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
+import getCurrentTime from '@/assets/ts/getCurrentTime'
 import { ImageInfo } from '@/types'
 
 const imageInfo = ref<ImageInfo[]>([])
@@ -46,6 +47,8 @@ const cropImage = async () => {
         })
     )
 
+    const currentTime = getCurrentTime()
+    console.log(currentTime)
     try {
         for (let i = 0; i < imagePaths.length; i += batchSize) {
             const batch = imagePaths.slice(i, i + batchSize)
@@ -53,9 +56,9 @@ const cropImage = async () => {
                 `${apiPath}/crop/cropImage`,
                 {
                     content: batch,
+                    currentTime: currentTime,
                 }
             )
-            console.log(response, `${i + batchSize}`)
         }
     } catch (error) {
         console.error(error)

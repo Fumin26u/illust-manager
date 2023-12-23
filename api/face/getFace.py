@@ -39,15 +39,24 @@ def extendFaceRect(x, y, x2, y2, image, extension: int = 30):
         return (nx, ny, nx2, ny2)
     
 # 顔検出部分を切り抜き保存
-def saveFace(faces, image, savePath, filename, resizeResolution):
+def cropFace(faces, image, resizeResolution, extension):
+    resizedFaces = []
     for i, (x, y, x2, y2) in enumerate(faces):
         x, y, x2, y2 = extendFaceRect(x, y, x2, y2, image)
 
         h = y2 - y
         w = x2 - x
         face = image[y:y+h, x:x+w]
-        resized_face = cv2.resize(face, resizeResolution)
-        cv2.imwrite(f'{savePath}{filename}', resized_face)
+        resizedFace = cv2.resize(face, resizeResolution)
+        result, encodedFace = cv2.imencode(extension, resizedFace)
+        if result:
+            resizedFaces.append(encodedFace)
+        else:
+            print(f"failed to encode image: {resizedFace}")
+        # resized_face = cv2.resize(face, resizeResolution)
+        # print(savePath)
+        # cv2.imwrite(savePath, resized_face)
+    return resizedFaces
 
 # 画像の表示
 def displayFace(faces, image):
@@ -57,36 +66,13 @@ def displayFace(faces, image):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
-BASE_PATH = 'api/evaluate/'
-# モデルのパス
-MODEL_PATH = BASE_PATH + 'opencv/lbpcascade_animeface.xml'
-
-# 元画像から顔を抜き出し保存
-def clipImageToFace2(rawPath, savePath, resizeResolution = (int, int)):
-    for filename in os.listdir(rawPath):
-        try:
-            if filename.endswith(('.jpg', '.jpeg', '.png', '.webp')):
-                image_path = os.path.join(rawPath, filename)
-                image = loadImage(image_path)
-                resizedImage = resizeImage(image, 1500)
-                faces = getFaceRect(resizedImage)
-                if len(faces) == 0:
-                    print(f"no faces detected")
-                    continue
-                elif len(faces) > 1:
-                    print(f"detected {len(faces)} faces")
-                saveFace(faces, resizedImage, savePath, filename, resizeResolution)
-                # displayFace(faces, resizedImage)
-        except Exception as e:
-            print(f"error: {e}")
-            pass
-        
-def cropImageToFace(image, savePath, filename, resizeResolution = (224, 224)):
+# 元画像から顔を抜き出し保存        
+def cropImageToFace(image, resizeResolution = (224, 224), extension = '.jpg'):
     resizedImage = resizeImage(image, 1500)
     faces = getFaceRect(resizedImage)
     if len(faces) == 0:
         print(f"no faces detected")
     elif len(faces) > 1:
         print(f"detected {len(faces)} faces")
-    saveFace(faces, resizedImage, savePath, filename, resizeResolution)
+    return cropFace(faces, resizedImage, resizeResolution, extension)
 
