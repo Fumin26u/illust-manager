@@ -3,6 +3,7 @@ node_modules
 /dist
 .VSCodeCounter/*
 .VSCodeCounter/
+lbpcascade_animeface.xml
 
 # local env files
 .env.local
