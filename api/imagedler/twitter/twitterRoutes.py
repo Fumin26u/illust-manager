@@ -1,10 +1,10 @@
 from flask import Blueprint, request, jsonify, make_response
 import os, shutil
 from api.imagedler.twitter.getTweetInfo import setDriver, twitterLogin, getTweet
-from api.imagedler.twitter.twitterPassword import USER_PASSWORD
 from api.imagedler.twitter.dlImage import dlImages
 from api.utils.createPath import createPath
 from api.utils.makeZip import makeZip 
+from api.account.accountManager import AccountManager
 
 twitterRoutes = Blueprint('twitterRoutes', __name__)
 
@@ -13,7 +13,9 @@ async def getImages():
     data = request.get_json()
     searchQuery = data['content']
     driver = setDriver()
-    await twitterLogin(driver, searchQuery['twitterID'], USER_PASSWORD)
+    accountManager = AccountManager()
+    
+    await twitterLogin(driver, searchQuery['twitterID'], accountManager.getSingleData('twitter_password'))
     tweetInfo = await getTweet(driver, searchQuery)
     driver.quit()
     return tweetInfo

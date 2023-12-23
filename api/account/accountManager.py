@@ -14,6 +14,7 @@ class AccountManager:
                 return AccountInfo(
                         accountData['user_name'],
                         datetime.strptime(accountData['created_at'], '%Y-%m-%d %H:%M:%S'),
+                        accountData['twitter_password'],
                         accountData['dl_count'],
                         accountData['images_count'],
                         accountData['twitter'],
