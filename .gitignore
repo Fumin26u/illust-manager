@@ -1,7 +1,9 @@
 .DS_Store
 node_modules
 /dist
-
+.VSCodeCounter/*
+.VSCodeCounter/
+lbpcascade_animeface.xml
 
 # local env files
 .env.local
@@ -22,8 +24,32 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
-api/evaluate/models/*
-api/evaluate/__pycache__/*
-api/evaluate/eval.jpg
-api/evaluate/images/*
+# common
+api/**/*images*/*
+api/**/*.h5
+api/**/chromedriver.exe
+images.zip
+
+# Python
+__pycache__/
+*.pyc
+
+# api/account
+api/account/userdata.json
+
+# api/crop
+
+# api/evaluate
+api/evaluate/*.jpg
+
+#api/face
+api/face/checkpoints/retinaface_mbv2/*
+
+# api/imagedler/pixiv
+api/imagedler/pixiv/config.py
+
+# api/imagedler/twitter
+api/imagedler/twitter/twitterPassword.py
+
+
 
