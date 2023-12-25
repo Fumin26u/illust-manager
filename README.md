@@ -4,12 +4,8 @@
 
 - 本リポジトリの一部は、[こちらの顔検出ツール](https://github.com/maya-hanada/anime-face-detector)を利用させて頂いております。
 
-以下WIP
-***
 ## 概要
 - 機械学習によるキャラクター画像のキャラクター毎のフォルダ分類器(Character Classificator(仮))と、[ImageDLer](https://github.com/Fumiya0719/likedimagedler_v2)の、2ツールの統合リポジトリです。
-
-- 両ツールともにWebUI上で使用可能です。
 
 ## Character Classificator(仮)
 - キャラクターの顔画像を基に機械学習を行い作成したモデルを用いて、イラスト内のキャラクターを判別するツールです。

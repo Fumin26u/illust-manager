@@ -44,7 +44,6 @@ api/account/userdata.json
 api/evaluate/*.jpg
 
 #api/face
-api/face/checkpoints/retinaface_mbv2/*
 
 # api/imagedler/pixiv
 api/imagedler/pixiv/config.py

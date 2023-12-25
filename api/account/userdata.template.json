@@ -3,6 +3,7 @@
     "dl_count": 0,
     "images_count": 0,
     "created_at": "2023-01-01T00:00:00",
+    "twitter_password": "",
     "twitter": [{
         "id": "",
         "post": ""
