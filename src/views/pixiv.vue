@@ -14,12 +14,13 @@ const errorMessage = ref<string>('')
 const search = ref<PixSearch>({
     userID: 0,
     tag: '',
-    getPostType: 'bookmark',
-    getNumberOfPost: '200',
+    getPostType: 'tag',
+    getNumberOfPost: '250',
     minBookmarks: 2000,
-    isGetFromPreviousPost: true,
+    isGetFromPreviousPost: false,
     includeTags: false,
     suspendID: '',
+    isIgnoreSensitive: true,
 })
 
 // pixivユーザーID・中断IDを取得
@@ -48,6 +49,7 @@ const inputValidation = (): string => {
 
 const pixPostInfo = ref<PixPostInfo[]>([])
 const isLoadImages = ref<boolean>(false)
+const dlName = ref<string>('')
 // 画像情報の取得
 const getImage = async () => {
     isLoadImages.value = true
@@ -75,6 +77,7 @@ const getImage = async () => {
         }
     })
     isLoadImages.value = false
+    dlName.value = search.value.tag !== '' ? search.value.tag : ''
 }
 
 // 画像情報から画像URLのみを抜き出す
@@ -100,6 +103,7 @@ const dlImage = async () => {
         `${apiPath}/pixiv/downloadImages`,
         {
             content: imagePaths,
+            dlName: dlName.value,
         }
     )
 
@@ -113,6 +117,7 @@ const dlImage = async () => {
     link.href = `${apiPath}/pixiv/getZip`
     document.body.appendChild(link)
     link.click()
+    link.setAttribute('download', ``)
     document.body.removeChild(link)
 
     const posts = {
@@ -238,6 +243,12 @@ onMounted(async () => {
                             type="checkbox"
                         />
                         <label for="include-tags">タグフィルターを設定</label>
+                        <input
+                            id="ignore-sensitive"
+                            v-model="search.isIgnoreSensitive"
+                            type="checkbox"
+                        />
+                        <label for="ignore-sensitive">R-18作品を除外する</label>
                     </dd>
                 </div>
                 <div v-show="isLoadImages" class="btn-cover"></div>
@@ -258,6 +269,8 @@ onMounted(async () => {
                 </p>
             </div>
             <div class="dl-image-area">
+                <label for="dl-name">保存名</label>
+                <input type="text" id="dl-name" v-model="dlName" />
                 <ButtonComponent
                     @click="dlImage()"
                     text="ダウンロード"

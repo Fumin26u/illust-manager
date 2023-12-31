@@ -9,7 +9,7 @@ class AccountManager:
         
     def loadAccount(self, jsonPath):
         try:
-            with open(jsonPath, 'r') as file:
+            with open(jsonPath, 'r', encoding='utf-8') as file:
                 accountData = json.load(file)
                 return AccountInfo(
                         accountData['user_name'],
@@ -26,7 +26,8 @@ class AccountManager:
             return AccountInfo(None, None, None, None, None, None)
         
     def saveAccount(self):
-        with open(self.jsonPath, 'w') as file:
+        print(self.account.toDict())
+        with open(self.jsonPath, 'w', encoding='utf-8') as file:
             json.dump(self.account.toDict(), file, indent=4, ensure_ascii=False)
         
     def getSingleData(self, key):

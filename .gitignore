@@ -29,7 +29,7 @@ pnpm-debug.log*
 api/**/*images*/*
 api/**/*.h5
 api/**/chromedriver.exe
-images.zip
+*.zip
 
 # Python
 __pycache__/

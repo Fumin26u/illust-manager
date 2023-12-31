@@ -86,6 +86,13 @@ async def main(query):
             if query['getPostType'] == "tag" and imageInfo['total_bookmarks'] < int(query['minBookmarks']):
                 continue
             
+            # ユーザーまたはタグ検索時かつR-18タグを除外する場合、R-18カテゴリをスルー
+            tagList = [tag['name'] for tag in imageInfo['tags'] if 'name' in tag]
+            if query['getPostType'] == "post" or query['getPostType'] == "tag":
+                if query['isIgnoreSensitive'] and "R-18" in tagList:
+                    print(f'ignore R-18 image: {imageInfo["id"]}')
+                    continue
+            
             # 残りDL数のデクリメント
             remaining -= 1
 

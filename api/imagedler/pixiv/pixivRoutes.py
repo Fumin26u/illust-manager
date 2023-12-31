@@ -1,10 +1,11 @@
 from flask import Blueprint, request, jsonify, make_response
 from api.imagedler.pixiv.getImage import main as getImage
 from api.imagedler.pixiv.dlImage import main as downloadImage
-from api.utils.makeZip import makeZip
+from api.utils.makeZip import makeZip, deleteZipFiles, getZipFileName
 from api.utils.createPath import createPath
 
 import os, shutil
+from urllib.parse import quote
 
 pixivRoutes = Blueprint('pixivRoutes', __name__)
 
@@ -21,6 +22,7 @@ async def downloadImages():
     illusts = data['content']
     pixivPath = createPath('imagedler', 'pixiv')
     imageDirPath = createPath(pixivPath, 'images')
+    zipFileName = data['dlName'] + '.zip' if data['dlName'] != '' else 'images.zip'
     
     # 先に作成しているimagesフォルダを削除
     if os.path.exists(imageDirPath):
@@ -33,7 +35,7 @@ async def downloadImages():
             'content': 'download failed'
         })
     else:
-        zipFilePath = makeZip(imageDirPath, pixivPath)
+        makeZip(imageDirPath, pixivPath, zipFileName)
         return jsonify({
             'error': False,
             'content': 'download Success'
@@ -41,11 +43,16 @@ async def downloadImages():
     
 @pixivRoutes.route('/pixiv/getZip', methods=['GET'])
 def getZip():
-    zip_path = createPath('imagedler', 'pixiv', 'images.zip')
+    pixivPath = createPath('imagedler', 'pixiv')
+    zipFileName = getZipFileName(pixivPath)
+    zip_path = f'{pixivPath}\\{zipFileName}'
+    print(zip_path)
     
     response = make_response()
     response.headers['Content-Type'] = 'application/octet-stream'
-    response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zip_path)}'
+    encodedFilename = quote(zipFileName.encode('utf-8'))
+    
+    response.headers['Content-Disposition'] = f'attachment; filename={encodedFilename}'
     response.data = open(zip_path, 'rb').read()
 
     return response

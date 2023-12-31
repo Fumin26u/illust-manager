@@ -63,6 +63,7 @@ export interface PixSearch {
     isGetFromPreviousPost: boolean
     includeTags: boolean
     suspendID: string
+    isIgnoreSensitive: boolean
 }
 
 export interface PixPostInfo {

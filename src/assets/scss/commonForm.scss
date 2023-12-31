@@ -57,8 +57,17 @@
     > .dl-image-area {
         width: 100%;
         margin-bottom: 1em;
+        > #dl-name, > label {
+            @include horizontalAlign;
+            margin-right: 1em;
+        }
+        > input#dl-name {
+            width: 240px;
+            font-size: 16px;
+            padding: 4px 8px;
+        }
         > * {
-            @include horizontalAlign(text-bottom);
+            @include horizontalAlign;
         }
         > p {
             font-size: 14px;
