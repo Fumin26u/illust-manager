@@ -26,7 +26,6 @@ class AccountManager:
             return AccountInfo(None, None, None, None, None, None)
         
     def saveAccount(self):
-        print(self.account.toDict())
         with open(self.jsonPath, 'w', encoding='utf-8') as file:
             json.dump(self.account.toDict(), file, indent=4, ensure_ascii=False)
         
