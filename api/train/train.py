@@ -1,13 +1,8 @@
 import os
-import tensorflow as tf
 from tensorflow import keras
-from keras.preprocessing.image import ImageDataGenerator
-import numpy as np
 
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
-
-from api.utils.getNowTime import getNowTime
 
 # モデルの構築
 def createModel(trainExtends):
@@ -34,7 +29,6 @@ def createWeights(modelDir):
         classWeights[i] = 1.0 / files_in_subdirectory
 
     return classWeights
-
 
 # 実行
 def main(trainExtends, faceModelPath, savePath):
