@@ -14,19 +14,27 @@ export interface ImageInfo {
     index: number
 }
 
-type AccountPostMethod = 'logout' | 'login' | 'register'
-
-export interface Register {
-    method: AccountPostMethod
-    email: string
+// account関連
+export interface UserInfo {
+    created_at: string
+    updated_at: string
+    dl_count: number
+    images_count: number
+    pixiv: UserPixivInfo[]
+    twitter: UserTwitterInfo[]
+    twitter_password: string
     user_name: string
-    password: string
 }
 
-export interface Login {
-    method: AccountPostMethod
-    user_name: string
-    password: string
+export interface UserPixivInfo {
+    id: string
+    post: string
+    tag: string
+}
+
+export interface UserTwitterInfo {
+    id: string
+    post: string
 }
 
 // Twitter関連

@@ -9,8 +9,8 @@ const username = ref<string>('')
 const apiManager = new ApiManager()
 
 const getUserInfo = async () => {
-    const response = await apiManager.get(`${apiPath}/api/getAccount`)
-    return response.content
+    const response = await apiManager.get(`${apiPath}/api/getUserName`)
+    return response.content.content
 }
 
 // 画面読み込み時にログインユーザーIDを取得
@@ -61,9 +61,7 @@ const isImageMenuVisible = ref<boolean>(false)
                 <p>{{ username }}さん</p>
             </div>
             <div v-else>
-                <a href="./#/register-pre" class="btn-common green">
-                    アカウント登録
-                </a>
+                <a href="./account" class="btn-common green">アカウント登録</a>
             </div>
         </div>
     </header>

@@ -27,7 +27,7 @@ const search = ref<PixSearch>({
 const apiManager = new ApiManager()
 const getUserInfo = async () => {
     const response = await apiManager.get(`${apiPath}/api/getPixivInfo`)
-    return response.content
+    return response.content.content
 }
 
 // 入力フォームのバリデーション

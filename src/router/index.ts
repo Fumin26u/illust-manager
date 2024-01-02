@@ -4,6 +4,7 @@ import train from '../views/train.vue'
 import evaluate from '../views/evaluate.vue'
 import twitter from '../views/twitter.vue'
 import pixiv from '../views/pixiv.vue'
+import account from '../views/account.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
@@ -35,6 +36,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/pixiv',
         name: 'pixiv',
         component: pixiv,
+    },
+    {
+        path: '/account',
+        name: 'account',
+        component: account,
     },
 ]
 

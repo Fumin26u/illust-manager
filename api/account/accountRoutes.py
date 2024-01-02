@@ -1,19 +1,59 @@
 from flask import Blueprint, request, jsonify
 from api.account.accountManager import AccountManager
 from api.utils.createPath import createPath
+from datetime import datetime
 
 accountRoutes = Blueprint('accountRoutes', __name__)
 accountManager = AccountManager(createPath('account', 'userdata.json'))
 
-@accountRoutes.route('/api/getAccount', methods=['GET'])
-def getAccount():
-    username = accountManager.getSingleData('user_name')
-    return username
+@accountRoutes.route('/api/getUserName', methods=['GET'])
+def getUserName():
+    try:
+        username = accountManager.getSingleData('user_name')
+        return {'error': False, 'content': username}
+    except Exception as e:  
+        return {'error': True, 'content': str(e)}
+    
+@accountRoutes.route('/api/getUserInfo', methods=['GET'])
+def getUserInfo():
+    try:
+        userInfo = accountManager.account.toDict()
+        return {'error': False, 'content': userInfo}
+    except Exception as e:  
+        return {'error': True, 'content': str(e)}
 
 @accountRoutes.route('/api/getPixivInfo', methods=['GET'])
 def getPixivInfo():
-    pixivInfo = accountManager.getSingleData('pixiv')
-    return pixivInfo
+    try:
+        pixivInfo = accountManager.getSingleData('pixiv')
+        return {'error': False, 'content': pixivInfo}
+    except Exception as e:  
+        return {'error': True, 'content': str(e)}
+
+@accountRoutes.route('/api/updateUserInfo', methods=['POST'])
+def updateUserInfo():
+    data = request.get_json()
+    try:
+        created_at = accountManager.getSingleData('created_at')
+        if created_at == None or created_at == '':
+            accountManager.update('created_at', datetime.now())
+            
+        accountManager.update('updated_at', datetime.now())
+        accountManager.update('user_name', data['user_name'])
+        accountManager.update('twitter_password', data['twitter_password'])
+        
+        return {'error': False, 'content': 'success'}
+    except Exception as e:
+        return {'error': True, 'content': str(e)}
+    
+@accountRoutes.route('/api/deleteUserInfo', methods=['POST'])
+def deleteUserInfo():
+    try:
+        accountManager.delete()
+        
+        return {'error': False, 'content': 'success'}
+    except Exception as e:
+        return {'error': True, 'content': str(e)}
 
 @accountRoutes.route('/api/updatePixivInfo', methods=['POST'])
 def updatePixivInfo():

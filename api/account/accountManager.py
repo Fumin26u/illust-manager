@@ -11,9 +11,14 @@ class AccountManager:
         try:
             with open(jsonPath, 'r', encoding='utf-8') as file:
                 accountData = json.load(file)
+                
+                created_at = datetime.strptime(accountData['created_at'], '%Y-%m-%d %H:%M:%S') if accountData['created_at'] != '' else ''
+                updated_at = datetime.strptime(accountData['updated_at'], '%Y-%m-%d %H:%M:%S') if accountData['updated_at'] != '' else ''
+                
                 return AccountInfo(
                         accountData['user_name'],
-                        datetime.strptime(accountData['created_at'], '%Y-%m-%d %H:%M:%S'),
+                        created_at,
+                        updated_at,
                         accountData['twitter_password'],
                         accountData['dl_count'],
                         accountData['images_count'],
@@ -21,9 +26,9 @@ class AccountManager:
                         accountData['pixiv']
                     )
         except FileNotFoundError:
-            return AccountInfo(None, None, None, None, None, None)
+            return AccountInfo(None, None, None, None, None, None, None)
         except json.decoder.JSONDecodeError:
-            return AccountInfo(None, None, None, None, None, None)
+            return AccountInfo(None, None, None, None, None, None, None)
         
     def saveAccount(self):
         with open(self.jsonPath, 'w', encoding='utf-8') as file:
@@ -40,12 +45,33 @@ class AccountManager:
             setattr(self.account, key, value)
             self.saveAccount()
             return True
-    
-    # def create(self, id, password):
-    #     return self.account.create(id, password)
-    
-    # def delete(self, id):
-    #     return self.account.delete(id)
-    
-    # def update(self, id, password):
-    #     return self.account.update(id, password)
+        
+    def delete(self):
+        # ファイルを読み込む
+        try:
+            with open(self.jsonPath, 'r+', encoding='utf-8') as file:
+                data = json.load(file)
+
+                # 各キーの値をチェックして適切な型で初期化する
+                for key, value in data.items():
+                    if isinstance(value, str):
+                        data[key] = ''
+                    elif isinstance(value, int):
+                        data[key] = 0
+                    elif isinstance(value, list):
+                        data[key] = []
+
+                # ファイルポインタを先頭に戻す
+                file.seek(0)
+
+                # 変更をファイルに保存する
+                json.dump(data, file, indent=4, ensure_ascii=False)
+                file.truncate()
+
+                # アカウントオブジェクトも更新する
+                self.account = self.loadAccount(self.jsonPath)
+
+        except FileNotFoundError:
+            print("ファイルが見つかりませんでした。")
+        except json.decoder.JSONDecodeError:
+            print("JSONデコードエラーが発生しました。")

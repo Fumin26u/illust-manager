@@ -1,0 +1,11 @@
+@import './style.scss';
+
+#page-account > div {
+    margin: 1em auto;
+}
+
+#page-account .get-post-list li {
+    padding: 1em 0;
+    display: block;
+    border-bottom: 1px solid $border-color;
+}
