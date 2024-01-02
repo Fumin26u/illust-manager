@@ -4,7 +4,7 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import '@/assets/scss/account.scss'
 
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
 import { UserInfo } from '@/types'
@@ -25,7 +25,6 @@ const userInfo = ref<UserInfo>({
 const apiManager = new ApiManager()
 const getUserInfo = async () => {
     const response = await apiManager.get(`${apiPath}/api/getUserInfo`)
-    console.log(response.content.content)
     return response.content.content
 }
 
