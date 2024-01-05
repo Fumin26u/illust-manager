@@ -1,6 +1,7 @@
 import os
 from tensorflow import keras
 
+from keras.callbacks import EarlyStopping
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
 
@@ -31,8 +32,14 @@ def createWeights(modelDir):
     return classWeights
 
 # 実行
-def main(trainExtends, faceModelPath, savePath):
-    model = createModel(trainExtends)
+def main(
+    trainGenerator, 
+    validationGenerator, 
+    faceModelPath, 
+    savePath,
+    epochs = 50,
+):
+    model = createModel(trainGenerator)
 
     # 各クラスの重み
     classWeights = createWeights(faceModelPath)
@@ -43,10 +50,22 @@ def main(trainExtends, faceModelPath, savePath):
         loss='categorical_crossentropy', 
         metrics=['accuracy']
     )
+    
+    # EarlyStopping
+    early_stopping = EarlyStopping(
+        monitor='val_loss', 
+        patience=3, 
+        verbose=1, 
+        mode='auto',
+        restore_best_weights=True
+    )
+    
     # 訓練
     model.fit(
-        trainExtends, 
-        epochs=12, 
-        class_weight=classWeights
+        trainGenerator, 
+        epochs=epochs, 
+        class_weight=classWeights,
+        callbacks=[early_stopping],
+        validation_data=validationGenerator
     )
     model.save(savePath)   
