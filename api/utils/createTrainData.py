@@ -9,7 +9,7 @@ def createTrainData(
     horizontal_flip = True,
     resize_resolution = (224, 224),
     batch_size = 64,
-    validation_split = 0.2
+    validation_split = 0.3
 ):
     trainData = ImageDataGenerator(
         rescale=rescale,

@@ -51,7 +51,12 @@ def main(
     extension = '.jpg'
 ):
     # モデルのロード
-    model = load_model(modelPath) 
+    try: 
+        model = load_model(modelPath) 
+    except Exception as e:
+        print(f"Error loading model: {str(e)}")
+        return []
+    print(extension)
     
     # 画像の顔部分を切り抜き保存 + 保存先のパス取得
     image = resizeImage(evaluatedImage, 1280)

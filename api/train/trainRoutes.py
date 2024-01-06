@@ -17,9 +17,9 @@ def train():
     data = request.get_json()
     path = data.get('path', '')
     
-    shear_ragnes = [0.0, 0.05, 0.1]
-    zoom_ranges = [0.0, 0.1, 0.2, 0.3]
-    epoch_list = [30, 50, 70, 90, 100]
+    shear_ragnes = [0.1]
+    zoom_ranges = [0.2]
+    epoch_list = [30]
     
     try:
         referencePath = createPath('save', 'face_images', path)

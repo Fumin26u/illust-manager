@@ -3,17 +3,28 @@ from tensorflow import keras
 
 from keras.callbacks import EarlyStopping
 from keras.models import Sequential
-from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout
+from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 
 # モデルの構築
 def createModel(trainExtends):
     model = Sequential()
+    model.add(BatchNormalization())
+    
     model.add(Conv2D(32, (3, 3), input_shape=(224, 224, 3), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.05))
+    
+    model.add(Conv2D(64, (4,4), input_shape=(224, 224, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.05))
+    
     model.add(Flatten())
+    model.add(Dense(units=256, activation='relu'))
     model.add(Dense(units=128, activation='relu'))
-    model.add(Dropout(0.0))
     model.add(Dense(units=len(trainExtends.class_indices), activation='softmax'))
+    
+    model.add(Dropout(0.05))
+    
     return model
 
 # モデル作成するディレクトリから各クラスのファイル数を取得
@@ -54,7 +65,7 @@ def main(
     # EarlyStopping
     early_stopping = EarlyStopping(
         monitor='val_loss', 
-        patience=3, 
+        patience=8, 
         verbose=1, 
         mode='auto',
         restore_best_weights=True
