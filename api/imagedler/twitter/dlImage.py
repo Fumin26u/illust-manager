@@ -8,6 +8,7 @@ def generateRandomString(strLength: int) -> str:
 
 # format引数が付いている画像URLから、どの形式でフォーマットされているかを取得
 def getFormatMethod(url):
+    print(url)
     target = 'format='
     index = url.find(target)
     if (index != -1) and index + len(target) + 3 <= len(url):
@@ -25,7 +26,7 @@ def getFormatMethod(url):
         else:
             return 'jpg'
     else:
-        return False
+        return 'jpg'
 
 async def dlImage(session, illust, savePath):
     try:
