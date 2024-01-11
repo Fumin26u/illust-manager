@@ -27,8 +27,8 @@ def detectFace(image, modelPath):
 def extendFaceRect(
     x, y, x2, y2, 
     image, 
-    initExtension_neg: int = 120,
-    initExtension_pos: int = 60,
+    initExtension_neg: int = 40,
+    initExtension_pos: int = 40,
     decrement: int = 20
 ):
     max_x, max_y = image.shape[1], image.shape[0]
@@ -55,9 +55,7 @@ def extendFaceRect(
 def cropFace(faces, image, resizeResolution, extension):
     resizedFaces = []
     for i, (x, y, x2, y2) in enumerate(faces):
-        print(f"face {i}: {x}, {y}, {x2}, {y2}")
         x, y, x2, y2 = extendFaceRect(x, y, x2, y2, image)
-        print(f"extended face {i}: {x}, {y}, {x2}, {y2}")
 
         h = y2 - y
         w = x2 - x
