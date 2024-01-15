@@ -5,6 +5,7 @@ node_modules
 .VSCodeCounter/
 lbpcascade_animeface.xml
 cmd.md
+memo.md
 
 # local env files
 .env.local
