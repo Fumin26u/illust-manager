@@ -32,15 +32,20 @@ const isImageMenuVisible = ref<boolean>(false)
                 </a>
             </div>
             <nav class="header-nav">
+                <a href="./account" class="btn-small blue">アカウント管理</a>
                 <div
                     @mouseover="isCharaMenuVisible = true"
                     @mouseleave="isCharaMenuVisible = false"
                 >
-                    <p>キャラ分類</p>
-                    <div class="nav-menu" v-show="isCharaMenuVisible">
-                        <a href="./crop" class="btn-small blue">加工</a>
-                        <a href="./evaluate" class="btn-small blue">評価</a>
-                        <a href="./train" class="btn-small blue">訓練</a>
+                    <p>画像処理</p>
+                    <div
+                        class="nav-menu edit-image"
+                        v-show="isCharaMenuVisible"
+                    >
+                        <a href="./crop" class="btn-small blue">画像加工</a>
+                        <a href="./evaluate" class="btn-small blue">画像評価</a>
+                        <a href="./train" class="btn-small blue">モデル訓練</a>
+                        <a href="./remove" class="btn-small blue">被り削除</a>
                     </div>
                 </div>
                 <div
@@ -48,12 +53,11 @@ const isImageMenuVisible = ref<boolean>(false)
                     @mouseleave="isImageMenuVisible = false"
                 >
                     <p>ImageDLer</p>
-                    <div class="nav-menu" v-show="isImageMenuVisible">
+                    <div class="nav-menu imagedler" v-show="isImageMenuVisible">
                         <a href="./twitter" class="btn-small blue">twitter</a>
                         <a href="./pixiv" class="btn-small blue">pixiv</a>
                     </div>
                 </div>
-                <a href="./account" class="btn-small blue">アカウント管理</a>
             </nav>
         </div>
         <div class="header-account">

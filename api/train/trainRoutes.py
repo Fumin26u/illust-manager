@@ -17,12 +17,24 @@ def train():
     data = request.get_json()
     path = data.get('path', '')
     
+    shear_ragnes = [0.1]
+    zoom_ranges = [0.2]
+    epoch_list = [30]
+    
     try:
         referencePath = createPath('save', 'face_images', path)
-        trainExtends = createTrainData(referencePath)
-        
-        savePath = createPath('save', 'train_face_models', f'model-{getNowTime()}.h5')
-        createTrainModel(trainExtends, referencePath, savePath)
+        savePaths = []
+        for shear_range in shear_ragnes:
+            for zoom_range in zoom_ranges:
+                for epochs in epoch_list:
+                    print(f'shear_range: {shear_range}, zoom_range: {zoom_range}, epochs: {epochs}')
+                    
+                    trainGenerator, validationGenerator = createTrainData(referencePath, shear_range=shear_range, zoom_range=zoom_range)
+                    
+                    savePath = createPath('save', 'train_face_models', f'model-{getNowTime()}.h5')
+                    createTrainModel(trainGenerator, validationGenerator, referencePath, savePath, epochs=epochs)
+                    
+                    savePaths.append(savePath)
         
         return jsonify({'error': False, 'content': f'success, save path: {savePath}'})
     except Exception as e:

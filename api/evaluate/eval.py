@@ -49,10 +49,7 @@ def main(
     modelPath, 
     base_path = BASE_PATH,
     extension = '.jpg'
-):
-    # モデルのロード
-    model = load_model(modelPath) 
-    
+):    
     # 画像の顔部分を切り抜き保存 + 保存先のパス取得
     image = resizeImage(evaluatedImage, 1280)
     
@@ -71,6 +68,13 @@ def main(
     face = cropFace([faceRect[0]], image, (224, 224), extension)[0]
     with open(croppedImagePath, 'wb') as f:
         f.write(face)
+        
+    # モデルのロード
+    try: 
+        model = load_model(modelPath) 
+    except Exception as e:
+        print(f"Error loading model: {str(e)}")
+        return []
         
     # モデルの分析
     predictions = analyzeImage(model, croppedImagePath)

@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import crop from '../views/crop.vue'
 import train from '../views/train.vue'
 import evaluate from '../views/evaluate.vue'
+import remove from '../views/remove.vue'
 import twitter from '../views/twitter.vue'
 import pixiv from '../views/pixiv.vue'
 import account from '../views/account.vue'
@@ -26,6 +27,11 @@ const routes: Array<RouteRecordRaw> = [
         path: '/evaluate',
         name: 'evaluate',
         component: evaluate,
+    },
+    {
+        path: '/remove',
+        name: 'remove',
+        component: remove,
     },
     {
         path: '/twitter',

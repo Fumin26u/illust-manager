@@ -34,17 +34,18 @@ def evaluate():
     base64Images = data['imagePaths']
     modelPath = createPath('save', 'train_face_models', data['model'])
     faceModelPath = createPath('save', 'face_images', data['imageDir'])
-    trainExtends = createTrainData(faceModelPath = faceModelPath)
+    trainGenerator, validationGenerator = createTrainData(faceModelPath = faceModelPath)
     
     eachResults = []
     load_checkpoint()
+    print(modelPath)
     
     def evaluateSingleImage(args):
         i, base64Image = args['index'], args['imagePath']
         try:
             image = base64ToImage(base64Image)
             extension = '.' + getImageExtension(base64Image)
-            result = image_evaluate(image, f'api/evaluate/{createUuid(8)}.jpg', trainExtends, modelPath, extension=extension)
+            result = image_evaluate(image, f'api/evaluate/{createUuid(8)}.jpg', trainGenerator, modelPath, extension=extension)
             return i, result
         except Exception as e:
             print(f"Error evaluating image: {str(e)}")

@@ -24,20 +24,32 @@ def detectFace(image, modelPath):
     return FACE_MODEL.detectMultiScale(GRAY_IMAGE, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
 # 顔検出部分の拡張
-def extendFaceRect(x, y, x2, y2, image, extension: int = 30):
+def extendFaceRect(
+    x, y, x2, y2, 
+    image, 
+    initExtension_neg: int = 40,
+    initExtension_pos: int = 40,
+    decrement: int = 20
+):
     max_x, max_y = image.shape[1], image.shape[0]
     min_x, min_y = 0, 0
+    extension_neg = initExtension_neg
+    extension_pos = initExtension_pos
 
-    nx = max(min_x, x - extension)
-    ny = max(min_y, y - extension)
-    nx2 = min(max_x, x2 + extension)
-    ny2 = min(max_y, y2 + extension)
+    while True: 
+        nx = max(min_x, x - extension_neg)
+        ny = max(min_y, y - extension_neg)
+        nx2 = min(max_x, x2 + extension_pos)
+        ny2 = min(max_y, y2 + extension_pos)
 
-    # 画像の端に顔がある場合は拡張しない 
-    if x == min_x or y == min_y or x2 == max_x or y2 == max_y:
-        return (x, y, x2, y2)
-    else:
-        return (nx, ny, nx2, ny2)
+        # 画像の端に顔がある場合は拡張しない 
+        if (nx == min_x or ny == min_y or nx2 == max_x or ny2 == max_y) and (extension_neg > 0 or extension_pos > 0):
+            extension_neg -= decrement
+            extension_pos -= decrement
+        else:
+            break
+        
+    return (nx, ny, nx2, ny2)
     
 # 顔検出部分を切り抜き保存
 def cropFace(faces, image, resizeResolution, extension):
