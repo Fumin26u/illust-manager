@@ -5,7 +5,8 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import CNNComponent from '@/components/train/CNNComponent.vue'
 
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { createCnnInit } from '@/assets/ts/train/cnn'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
 import {
@@ -18,18 +19,12 @@ import {
     TrainParameters,
 } from '@/types'
 
-const cnnComponents = ref<any>([])
-const addCNNComponent = () => {
-    cnnComponents.value.push(CNNComponent)
-}
-
-const cnns = ref<CNN[]>([])
-const addCNN = (cnnInit: CNN) => {
-    cnns.value.push(cnnInit)
-}
+import { VBtn, VIcon } from 'vuetify/components'
+import '@/assets/scss/train.scss'
 
 const denses = ref<Dense[]>([
     {
+        uuid: '',
         units: 256,
         activation: 'relu',
     },
@@ -76,39 +71,29 @@ const train = async () => {
         <div class="title-area">
             <h1 class="title">画像訓練</h1>
         </div>
-        <div class="form-reference train-form">
-            <dl class="input-form train-parameters">
+        <div class="form-reference train-settings">
+            <div class="train-overall">
                 <h2>全体の設定</h2>
                 <FileListComponent
-                    title="参照画像を選択:"
+                    title="データセット"
                     :type="'getImageDirs'"
                     @setSelectedFile="setSelectedFile"
                 />
                 <div>
-                    <dt>試行回数 (Epoch数)</dt>
+                    <dt>試行回数(Epoch)</dt>
                     <dd><input type="number" /></dd>
                 </div>
                 <div>
                     <dt>最適化関数</dt>
                     <dd><input type="text" /></dd>
                 </div>
-            </dl>
-            <div class="train-models">
-                <h2>各モデルの設定</h2>
-                <dl class="input-form cnn">
+            </div>
+            <div>
+                <h2>モデル構築</h2>
+                <div class="train-models">
                     <h3>CNN (畳み込み・プーリング・ドロップアウト)</h3>
-                    <div
-                        v-for="(cnnComponent, index) in cnnComponents"
-                        :key="index"
-                    >
-                        <CNNComponent @addCNN="addCNN" />
-                    </div>
-                    <ButtonComponent
-                        @click="addCNNComponent"
-                        text="追加"
-                        class="btn-small blue"
-                    />
-                </dl>
+                    <CNNComponent />
+                </div>
             </div>
         </div>
         <div class="button-area input-form" v-if="selectedImageDir !== ''">

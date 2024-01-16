@@ -85,6 +85,7 @@ export interface MaxPooling2d {
 
 // 畳み込み層・プーリング層・ドロップアウト層の組み合わせ(CNN)
 export interface CNN {
+    uuid: string
     conv2d: Conv2d
     maxPooling2d: MaxPooling2d
     dropout: float
@@ -92,6 +93,7 @@ export interface CNN {
 
 // 結合層(Dense)
 export interface Dense {
+    uuid: string
     units: 'class_length' | number
     activation: Activation
 }

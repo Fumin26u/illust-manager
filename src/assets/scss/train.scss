@@ -1,0 +1,92 @@
+@import './style.scss';
+.train-settings {
+    > div {
+        margin: 1.5em 0;
+        div {
+            margin: 0.5em 0;
+        }
+    }
+
+    dt,
+    dd {
+        @include horizontalAlign();
+    }
+    dt {
+        width: 16%;
+        padding-right: 8px;
+        border-right: 1px solid $border-color;
+        text-align: right;
+    }
+    dd {
+        input,
+        select {
+            font-size: 16px;
+            margin: 0;
+        }
+    }
+}
+
+.train-settings .train-models {
+    padding: 0 1em;
+    h3,
+    h4 {
+        margin: 4px auto 2px;
+    }
+    h3 {
+        font-size: 18px;
+    }
+    h4 {
+        font-size: 16px;
+    }
+
+    .vuetify-btn {
+        margin: 4px 0;
+    }
+}
+
+.train-settings .train-form {
+    border: 2px solid $border-color;
+    margin: 8px 0;
+    position: relative;
+
+    > .divider {
+        margin: 0.25em 1em 0;
+        border-radius: 16px;
+    }
+
+    > div {
+        border-bottom: 1px solid $border-color;
+        margin: 0 1em;
+        padding: 0.5em 1em;
+    }
+    > div:last-child {
+        border-bottom: none;
+    }
+
+    > .display-form > div,
+    .hidden-form > div {
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        > h4 {
+            text-align: center;
+            width: 16%;
+        }
+        > .content {
+            width: 84%;
+        }
+    }
+
+    > .hidden-form {
+        p {
+            display: inline-block;
+            margin-right: 1em;
+        }
+    }
+
+    .vuetify-btn.delete {
+        position: absolute;
+        top: 1em;
+        right: 1em;
+    }
+}
