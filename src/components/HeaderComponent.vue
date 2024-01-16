@@ -3,6 +3,13 @@ import { ref, onMounted } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
 import '@/assets/scss/imagedler/header.scss'
+import {
+    VMenu,
+    VList,
+    VListItem,
+    VListItemTitle,
+    VBtn,
+} from 'vuetify/components'
 
 const username = ref<string>('')
 // ログアウトリンクが押された場合APIに伝える
@@ -18,8 +25,39 @@ onMounted(async () => {
     username.value = await getUserInfo()
 })
 
-const isCharaMenuVisible = ref<boolean>(false)
-const isImageMenuVisible = ref<boolean>(false)
+const imageLinks = ref<any>([
+    {
+        name: 'アカウント管理',
+        path: './account',
+    },
+    {
+        name: '画像加工',
+        path: './crop',
+    },
+    {
+        name: '画像評価',
+        path: './evaluate',
+    },
+    {
+        name: 'モデル訓練',
+        path: './train',
+    },
+    {
+        name: '被り削除',
+        path: './remove',
+    },
+])
+
+const imageDLerLinks = [
+    {
+        name: 'twitter',
+        path: './twitter',
+    },
+    {
+        name: 'pixiv',
+        path: './pixiv',
+    },
+]
 </script>
 
 <template>
@@ -33,31 +71,42 @@ const isImageMenuVisible = ref<boolean>(false)
             </div>
             <nav class="header-nav">
                 <a href="./account" class="btn-small blue">アカウント管理</a>
-                <div
-                    @mouseover="isCharaMenuVisible = true"
-                    @mouseleave="isCharaMenuVisible = false"
-                >
-                    <p>画像処理</p>
-                    <div
-                        class="nav-menu edit-image"
-                        v-show="isCharaMenuVisible"
-                    >
-                        <a href="./crop" class="btn-small blue">画像加工</a>
-                        <a href="./evaluate" class="btn-small blue">画像評価</a>
-                        <a href="./train" class="btn-small blue">モデル訓練</a>
-                        <a href="./remove" class="btn-small blue">被り削除</a>
-                    </div>
-                </div>
-                <div
-                    @mouseover="isImageMenuVisible = true"
-                    @mouseleave="isImageMenuVisible = false"
-                >
-                    <p>ImageDLer</p>
-                    <div class="nav-menu imagedler" v-show="isImageMenuVisible">
-                        <a href="./twitter" class="btn-small blue">twitter</a>
-                        <a href="./pixiv" class="btn-small blue">pixiv</a>
-                    </div>
-                </div>
+                <v-menu open-on-hover offset-y>
+                    <template v-slot:activator="{ props }">
+                        <v-btn v-bind="props">画像処理</v-btn>
+                    </template>
+
+                    <v-list>
+                        <v-list-item
+                            v-for="(imageLink, index) in imageLinks"
+                            :key="index"
+                            link
+                            :href="imageLink.path"
+                        >
+                            <v-list-item-title>
+                                {{ imageLink.name }}
+                            </v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
+                <v-menu open-on-hover close-on-content-click offset-y>
+                    <template v-slot:activator="{ props }">
+                        <v-btn v-bind="props">ImageDLer</v-btn>
+                    </template>
+
+                    <v-list>
+                        <v-list-item
+                            v-for="(imageDLerLink, index) in imageDLerLinks"
+                            :key="index"
+                            link
+                            :href="imageDLerLink.path"
+                        >
+                            <v-list-item-title>
+                                {{ imageDLerLink.name }}
+                            </v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu>
             </nav>
         </div>
         <div class="header-account">
