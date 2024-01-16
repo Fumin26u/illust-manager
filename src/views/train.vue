@@ -22,6 +22,13 @@ import {
 import { VBtn, VIcon } from 'vuetify/components'
 import '@/assets/scss/train.scss'
 
+const cnns = ref<CNN[]>([])
+// 子コンポーネント内のCNNを取得
+const setCNN = (provided: CNN[]) => {
+    cnns.value = provided
+    console.log(cnns.value)
+}
+
 const denses = ref<Dense[]>([
     {
         uuid: '',
@@ -92,16 +99,21 @@ const train = async () => {
                 <h2>モデル構築</h2>
                 <div class="train-models">
                     <h3>CNN (畳み込み・プーリング・ドロップアウト)</h3>
-                    <CNNComponent />
+                    <CNNComponent @setCNN="setCNN" />
                 </div>
             </div>
         </div>
         <div class="button-area input-form" v-if="selectedImageDir !== ''">
-            <ButtonComponent
+            <v-btn
+                color="blue-darken-4"
+                class="vuetify-btn execute font-weight-bold"
                 @click="train"
-                text="実行"
-                :buttonClass="'btn-common blue'"
-            />
+            >
+                <template v-slot:prepend>
+                    <v-icon left>mdi-ray-start-arrow</v-icon>
+                </template>
+                実行
+            </v-btn>
         </div>
     </main>
 </template>

@@ -27,9 +27,9 @@
 }
 
 .train-settings .train-models {
+    position: relative;
     padding: 0 1em;
-    h3,
-    h4 {
+    h3 {
         margin: 4px auto 2px;
     }
     h3 {
@@ -42,6 +42,20 @@
     .vuetify-btn {
         margin: 4px 0;
     }
+
+    > div {
+        position: relative;
+        .form-cover {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 99;
+            background-color: white;
+            opacity: 0.3;
+        }
+    }
 }
 
 .train-settings .train-form {
@@ -49,9 +63,13 @@
     margin: 8px 0;
     position: relative;
 
-    > .divider {
+    .divider {
         margin: 0.25em 1em 0;
         border-radius: 16px;
+    }
+    .divider.short {
+        width: 32%;
+        margin: 0 auto;
     }
 
     > div {
@@ -68,12 +86,13 @@
         display: flex;
         justify-content: space-evenly;
         align-items: center;
-        > h4 {
+        > h4, .title {
             text-align: center;
             width: 16%;
         }
         > .content {
             width: 84%;
+            margin: 4px auto;
         }
     }
 

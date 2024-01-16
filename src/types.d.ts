@@ -70,7 +70,7 @@ export interface Conv2d {
     filters: number
     kernel_size: [number, number]
     activation: Activation
-    input_shape?: [number, number, number]
+    input_shape: [number, number, number]
     padding?: Padding
     strides?: [number, number]
     use_bias?: boolean
