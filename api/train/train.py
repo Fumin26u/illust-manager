@@ -6,7 +6,8 @@ from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 
 # モデルの構築
-def createModel(trainExtends):
+# デフォルトの設定
+def createModel_default(extendImages):
     model = Sequential()
     model.add(BatchNormalization())
     
@@ -21,10 +22,39 @@ def createModel(trainExtends):
     model.add(Flatten())
     model.add(Dense(units=256, activation='relu'))
     model.add(Dense(units=128, activation='relu'))
-    model.add(Dense(units=len(trainExtends.class_indices), activation='softmax'))
+    model.add(Dense(units=len(extendImages.class_indices), activation='softmax'))
     
     model.add(Dropout(0.05))
     
+    return model
+
+# ユーザーがフロントエンドで手動構築した場合
+def createModel(extendImages, train_model):    
+    model = Sequential()
+    model.add(BatchNormalization()) if train_model['batchNormalization'] else None
+    
+    # cnn各層
+    for i, layer in enumerate(train_model['cnn']):
+        model.add(Conv2D(
+            layer['conv2d']['filters'], 
+            layer['conv2d']['kernel_size'], 
+            input_shape=layer['conv2d']['input_shape'], 
+            activation=layer['conv2d']['activation']
+        ))
+        model.add(MaxPooling2D(pool_size=layer['maxPooling2d']['pool_size']))
+        model.add(Dropout(layer['dropout']))
+    
+    model.add(Flatten()) if train_model['flatten'] else None
+        
+    # 結合層
+    for i, layer in enumerate(train_model['dense']):
+        model.add(Dense(
+            units=layer['units'] if not layer['isUsingClassLength'] else len(extendImages.class_indices), 
+            activation=layer['activation']
+        ))
+        
+    model.add(Dropout(train_model['final_dropout']))
+    print(model)
     return model
 
 # モデル作成するディレクトリから各クラスのファイル数を取得
@@ -43,40 +73,46 @@ def createWeights(modelDir):
     return classWeights
 
 # 実行
-def main(
-    trainGenerator, 
-    validationGenerator, 
+def createTrainedModel(
+    extendImages, 
+    validationImages, 
     faceModelPath, 
     savePath,
-    epochs = 50,
+    train_parameter,
+    isSetDetail = False,
+    train_model = False,
 ):
-    model = createModel(trainGenerator)
+    model = createModel_default(extendImages) if not isSetDetail else createModel(
+        extendImages,
+        train_model,
+    )
 
     # 各クラスの重み
     classWeights = createWeights(faceModelPath)
 
     # コンパイル
     model.compile(
-        optimizer='adam', 
+        optimizer=train_parameter['optimizer'], 
         loss='categorical_crossentropy', 
         metrics=['accuracy']
     )
     
     # EarlyStopping
+    esParams = train_parameter['earlyStopping']
     early_stopping = EarlyStopping(
-        monitor='val_loss', 
-        patience=8, 
-        verbose=1, 
-        mode='auto',
-        restore_best_weights=True
+        monitor=esParams['monitor'], 
+        patience=esParams['patience'], 
+        verbose=esParams['verbose'],
+        mode=esParams['mode'],
+        restore_best_weights=esParams['restore_best_weights']
     )
     
     # 訓練
     model.fit(
-        trainGenerator, 
-        epochs=epochs, 
+        extendImages, 
+        epochs=train_parameter['epochs'], 
         class_weight=classWeights,
-        callbacks=[early_stopping],
-        validation_data=validationGenerator
+        callbacks=[early_stopping] if train_parameter['isSetEarlyStopping'] else None,
+        validation_data=validationImages
     )
     model.save(savePath)   

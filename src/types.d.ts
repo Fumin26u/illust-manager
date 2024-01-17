@@ -40,18 +40,18 @@ export type Activation =
 
 export type Padding = 'valid' | 'same' | 'causal'
 
-// EarlyStopping
-export interface EarlyStopping {
-    monitor: string
-    patience: number
-    verbose: number
-    mode: string
-    restore_best_weights: boolean
-}
+export type Optimizer =
+    | 'adam'
+    | 'sgd'
+    | 'rmsprop'
+    | 'adagrad'
+    | 'adadelta'
+    | 'adamax'
+    | 'nadam'
 
 // ImageDataGenerator Class
 export interface ImageDataGenerator {
-    rescale: [number, number]
+    rescale: number
     shear_range: float
     zoom_range: float
     horizontal_flip: boolean
@@ -96,6 +96,16 @@ export interface Dense {
     uuid: string
     units: 'class_length' | number
     activation: Activation
+    isUsingClassLength: boolean
+}
+
+// EarlyStopping
+export interface EarlyStopping {
+    monitor: string
+    patience: number
+    verbose: number
+    mode: string
+    restore_best_weights: boolean
 }
 
 // モデル構築全体
@@ -107,17 +117,25 @@ export interface TrainModels {
     final_dropout: float
 }
 
-// 訓練全体
-export interface TrainParameters {
-    earlyStopping: EarlyStopping
+// データセットの処理関連
+export interface DataSets {
     imageDataGenerator: ImageDataGenerator
     trainFlows: TrainFlows
-    epochs: number
-    datasetPath: string
-    optimizer: string
 }
 
-// account関連
+// 訓練全体
+export interface TrainParameters {
+    isSetEarlyStopping: boolean
+    earlyStopping: EarlyStopping
+    optimizer: string
+    epochs: number
+}
+
+/* -----------------  
+
+    アカウント関連
+
+----------------- */
 export interface UserInfo {
     created_at: string
     updated_at: string
@@ -140,7 +158,12 @@ export interface UserTwitterInfo {
     post: string
 }
 
-// Twitter関連
+/* -----------------  
+
+    ImageDLer
+
+----------------- */
+// Twitter
 export interface TwiSearch {
     twitterID: string
     getTweetType: 'liked_tweets' | 'tweets' | 'bookmarks'
@@ -164,7 +187,7 @@ export interface TweetInfo {
     url: string
 }
 
-// pixiv関連
+// pixiv
 export interface PixSearch {
     userID: number
     tag: string

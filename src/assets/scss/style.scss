@@ -84,6 +84,11 @@ label {
     @include horizontalAlign;
 }
 
+select {
+    -webkit-appearance: auto !important;
+    appearance: auto !important;
+}
+
 a {
     text-decoration: none;
     &:hover {

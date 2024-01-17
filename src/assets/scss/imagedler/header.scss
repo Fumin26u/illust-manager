@@ -47,24 +47,13 @@
 // Header nav
 .header-nav {
     height: 58px;
-    > div,
-    > a {
+    > a, p {
         display: inline-block;
         vertical-align: middle;
         padding: 0 1em;
         margin: 0;
         font-size: 18px;
         position: relative;
-    }
-    > div {
-        transition: all 0.1s;
-        p {
-            display: block;
-            height: 58px;
-            line-height: 52px;
-        }
-    }
-    > a {
         height: 58px;
         line-height: 52px;
     }

@@ -71,9 +71,14 @@ const imageDLerLinks = [
             </div>
             <nav class="header-nav">
                 <a href="./account" class="btn-small blue">アカウント管理</a>
-                <v-menu open-on-hover offset-y>
+                <v-menu
+                    open-on-hover
+                    offset-y
+                    :open-delay="50"
+                    :close-delay="50"
+                >
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props">画像処理</v-btn>
+                        <p v-bind="props">画像処理</p>
                     </template>
 
                     <v-list>
@@ -89,9 +94,14 @@ const imageDLerLinks = [
                         </v-list-item>
                     </v-list>
                 </v-menu>
-                <v-menu open-on-hover close-on-content-click offset-y>
+                <v-menu
+                    open-on-hover
+                    offset-y
+                    :open-delay="50"
+                    :close-delay="50"
+                >
                     <template v-slot:activator="{ props }">
-                        <v-btn v-bind="props">ImageDLer</v-btn>
+                        <p v-bind="props">ImageDLer</p>
                     </template>
 
                     <v-list>

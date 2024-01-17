@@ -1,36 +1,44 @@
 from tensorflow import keras
 from keras.preprocessing.image import ImageDataGenerator
 
+generatorParams_default = {
+    'rescale': 1.0 / 255,
+    'shear_range': 0,
+    'zoom_range': 0.2,
+    'horizontal_flip': True,
+    'validation_split': 0.2,
+}
+
+datasetParams_default = {
+    'resize_resolution': (224, 224),
+    'batch_size': 32,
+}
+
 def createTrainData(
     faceModelPath,
-    rescale = 1./255,
-    shear_range = 0.2,
-    zoom_range = 0.2,
-    horizontal_flip = True,
-    resize_resolution = (224, 224),
-    batch_size = 64,
-    validation_split = 0.3
+    generatorParams = generatorParams_default,
+    datasetParams = datasetParams_default,
 ):
     trainData = ImageDataGenerator(
-        rescale=rescale,
-        shear_range=shear_range,
-        zoom_range=zoom_range,
-        horizontal_flip=horizontal_flip,
-        validation_split=validation_split
+        rescale=generatorParams['rescale'],
+        shear_range=generatorParams['shear_range'],
+        zoom_range=generatorParams['zoom_range'],
+        horizontal_flip=generatorParams['horizontal_flip'],
+        validation_split=generatorParams['validation_split']
     )
     
     trainGenerator = trainData.flow_from_directory(
         faceModelPath,
-        target_size=resize_resolution,
-        batch_size=batch_size,
+        target_size=datasetParams['resize_resolution'],
+        batch_size=datasetParams['batch_size'],
         class_mode='categorical',
         subset='training'
     )
     
     validationGenerator = trainData.flow_from_directory(
         faceModelPath,
-        target_size=resize_resolution,
-        batch_size=batch_size,
+        target_size=datasetParams['resize_resolution'],
+        batch_size=datasetParams['batch_size'],
         class_mode='categorical',
         subset='validation'
     )
