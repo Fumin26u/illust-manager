@@ -1,16 +1,12 @@
 from flask import Blueprint, request, jsonify
 
-import os, base64, cv2, string, random, uuid
-import numpy as np
-import concurrent.futures
-
 from api.utils.createPath import createPath
 from api.utils.getNowTime import getNowTime
-from api.utils.createUuid import createUuid
 from api.utils.createTrainData import createTrainData
 from api.train.train import createTrainedModel
 
 trainRoutes = Blueprint('trainRoutes', __name__)
+
 
 @trainRoutes.route('/train/train', methods=['POST'])
 def train():
@@ -31,6 +27,17 @@ def train():
     try:
         referencePath = createPath('save', 'face_images', path)
         
+        nowTime = getNowTime()
+        # 各種パラメータをテキストに保存
+        txtPath = createPath('save', 'train_texts', f'train-{nowTime}.txt')
+        with open(txtPath, "w") as file:
+            file.write(f"path: {path}\n")
+            file.write(f"referencePath: {referencePath}\n")
+            file.write(f"isSetDetail: {isSetDetail}\n")
+            file.write(f"dataset: {dataset}\n")
+            file.write(f"train_model: {train_model}\n")
+            file.write(f"train_parameter: {train_parameter}\n")
+        
         # データ拡張
         if isSetDetail:
             imageDataGenerator = dataset['imageDataGenerator']
@@ -43,7 +50,7 @@ def train():
         else:
             extendImages, validationImages = createTrainData(referencePath)
         
-        savePath = createPath('save', 'train_face_models', f'model-{getNowTime()}.h5')
+        savePath = createPath('save', 'train_face_models', f'model-{nowTime}.h5')
         
         # モデル構築＋訓練
         createTrainedModel(
