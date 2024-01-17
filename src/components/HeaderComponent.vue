@@ -27,24 +27,16 @@ onMounted(async () => {
 
 const imageLinks = ref<any>([
     {
-        name: 'アカウント管理',
-        path: './account',
-    },
-    {
         name: '画像加工',
         path: './crop',
-    },
-    {
-        name: '画像評価',
-        path: './evaluate',
     },
     {
         name: 'モデル訓練',
         path: './train',
     },
     {
-        name: '被り削除',
-        path: './remove',
+        name: '画像評価',
+        path: './evaluate',
     },
 ])
 
