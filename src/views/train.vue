@@ -83,14 +83,12 @@ const trainModels = ref<TrainModels>({
 const cnns = ref<CNN[]>([])
 const setCNN = (provided: CNN[]) => {
     cnns.value = provided
-    console.log(cnns.value)
 }
 
 // 子コンポーネント内のDenseを取得
 const denses = ref<Dense[]>([])
 const setDense = (provided: Dense[]) => {
     denses.value = provided
-    console.log(denses.value)
 }
 
 /* -----------------  
@@ -127,7 +125,6 @@ const train = async () => {
                 train_parameter: trainParameters.value,
                 isSetDetail: false,
             })
-            console.log(response)
             messages.value.push({
                 content: response.content,
                 error: response.error,
@@ -165,14 +162,12 @@ const train = async () => {
         train_model: models,
         train_parameter: trainParameters.value,
     }
-    console.log(postData)
 
     try {
         const response = await apiManager.post(
             `${apiPath}/train/train`,
             postData
         )
-        console.log(response)
         messages.value.push({
             content: response.content,
             error: response.error,
