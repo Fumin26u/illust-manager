@@ -124,7 +124,7 @@ const imageDLerLinks = [
                 <p>{{ username }}さん</p>
             </div>
             <div v-else>
-                <a href="./account" class="btn-common green">アカウント登録</a>
+                <a href="./account" class="btn-small green">アカウント登録</a>
             </div>
         </div>
     </header>
