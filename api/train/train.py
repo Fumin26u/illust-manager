@@ -54,7 +54,6 @@ def createModel(extendImages, train_model):
         ))
         
     model.add(Dropout(train_model['final_dropout']))
-    print(model)
     return model
 
 # モデル作成するディレクトリから各クラスのファイル数を取得

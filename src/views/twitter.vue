@@ -91,6 +91,7 @@ const dlImage = async () => {
     // 選択した画像一覧の配列を作成
     const imagePaths = getSelectedImagesFromTweets(tweetInfo.value)
     // 画像URL一覧をAPIに送り画像をDL
+    console.log(imagePaths)
     const downloadResponse = await apiManager.post(
         `${apiPath}/twitter/downloadImages`,
         {
