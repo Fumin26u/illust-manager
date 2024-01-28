@@ -31,7 +31,7 @@ def getFormatMethod(url):
 async def dlImage(session, illust, savePath):
     try:
         await asyncio.sleep(1)
-        async with session.get(illust, timeout=10, ssl=False) as response:
+        async with session.get(illust, timeout=30, ssl=False) as response:
             if response.status == 200:
                 fileName = generateRandomString(12) + '.' + getFormatMethod(illust)
                 filePath = createPath(savePath, fileName)

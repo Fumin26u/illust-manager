@@ -30,6 +30,7 @@ pnpm-debug.log*
 api/**/*images*/*
 api/**/*.h5
 api/**/chromedriver.exe
+api/**/*.txt
 *.zip
 
 # Python

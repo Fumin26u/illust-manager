@@ -33,11 +33,8 @@
     p {
         @include horizontalAlign();
         margin-left: 1em;
-    }
-    > a {
-        width: 120px;
-    }
-    > p {
+        height: 58px;
+        line-height: 52px;
         font-size: 18px;
     }
 }
@@ -45,18 +42,15 @@
 // Header nav
 .header-nav {
     height: 58px;
-    line-height: 56px;
-    > div,
-    > a {
+    > a, p {
         display: inline-block;
         vertical-align: middle;
         padding: 0 1em;
         margin: 0;
         font-size: 18px;
         position: relative;
-    }
-    > div {
-        transition: all 0.1s;
+        height: 58px;
+        line-height: 52px;
     }
 }
 .nav-menu {

@@ -27,8 +27,8 @@ def detectFace(image, modelPath):
 def extendFaceRect(
     x, y, x2, y2, 
     image, 
-    initExtension_neg: int = 40,
-    initExtension_pos: int = 40,
+    initExtension_neg: int = 20,
+    initExtension_pos: int = 20,
     decrement: int = 20
 ):
     max_x, max_y = image.shape[1], image.shape[0]

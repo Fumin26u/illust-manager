@@ -50,8 +50,21 @@ $mq-breakpoints: (
     共通パーツ
 
 --------------------*/
+// import Noto Sans JP
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP&display=swap');
+
+// カラー初期値
+$border-color: #888;
+$color-red: hsl(20, 100%, 32%);
+$color-green: hsl(110, 100%, 32%);
+$color-blue: hsl(200, 100%, 32%);
+
+$color-dark-red: hsl(20, 100%, 20%);
+$color-dark-green: hsl(110, 100%, 20%);
+$color-dark-blue: hsl(200, 100%, 20%);
+
 body {
-    font-family: 'Yu Gothic Medium', '游ゴシック Medium', sans-serif;
+    font-family: 'Noto Sans JP', sans-serif;
     padding: 0 0 1em;
     margin: 0 12px;
 }
@@ -67,8 +80,13 @@ input,
 textarea,
 select,
 label {
-    font-family: 'Yu Gothic Medium', '游ゴシック Medium', sans-serif;
+    font-family: 'Noto Sans JP', sans-serif;
     @include horizontalAlign;
+}
+
+select {
+    -webkit-appearance: auto !important;
+    appearance: auto !important;
 }
 
 a {
@@ -117,15 +135,16 @@ input[type='submit'] {
     cursor: pointer;
 }
 
-// カラー初期値
-$border-color: #888;
-$color-red: hsl(20, 100%, 32%);
-$color-green: hsl(110, 100%, 32%);
-$color-blue: hsl(200, 100%, 32%);
+input[type='text'],
+input[type='number'],
+select {
+    border-bottom: 1px solid $border-color;
+    padding: 1px 2px;
+}
 
-$color-dark-red: hsl(20, 100%, 20%);
-$color-dark-green: hsl(110, 100%, 20%);
-$color-dark-blue: hsl(200, 100%, 20%);
+dd {
+    margin-left: 8px;
+}
 
 /*--------------------
 
