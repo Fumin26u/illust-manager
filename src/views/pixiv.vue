@@ -12,15 +12,15 @@ import '@/assets/scss/imagedler/pixForm.scss'
 
 const errorMessage = ref<string>('')
 const search = ref<PixSearch>({
-    userID: 0,
+    userID: 13936467,
     tag: '',
-    getPostType: 'tag',
-    getNumberOfPost: '250',
+    getPostType: 'bookmark',
+    getNumberOfPost: '200',
     minBookmarks: 2000,
-    isGetFromPreviousPost: false,
+    isGetFromPreviousPost: true,
     includeTags: false,
     suspendID: '',
-    isIgnoreSensitive: true,
+    isIgnoreSensitive: false,
 })
 
 // pixivユーザーID・中断IDを取得
