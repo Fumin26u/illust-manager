@@ -19,8 +19,9 @@ def createTrainData(
     generatorParams = generatorParams_default,
     datasetParams = datasetParams_default,
 ):
+    print(datasetParams['resize_resolution'])
     trainData = ImageDataGenerator(
-        rescale=generatorParams['rescale'],
+        rescale=1.0 / 255,
         shear_range=generatorParams['shear_range'],
         zoom_range=generatorParams['zoom_range'],
         horizontal_flip=generatorParams['horizontal_flip'],
