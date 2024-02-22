@@ -7,6 +7,7 @@ class AccountInfo:
         created_at,
         updated_at,
         twitter_password,
+        pixiv_password,
         dl_count,
         images_count,
         twitter,
@@ -16,6 +17,7 @@ class AccountInfo:
         self.created_at = created_at
         self.updated_at = updated_at
         self.twitter_password = twitter_password
+        self.pixiv_password = pixiv_password
         self.dl_count = dl_count
         self.images_count = images_count
         self.twitter = twitter
@@ -29,6 +31,7 @@ class AccountInfo:
             'created_at': created_at,
             'updated_at': updated_at,
             'twitter_password': self.twitter_password, 
+            'pixiv_password': self.pixiv_password, 
             'dl_count': self.dl_count,
             'images_count': self.images_count,
             'twitter': self.twitter,

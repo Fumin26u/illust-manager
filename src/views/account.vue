@@ -20,6 +20,7 @@ const userInfo = ref<UserInfo>({
     pixiv: [],
     twitter: [],
     twitter_password: '',
+    pixiv_password: '',
     user_name: '',
 })
 const apiManager = new ApiManager()
@@ -70,6 +71,12 @@ onMounted(async () => {
                             type="text"
                             v-model="userInfo.twitter_password"
                         />
+                    </dd>
+                </div>
+                <div>
+                    <dt>pixivパスワード</dt>
+                    <dd>
+                        <input type="text" v-model="userInfo.pixiv_password" />
                     </dd>
                 </div>
                 <ButtonComponent

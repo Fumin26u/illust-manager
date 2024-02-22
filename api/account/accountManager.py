@@ -20,15 +20,16 @@ class AccountManager:
                         created_at,
                         updated_at,
                         accountData['twitter_password'],
+                        accountData['pixiv_password'],
                         accountData['dl_count'],
                         accountData['images_count'],
                         accountData['twitter'],
                         accountData['pixiv']
                     )
         except FileNotFoundError:
-            return AccountInfo(None, None, None, None, None, None, None)
+            return AccountInfo(None, None, None, None, None, None, None, None)
         except json.decoder.JSONDecodeError:
-            return AccountInfo(None, None, None, None, None, None, None)
+            return AccountInfo(None, None, None, None, None, None, None, None)
         
     def saveAccount(self):
         with open(self.jsonPath, 'w', encoding='utf-8') as file:

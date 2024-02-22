@@ -144,6 +144,7 @@ export interface UserInfo {
     pixiv: UserPixivInfo[]
     twitter: UserTwitterInfo[]
     twitter_password: string
+    pixiv_password: string
     user_name: string
 }
 
@@ -213,4 +214,10 @@ export interface PixPostImage {
     id: string
     url: string
     selected: boolean
+}
+
+// pixiv fanbox
+export interface FanboxSearch {
+    userID: string
+    url: string
 }

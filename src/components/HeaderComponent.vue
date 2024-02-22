@@ -49,6 +49,10 @@ const imageDLerLinks = [
         name: 'pixiv',
         path: './pixiv',
     },
+    {
+        name: 'fanbox',
+        path: './fanbox',
+    },
 ]
 </script>
 
