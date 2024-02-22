@@ -10,7 +10,7 @@ import { apiPath } from '@/assets/ts/paths'
 import '@/assets/scss/imagedler/pixForm.scss'
 
 const search = ref<FanboxSearch>({
-    userID: 'fu_min0719',
+    userID: '',
     url: '',
 })
 
