@@ -15,8 +15,8 @@ async def getImages():
     driver = setDriver()
     accountManager = AccountManager()
     
-    await twitterLogin(driver, searchQuery['twitterID'], accountManager.getSingleData('twitter_password'))
-    tweetInfo = await getTweet(driver, searchQuery)
+    twitterLogin(driver, searchQuery['twitterID'], accountManager.getSingleData('twitter_password'))
+    tweetInfo = getTweet(driver, searchQuery)
     driver.quit()
     return tweetInfo
 
