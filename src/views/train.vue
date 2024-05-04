@@ -64,7 +64,7 @@ const trainParameters = ref<TrainParameters>({
     isSetEarlyStopping: true,
     earlyStopping: {
         monitor: 'val_loss',
-        patience: 3,
+        patience: 8,
         verbose: 1,
         mode: 'auto',
         restore_best_weights: true,

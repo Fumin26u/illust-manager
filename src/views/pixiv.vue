@@ -4,8 +4,7 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import { ref, onMounted } from 'vue'
 import ApiManager from '@/server/apiManager'
-import { PixPostInfo, PixPostImage } from '@/types'
-import { PixSearch } from '@/types'
+import { PixPostInfo, PixPostImage, PixSearch } from '@/types'
 import { apiPath } from '@/assets/ts/paths'
 
 import '@/assets/scss/imagedler/pixForm.scss'

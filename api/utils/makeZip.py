@@ -5,7 +5,8 @@ def makeZip(imageDirPath, zipSavePath, zipFileName = 'images.zip'):
     # 先に作成しているzipファイルを削除
     deleteZipFiles(zipSavePath)
     
-    # zipコマンドを実行してディレクトリを圧縮
+    print (zipSavePath)
+    
     try:
         subprocess.run(['zip', '-r', zipFilePath, '.'], cwd=imageDirPath, check=True)
         return zipFilePath

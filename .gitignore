@@ -29,6 +29,7 @@ pnpm-debug.log*
 # common
 api/**/*images*/*
 api/**/*.h5
+api/**/*.keras
 api/**/chromedriver.exe
 api/**/*.txt
 *.zip

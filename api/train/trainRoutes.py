@@ -50,7 +50,7 @@ def train():
         else:
             extendImages, validationImages = createTrainData(referencePath)
         
-        savePath = createPath('save', 'train_face_models', f'model-{nowTime}.h5')
+        savePath = createPath('save', 'train_face_models', f'model-{nowTime}.keras')
         
         # モデル構築＋訓練
         createTrainedModel(

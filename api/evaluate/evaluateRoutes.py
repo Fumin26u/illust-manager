@@ -38,7 +38,6 @@ def evaluate():
     
     eachResults = []
     load_checkpoint()
-    print(modelPath)
     
     def evaluateSingleImage(args):
         i, base64Image = args['index'], args['imagePath']
