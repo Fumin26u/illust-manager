@@ -4,7 +4,6 @@ from api.account.accountRoutes import accountRoutes
 # from api.evaluate.evaluateRoutes import evaluateRoutes
 from api.imagedler.pixiv.pixivRoutes import pixivRoutes
 from api.imagedler.twitter.twitterRoutes import twitterRoutes
-from api.imagedler.fanbox.fanboxRoutes import fanboxRoutes
 # from api.crop.cropRoutes import cropRoutes
 # from api.train.trainRoutes import trainRoutes
 
@@ -18,7 +17,6 @@ app.register_blueprint(accountRoutes)
 # app.register_blueprint(evaluateRoutes)
 app.register_blueprint(pixivRoutes)
 app.register_blueprint(twitterRoutes)
-app.register_blueprint(fanboxRoutes)
 # app.register_blueprint(cropRoutes)
 # app.register_blueprint(trainRoutes)
 
