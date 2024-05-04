@@ -2,41 +2,40 @@
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 
-import { ref, onMounted } from 'vue'
+import { ref, onBeforeMount } from 'vue'
 import ApiManager from '@/server/apiManager'
-import { PixPostInfo, PixPostImage, PixSearch } from '@/types'
+import { PixPostInfo, PixPostImage } from '@/types'
 import { apiPath } from '@/assets/ts/paths'
+import { usePixivStore } from '@/store/pixivStore'
+import { useAccountStore } from '@/store/accountStore'
 
 import '@/assets/scss/imagedler/pixForm.scss'
 
 const errorMessage = ref<string>('')
-const search = ref<PixSearch>({
-    userID: 13936467,
-    tag: '',
-    getPostType: 'bookmark',
-    getNumberOfPost: '200',
-    minBookmarks: 2000,
-    isGetFromPreviousPost: true,
-    includeTags: false,
-    suspendID: '',
-    isIgnoreSensitive: false,
-})
+const pixivStore = usePixivStore()
+const accountStore = useAccountStore()
+
+const userInfo = accountStore.userInfo
+const searchQuery = pixivStore.searchQuery
 
 // pixivユーザーID・中断IDを取得
-const apiManager = new ApiManager()
-const getUserInfo = async () => {
-    const response = await apiManager.get(`${apiPath}/api/getPixivInfo`)
-    return response.content.content
-}
+onBeforeMount(() => {
+    pixivStore.$patch({
+        searchQuery: {
+            userID: parseInt(userInfo.pixiv[0].id),
+            suspendID: userInfo.pixiv[0].post,
+        },
+    })
+})
 
 // 入力フォームのバリデーション
 const inputValidation = (): string => {
     let error = ''
-    if (search.value.userID === null || search.value.userID === 0) {
+    if (searchQuery.userID === null || searchQuery.userID === 0) {
         error = 'ユーザーIDが入力されていません。'
     }
 
-    const numPost = parseInt(search.value.getNumberOfPost)
+    const numPost = parseInt(searchQuery.getNumberOfPost)
     if (isNaN(numPost)) {
         error = '取得作品数は数値で入力してください。'
     }
@@ -46,6 +45,7 @@ const inputValidation = (): string => {
     return error
 }
 
+const apiManager = new ApiManager()
 const pixPostInfo = ref<PixPostInfo[]>([])
 const isLoadImages = ref<boolean>(false)
 const dlName = ref<string>('')
@@ -56,7 +56,7 @@ const getImage = async () => {
     if (errorMessage.value !== '') return
 
     const response = await apiManager.post(`${apiPath}/pixiv/getImages`, {
-        content: search.value,
+        content: searchQuery,
     })
 
     pixPostInfo.value = response.map((post: PixPostInfo) => {
@@ -76,7 +76,7 @@ const getImage = async () => {
         }
     })
     isLoadImages.value = false
-    dlName.value = search.value.tag !== '' ? search.value.tag : ''
+    dlName.value = searchQuery.tag !== '' ? searchQuery.tag : ''
 }
 
 // 画像情報から画像URLのみを抜き出す
@@ -122,24 +122,18 @@ const dlImage = async () => {
     const posts = {
         imageCount: imagePaths.length,
         latestID:
-            search.value.getPostType === 'tag'
+            searchQuery.getPostType === 'tag'
                 ? pixPostInfo.value[pixPostInfo.value.length - 1].postID
                 : pixPostInfo.value[0].postID,
-        getPostType: search.value.getPostType,
-        tag: search.value.tag,
-        pixUserID: search.value.userID,
+        getPostType: searchQuery.getPostType,
+        tag: searchQuery.tag,
+        pixUserID: searchQuery.userID,
     }
 
     // DL完了時、DL回数・枚数と最新DL画像の投稿IDを更新
     await apiManager.post(`${apiPath}/api/updatePixivInfo`, posts)
     isLoadImages.value = false
 }
-
-onMounted(async () => {
-    const userInfo = await getUserInfo()
-    search.value.userID = userInfo[0]['id']
-    search.value.suspendID = userInfo[0]['post']
-})
 </script>
 <template>
     <HeaderComponent />
@@ -155,7 +149,7 @@ onMounted(async () => {
                         <div>
                             <input
                                 id="get-bookmark"
-                                v-model="search.getPostType"
+                                v-model="searchQuery.getPostType"
                                 type="radio"
                                 value="bookmark"
                             />
@@ -164,7 +158,7 @@ onMounted(async () => {
                         <div>
                             <input
                                 id="get-post"
-                                v-model="search.getPostType"
+                                v-model="searchQuery.getPostType"
                                 type="radio"
                                 value="post"
                             />
@@ -173,7 +167,7 @@ onMounted(async () => {
                         <div>
                             <input
                                 id="get-keyword"
-                                v-model="search.getPostType"
+                                v-model="searchQuery.getPostType"
                                 type="radio"
                                 value="tag"
                             />
@@ -181,19 +175,19 @@ onMounted(async () => {
                         </div>
                     </dd>
                 </div>
-                <div v-if="search.getPostType === 'tag'">
+                <div v-if="searchQuery.getPostType === 'tag'">
                     <dt>タグキーワード</dt>
                     <dd>
-                        <input type="text" id="tag" v-model="search.tag" />
+                        <input type="text" id="tag" v-model="searchQuery.tag" />
                     </dd>
                 </div>
-                <div v-if="search.getPostType === 'tag'">
+                <div v-if="searchQuery.getPostType === 'tag'">
                     <dt>ブックマーク数下限</dt>
                     <dd>
                         <input
                             type="number"
                             id="min-bookmark"
-                            v-model="search.minBookmarks"
+                            v-model="searchQuery.minBookmarks"
                         />
                     </dd>
                 </div>
@@ -203,7 +197,7 @@ onMounted(async () => {
                         <input
                             type="number"
                             id="user-id"
-                            v-model="search.userID"
+                            v-model="searchQuery.userID"
                         />
                     </dd>
                 </div>
@@ -213,7 +207,7 @@ onMounted(async () => {
                         <input
                             type="number"
                             id="get-post-num"
-                            v-model="search.getNumberOfPost"
+                            v-model="searchQuery.getNumberOfPost"
                         />
                     </dd>
                 </div>
@@ -223,7 +217,7 @@ onMounted(async () => {
                         <input
                             type="number"
                             id="suspend-id"
-                            v-model="search.suspendID"
+                            v-model="searchQuery.suspendID"
                         />
                     </dd>
                 </div>
@@ -232,19 +226,19 @@ onMounted(async () => {
                     <dd>
                         <input
                             id="get-pre"
-                            v-model="search.isGetFromPreviousPost"
+                            v-model="searchQuery.isGetFromPreviousPost"
                             type="checkbox"
                         />
                         <label for="get-pre">取得を中断するIDを設定</label>
                         <input
                             id="include-tags"
-                            v-model="search.includeTags"
+                            v-model="searchQuery.includeTags"
                             type="checkbox"
                         />
                         <label for="include-tags">タグフィルターを設定</label>
                         <input
                             id="ignore-sensitive"
-                            v-model="search.isIgnoreSensitive"
+                            v-model="searchQuery.isIgnoreSensitive"
                             type="checkbox"
                         />
                         <label for="ignore-sensitive">R-18作品を除外する</label>

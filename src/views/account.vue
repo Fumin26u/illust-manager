@@ -4,9 +4,10 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import '@/assets/scss/account.scss'
 
-import { ref, onBeforeMount } from 'vue'
+import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
+import { getUserInfo } from '@/assets/ts/getUserInfo'
 import { useAccountStore } from '@/store/accountStore'
 
 const isOpenTwitter = ref<boolean>(false)
@@ -16,14 +17,6 @@ const accountStore = useAccountStore()
 const userInfo = accountStore.userInfo
 
 const apiManager = new ApiManager()
-const getUserInfo = async () => {
-    const response = await apiManager.get(`${apiPath}/api/getUserInfo`)
-    accountStore.$patch({
-        userInfo: response.content.content,
-    })
-}
-
-onBeforeMount(async () => getUserInfo())
 
 const saveUserInfo = async () => {
     const response = await apiManager.post(`${apiPath}/api/updateUserInfo`, {
@@ -32,7 +25,11 @@ const saveUserInfo = async () => {
         pixiv_password: userInfo.pixiv_password,
     })
 
-    if (!response.error) await getUserInfo()
+    if (!response.error) {
+        accountStore.$patch({
+            userInfo: await getUserInfo(),
+        })
+    }
 }
 
 const deleteUserInfo = async () => {
@@ -42,7 +39,9 @@ const deleteUserInfo = async () => {
 
     if (!response.error) {
         alert('アカウントを削除しました。')
-        await getUserInfo()
+        accountStore.$patch({
+            userInfo: await getUserInfo(),
+        })
     }
 }
 </script>
