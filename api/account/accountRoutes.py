@@ -41,6 +41,7 @@ def updateUserInfo():
         accountManager.update('updated_at', datetime.now())
         accountManager.update('user_name', data['user_name'])
         accountManager.update('twitter_password', data['twitter_password'])
+        accountManager.update('pixiv_password', data['pixiv_password'])
         
         return {'error': False, 'content': 'success'}
     except Exception as e:
