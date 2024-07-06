@@ -1,14 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import evaluate from '../../backup/evaluate.vue'
 import twitter from '../views/twitter.vue'
 import pixiv from '../views/pixiv.vue'
-import account from '../views/account.vue'
+import user from '../views/user.vue'
 
 const routes: Array<RouteRecordRaw> = [
     {
         path: '/',
-        name: 'index',
-        component: evaluate,
+        name: 'user',
+        component: user,
     },
     {
         path: '/twitter',
@@ -19,11 +18,6 @@ const routes: Array<RouteRecordRaw> = [
         path: '/pixiv',
         name: 'pixiv',
         component: pixiv,
-    },
-    {
-        path: '/account',
-        name: 'account',
-        component: account,
     },
 ]
 

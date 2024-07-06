@@ -6,6 +6,7 @@ node_modules
 lbpcascade_animeface.xml
 cmd.md
 memo.md
+.env
 
 # local env files
 .env.local
@@ -28,8 +29,6 @@ pnpm-debug.log*
 
 # common
 api/**/*images*/*
-api/**/*.h5
-api/**/*.keras
 api/**/chromedriver.exe
 api/**/*.txt
 *.zip
@@ -37,20 +36,3 @@ api/**/*.txt
 # Python
 __pycache__/
 *.pyc
-
-# api/account
-api/account/userdata.json
-
-# api/crop
-
-# api/evaluate
-api/evaluate/*.jpg
-
-#api/face
-
-# api/imagedler/pixiv
-api/imagedler/pixiv/config.py
-
-# api/imagedler/twitter
-api/imagedler/twitter/twitterPassword.py
-api/imagedler/twitter/getTweetInfo.py

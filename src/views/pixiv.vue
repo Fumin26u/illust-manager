@@ -7,7 +7,7 @@ import ApiManager from '@/server/apiManager'
 import { PixPostInfo, PixPostImage } from '@/types'
 import { apiPath } from '@/assets/ts/paths'
 import { usePixivStore } from '@/store/pixivStore'
-import { useAccountStore } from '@/store/accountStore'
+import { useAccountStore } from '@/store/userStore
 
 import '@/assets/scss/imagedler/pixForm.scss'
 

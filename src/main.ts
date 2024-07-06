@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
-import { useAccountStore } from '@/store/accountStore'
+import { useAccountStore } from '@/store/userStore'
 import { getUserInfo } from '@/assets/ts/getUserInfo'
 
 import App from './App.vue'

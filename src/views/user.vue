@@ -6,27 +6,28 @@ import '@/assets/scss/account.scss'
 
 import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
-import { apiPath } from '@/assets/ts/paths'
+import { createEndPoint } from '@/assets/ts/paths'
 import { getUserInfo } from '@/assets/ts/getUserInfo'
-import { useAccountStore } from '@/store/accountStore'
+import { useUserStore } from '@/store/userStore'
 
 const isOpenTwitter = ref<boolean>(false)
 const isOpenPixiv = ref<boolean>(false)
-const accountStore = useAccountStore()
+const userStore = useUserStore()
 
-const userInfo = accountStore.userInfo
+const userInfo = userStore.userInfo
+const endPoint = createEndPoint('/api/user')
 
 const apiManager = new ApiManager()
 
 const saveUserInfo = async () => {
-    const response = await apiManager.post(`${apiPath}/api/updateUserInfo`, {
+    const response = await apiManager.post(`${endPoint}/`, {
         user_name: userInfo.user_name,
         twitter_password: userInfo.twitter_password,
         pixiv_password: userInfo.pixiv_password,
     })
 
     if (!response.error) {
-        accountStore.$patch({
+        userStore.$patch({
             userInfo: await getUserInfo(),
         })
     }
@@ -39,7 +40,7 @@ const deleteUserInfo = async () => {
 
     if (!response.error) {
         alert('アカウントを削除しました。')
-        accountStore.$patch({
+        userStore.$patch({
             userInfo: await getUserInfo(),
         })
     }
