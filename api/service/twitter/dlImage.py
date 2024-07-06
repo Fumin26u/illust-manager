@@ -1,5 +1,5 @@
-import sys, os, random, string
-import requests, asyncio, aiohttp, aiofiles
+import os, random, string
+import asyncio, aiohttp, aiofiles
 
 def generateRandomString(strLength: int) -> str:
     strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]

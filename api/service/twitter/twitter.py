@@ -57,6 +57,36 @@ async def download(images):
     zipFilePath = makeZip(f"{downloadPath['image']}", f"{downloadPath['zip']}")
     return zipFilePath
 
+def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
+    userPlatformAccount = __getUserPlatformAccount(user_id, platform)
+    if not userPlatformAccount:
+        return False
+    
+    dlCount = userPlatformAccount['dl_count'] + 1
+    imagesCount = userPlatformAccount['get_images_count'] + downloadImagesCount 
+    nowTime = getNowTime()
+    
+    (db.session
+        .query(UserPlatformAccount)
+        .filter_by(id = userPlatformAccount['id'])
+        .update(dict(
+            dl_count = dlCount,
+            images_count = imagesCount
+        ))
+    )
+    
+    for tweet in latestGetTweets:
+        db.session.add(
+            UserPlatformAccountDlLog(
+                user_platform_account_id = userPlatformAccount['id'],
+                post_id = tweet['post_id'],
+                downloaded_at = nowTime
+            )
+        )
+    
+    db.session.commit()
+    return {'content': 'update success'}
+
 def __getUserPlatformAccount(user_id, platform = 'twitter'):
     return (
         UserPlatformAccount.query

@@ -32,3 +32,20 @@ async def download():
     response.data = open(zipPath, 'rb').read()
     
     return response
+
+@twitterController.route(f"{basePath}/", methods=['PUT'])
+def update():
+    try:
+        req = request.get_json()
+        if not req: 
+            return res_400('No data provided')
+        
+        response = api.service.twitter.twitter.update(
+            session['user_id'], 
+            req['latestGetTweets'], 
+            req['downloadImagesCount']
+        )
+        
+        return res_404 if not response else jsonify(response), 200
+    except Exception as e:
+        return res_400(e)

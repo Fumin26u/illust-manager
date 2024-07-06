@@ -24,18 +24,19 @@ def createUser(userInfo):
     
 def updateUser(user_id: int, userInfo): 
     user = User.query.filter_by(id = user_id).first()
-    
     if not user:
         return False
-        
-    if 'user_name' in userInfo:
-        user.user_name = userInfo['user_name']
-    if 'password' in userInfo:
-        user.password = userInfo['password']
-    if 'email' in userInfo:
-        user.email = userInfo['email']
-        
-    user.updated_at = datetime.now()
+    
+    (db.session
+        .query(User)
+        .filter_by(id = user_id)
+        .update(dict(
+            user_name = userInfo['user_name'],
+            password = userInfo['password'],
+            email = userInfo['email'],
+            updated_at = datetime.now()
+        ))
+    )
     
     db.session.commit()
     
