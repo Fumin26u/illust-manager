@@ -1,16 +1,16 @@
-import sys, json, asyncio
+import os, sys, asyncio
 from time import sleep
 # pixivpy: pixivからデータを抽出するAPI
 from pixivpy3 import *
 # import APIkey
-import api.imagedler.pixiv.config as config
+from dotenv import load_dotenv
 
 # Auth接続
 aapi = AppPixivAPI()
-aapi.auth(refresh_token = config.REFRESH_TOKEN)
+aapi.auth(refresh_token = os.getenv('PIXIVPY_REFRESH_TOKEN'))
 
 # 画像の取得先設定(ブックマークor作品)
-def getImagesInfo(id: int, postType: str, word: str = None):
+def __getImageInfo(id: int, postType: str, word: str = None):
     if postType == "bookmark":
         return aapi.user_bookmarks_illust(id, 'public')
     elif postType == "post":
@@ -23,11 +23,11 @@ def getImagesInfo(id: int, postType: str, word: str = None):
         return False
 
 # 投稿日付のフォーマット
-def formatPostDate(date: str) -> str:
+def __formatPostDate(date: str) -> str:
     return str(date).split('+')[0].replace('T', ' ')
 
-async def main(query):
-    imagesInfo = getImagesInfo(int(query['userID']), query['getPostType'], query['tag'])
+async def getImage(query, latestGetPosts = None):
+    imagesInfo = __getImageInfo(int(query['userID']), query['getPostType'], query['tag'])
     if imagesInfo == False:
         print('画像URLの取得に失敗しました。')
         sys.exit()
@@ -70,8 +70,7 @@ async def main(query):
 
             # 取得した画像が指定されたIDの場合ループを終了
             if (
-                'suspendID' in query and
-                str(imageInfo['id']) == query['suspendID'] and
+                str(imageInfo['id']) in latestGetPosts and
                 query['isGetFromPreviousPost']
             ):
                 isContinueRefers = False
