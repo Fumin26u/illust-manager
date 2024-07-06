@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import FileListComponent from '@/components/FileListComponent.vue'
-import FileSelectComponent from '@/components/FileSelectComponent.vue'
+import FileListComponent from 'backup/FileListComponent.vue'
+import FileSelectComponent from 'backup/FileSelectComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 import HeaderComponent from '@/components/HeaderComponent.vue'
 
 import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
-import { ImageInfo, EvaluatedResult } from '@/types'
+import { ImageInfo, EvaluatedResult } from '@/types/types/types'
 import '@/assets/scss/evaluate.scss'
 
 const isEvaluated = ref<boolean>(false)

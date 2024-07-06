@@ -1,4 +1,4 @@
-import { Dense } from '@/types'
+import { Dense } from '@/types/types'
 
 export const activations = [
     'relu',

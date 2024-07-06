@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import HeaderComponent from '@/components/HeaderComponent.vue'
-import FileSelectComponent from '@/components/FileSelectComponent.vue'
+import FileSelectComponent from 'backup/FileSelectComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
 import getCurrentTime from '@/assets/ts/getCurrentTime'
-import { ImageInfo } from '@/types'
+import { ImageInfo } from '@/types/types/types'
 
 const imageInfo = ref<ImageInfo[]>([])
 // 1度にAPIに送るリクエスト数

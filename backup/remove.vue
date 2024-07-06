@@ -7,7 +7,7 @@ import '@/assets/scss/remove.scss'
 import { ref, onMounted } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
-import { UserInfo } from '@/types'
+import { UserInfo } from '@/types/types/types'
 </script>
 
 <template>

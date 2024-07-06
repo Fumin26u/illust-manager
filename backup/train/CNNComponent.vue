@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { CNN, Conv2d, MaxPooling2d } from '@/types'
+import { CNN, Conv2d, MaxPooling2d } from '@/types/types/types'
 import { createCnnInit, activations } from '@/assets/ts/train/cnn'
 import { VDivider, VSwitch, VBtn, VIcon } from 'vuetify/components'
 import { v4 as uuidv4 } from 'uuid'

@@ -2,7 +2,7 @@
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 
-import '@/assets/scss/account.scss'
+import '@/assets/scss/user.scss'
 
 import axios from 'axios'
 import { createEndPoint } from '@/assets/ts/paths'

@@ -4,7 +4,7 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import { ref, onMounted } from 'vue'
 import ApiManager from '@/server/apiManager'
-import { TweetInfo, TweetImage, TwiSearch } from '@/types'
+import { TweetInfo, TweetImage, TwiSearch } from '@/types/types/types'
 import { apiPath } from '@/assets/ts/paths'
 
 import '@/assets/scss/imagedler/twiForm.scss'

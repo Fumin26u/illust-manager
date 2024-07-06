@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { Dense } from '@/types'
+import { Dense } from '@/types/types/types'
 import { createDenseInit, activations } from '@/assets/ts/train/dense'
 import { VDivider, VCheckbox, VBtn, VIcon } from 'vuetify/components'
 import { v4 as uuidv4 } from 'uuid'

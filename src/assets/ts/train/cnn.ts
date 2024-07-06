@@ -1,4 +1,4 @@
-import { CNN, Conv2d, MaxPooling2d } from '@/types'
+import { CNN, Conv2d, MaxPooling2d } from '@/types/types'
 import { ref } from 'vue'
 
 export const activations = [

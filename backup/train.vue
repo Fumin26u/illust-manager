@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import HeaderComponent from '@/components/HeaderComponent.vue'
-import FileListComponent from '@/components/FileListComponent.vue'
+import FileListComponent from 'backup/FileListComponent.vue'
 
 import CNNComponent from '@/components/train/CNNComponent.vue'
 import DenseComponent from '@/components/train/DenseComponent.vue'
@@ -18,7 +18,7 @@ import {
     Dense,
     TrainModels,
     TrainParameters,
-} from '@/types'
+} from '@/types/types/types'
 
 import { VBtn, VIcon, VDivider, VSwitch } from 'vuetify/components'
 import '@/assets/scss/train.scss'

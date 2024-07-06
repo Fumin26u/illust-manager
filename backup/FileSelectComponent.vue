@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from 'vue'
-import { ImageInfo } from '@/types'
+import { ImageInfo } from '@/types/types/types'
 
 const props = defineProps(['title'])
 const emits = defineEmits(['setImageInfo'])
