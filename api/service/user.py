@@ -10,7 +10,7 @@ def getUser(user_id: int):
         
         return jsonify(user.to_dict()), 200
     except Exception as e:
-        return jsonify({ 'error': True, 'content': str(e) }), 400
+        return jsonify({'error': str(e) }), 400
 
 def createUser(userInfo): 
     try:
@@ -28,7 +28,7 @@ def createUser(userInfo):
         
         return jsonify({'user_id': new_user.user_id}), 201
     except Exception as e:
-        return jsonify({ 'error': True, 'content': str(e) }), 400
+        return jsonify({'error': str(e) }), 400
     
 def updateUser(user_id: int, userInfo):    
     try:
@@ -50,4 +50,4 @@ def updateUser(user_id: int, userInfo):
         
         return jsonify({'user_id': user.user_id}), 200
     except Exception as e:
-        return jsonify({ 'error': True, 'content': str(e) }), 400
+        return jsonify({'error': str(e)}), 400
