@@ -13,7 +13,6 @@ def createUser(userInfo):
         user_name = userInfo['user_name'],
         password = userInfo['password'],
         email = userInfo['email'],
-        uuid = userInfo['uuid'],
         created_at = datetime.now(),
         updated_at = datetime.now()
     )

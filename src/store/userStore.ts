@@ -1,10 +1,10 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { UserInfo } from '@/types'
+import { User } from '@/types'
 
 export const useUserStore = defineStore('user', () => {
-    const userInfo = ref<UserInfo>({
-        id: 0,
+    const user = ref<User>({
+        id: 1,
         user_name: '',
         email: '',
         uuid: '',
@@ -12,5 +12,5 @@ export const useUserStore = defineStore('user', () => {
         updated_at: '',
     })
 
-    return { userInfo }
+    return { user }
 })

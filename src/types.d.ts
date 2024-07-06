@@ -3,7 +3,7 @@
     アカウント関連
 
 ----------------- */
-export interface UserInfo {
+export interface User {
     id: number
     email: string
     user_name: string
