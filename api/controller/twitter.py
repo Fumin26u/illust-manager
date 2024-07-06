@@ -6,9 +6,10 @@ from api.utils.createPath import createPath
 from api.utils.makeZip import makeZip 
 from api.account.accountManager import AccountManager
 
-twitterRoutes = Blueprint('twitterRoutes', __name__)
+twitterController = Blueprint('twitterController', __name__)
+basePath = '/api/twitter'
 
-@twitterRoutes.route('/twitter/getImages', methods=['POST'])
+@twitterController.route(f"{basePath}/getImages", methods=['POST'])
 async def getImages():
     data = request.get_json()
     searchQuery = data['content']
@@ -20,7 +21,7 @@ async def getImages():
     driver.quit()
     return tweetInfo
 
-@twitterRoutes.route('/twitter/downloadImages', methods=['POST'])
+@twitterController.route('/twitter/downloadImages', methods=['POST'])
 async def downloadImages():
     data = request.get_json()
     illusts = data['content']
@@ -44,7 +45,7 @@ async def downloadImages():
             'content': 'download Success'
         })
         
-@twitterRoutes.route('/twitter/getZip', methods=['GET'])
+@twitterController.route('/twitter/getZip', methods=['GET'])
 def getZip():
     zip_path = createPath('imagedler', 'twitter', 'images.zip')
     

@@ -7,16 +7,16 @@ from api.utils.createPath import createPath
 import os, shutil
 from urllib.parse import quote
 
-pixivRoutes = Blueprint('pixivRoutes', __name__)
+pixivController = Blueprint('pixivController', __name__)
 
-@pixivRoutes.route('/pixiv/getImages', methods=['POST'])
+@pixivController.route('/pixiv/getImages', methods=['POST'])
 async def getImages():
     data = request.get_json()
     searchQuery = data['content']
     return await getImage(searchQuery)
     # return searchQuery
 
-@pixivRoutes.route('/pixiv/downloadImages', methods=['POST'])
+@pixivController.route('/pixiv/downloadImages', methods=['POST'])
 async def downloadImages():
     data = request.get_json()
     illusts = data['content']
@@ -41,7 +41,7 @@ async def downloadImages():
             'content': 'download Success'
         })
     
-@pixivRoutes.route('/pixiv/getZip', methods=['GET'])
+@pixivController.route('/pixiv/getZip', methods=['GET'])
 def getZip():
     pixivPath = createPath('imagedler', 'pixiv')
     zipFileName = getZipFileName(pixivPath)
