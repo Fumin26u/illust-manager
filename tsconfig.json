@@ -34,7 +34,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-  ],
+, "backup/remove.vue", "backup/train.vue", "backup/fanbox.vue", "backup/evaluate.vue", "backup/crop.vue"  ],
   "exclude": [
     "node_modules"
   ]

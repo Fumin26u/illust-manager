@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 
 from api.utils.createPath import createPath
 from api.utils.getNowTime import getNowTime
-from api.utils.createTrainData import createTrainData
+from backup.createTrainData import createTrainData
 from api.train.train import createTrainedModel
 
 trainRoutes = Blueprint('trainRoutes', __name__)
