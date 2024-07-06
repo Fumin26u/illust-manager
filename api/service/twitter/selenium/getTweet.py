@@ -1,95 +1,16 @@
-import sys, json, random
-from time import sleep
+from api.utils.sleep import randomSleep
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 
-# Twitterのリンク
-TWITTER_PATH = 'https://x.com/'
-
-# ランダムな間隔(1~2秒)でタイムアウトを行う
-def randomSleep():
-    sleep(random.random() + 1)
-    
-# タグを取得
-def getTag(
-        parent,
-        target, 
-        getBy = By.CSS_SELECTOR, 
-        waitForDisplay = False, 
-        waitTime = 3
-    ):
-    try:
-        if waitForDisplay:
-            WebDriverWait(parent, waitTime).until(
-                EC.visibility_of_element_located((getBy, target))
-            )
-        return parent.find_element(getBy, target)
-    
-    except NoSuchElementException:
-        return None
-
-
-# ドライバの設定
-def setDriver():
-    options = Options()
-    # options.add_argument('--headless')
-    options.add_argument('--disable-gpu')
-    USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-    options.add_argument('--user-agent=' + USER_AGENT)
-    driver = webdriver.Chrome(options=options)
-    
-    return driver
-
-# ドライバからTwitterにログイン
-def twitterLogin(driver: webdriver, userId, password):
-    initUrl = TWITTER_PATH + 'i/flow/login'
-    driver.get(initUrl)
-    
-    # ユーザー名入力
-    # ユーザー名入力のinput欄のclass"r-30o5oe"が表示されるまで待つ
-    # 表示されたらinputを取得してユーザー名を挿入
-    userInput = getTag(
-        driver,
-        'r-30o5oe',
-        getBy = By.CLASS_NAME,
-        waitForDisplay = True
-    )
-    userInput.send_keys(userId)
-    randomSleep()
-    
-    # ボタンを取得
-    passwordSendButton = getTag(
-        driver, 
-        '.css-175oi2r.r-sdzlij.r-1phboty.r-rs99b7.r-lrvibr.r-ywje51.r-184id4b.r-13qz1uu.r-2yi16.r-1qi8awa.r-3pj75a.r-1loqt21.r-o7ynqc.r-6416eg.r-1ny4l3l',
-    )
-    passwordSendButton.click()
-
-    # パスワード入力
-    passwordInput = getTag(
-        driver,
-        '.r-30o5oe.r-1dz5y72.r-13qz1uu.r-1niwhzg.r-17gur6a.r-1yadl64.r-deolkf.r-homxoj.r-poiln3.r-7cikom.r-1ny4l3l.r-t60dpp.r-fdjqy7',
-        waitForDisplay = True
-    )
-    randomSleep()
-    passwordInput.send_keys(password)
-    
-    loginButton = getTag(
-        driver, 
-        '.css-175oi2r.r-sdzlij.r-1phboty.r-rs99b7.r-lrvibr.r-19yznuf.r-64el8z.r-1fkl15p.r-1loqt21.r-o7ynqc.r-6416eg.r-1ny4l3l'
-    )
-    randomSleep()
-    loginButton.click()
-
-
 # ツイート情報の取得
-def getTweet(driver: webdriver, query):
+def getTweet(driver: webdriver, query, latestGetTweets, url):
     randomSleep()
     # 初期リンク
-    initUrl = TWITTER_PATH + query['twitterID']
+    initUrl = url
     if query['getTweetType'] == 'liked_tweets':
         initUrl += '/likes'
 
@@ -116,7 +37,7 @@ def getTweet(driver: webdriver, query):
             if tweetRemains == 0:
                 return tweetInfo
             
-            result = getTweetInfo(article, query)
+            result = __getTweetInfo(article, query, latestGetTweets)
             # 取得が中断された場合、その時点でツイート情報一覧を返す
             if result == False:
                 return tweetInfo
@@ -137,7 +58,7 @@ def getTweet(driver: webdriver, query):
 # 個々のツイート情報を取得
 # ロードが完了したツイートのIDリスト
 doneTweetList = []
-def getTweetInfo(article, query):
+def __getTweetInfo(article, query, latestGetTweets):
     tweetInfo = dict()
     
     try:
@@ -165,11 +86,13 @@ def getTweetInfo(article, query):
         
         doneTweetList.append(postID)
         
-        # 前回取得した画像以降を取得したい場合、この時点でツイートIDが前回取得した最後のツイートのIDだった場合falseを返してツイート取得終了
+        # 前回取得した画像以降を取得したい場合、
+        # この時点でツイートIDが前回取得したツイートのID一覧に含まれていた場合、
+        # falseを返してツイート取得終了
         if (
             query['isGetFromPreviousTweet'] and
             'suspendID' in query and
-            postID == query['suspendID']
+            postID in latestGetTweets
         ): 
             print('前回取得した画像です。')
             return False 

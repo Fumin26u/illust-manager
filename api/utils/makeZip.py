@@ -2,10 +2,6 @@ import os, subprocess
 from time import sleep
 def makeZip(imageDirPath, zipSavePath, zipFileName = 'images.zip'):
     zipFilePath = os.path.join(zipSavePath, zipFileName)
-    # 先に作成しているzipファイルを削除
-    deleteZipFiles(zipSavePath)
-    
-    print (zipSavePath)
     
     try:
         subprocess.run(['zip', '-r', zipFilePath, '.'], cwd=imageDirPath, check=True)
@@ -13,10 +9,6 @@ def makeZip(imageDirPath, zipSavePath, zipFileName = 'images.zip'):
     except subprocess.CalledProcessError as e:
         print(f"Error during zip creation: {e}")
         return None
-    
-# def deleteZip(zipSavePath, zipFileName):
-#     zipFilePath = os.path.join(zipSavePath, zipFileName)
-#     os.remove(zipFilePath)
     
 def deleteZipFiles(zipSavePath):
     for file in os.listdir(zipSavePath):

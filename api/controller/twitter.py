@@ -1,57 +1,34 @@
-from flask import Blueprint, request, jsonify, make_response
-import os, shutil
-from api.imagedler.twitter.getTweetInfo import setDriver, twitterLogin, getTweet
-from api.imagedler.twitter.dlImage import dlImages
-from api.utils.createPath import createPath
-from api.utils.makeZip import makeZip 
-from api.account.accountManager import AccountManager
+from flask import Blueprint, request, session, jsonify, make_response
+import os
+from api.error.response import res_400, res_404
+from api.service.user import getUser
+import api.service.twitter.twitter
 
 twitterController = Blueprint('twitterController', __name__)
 basePath = '/api/twitter'
 
-@twitterController.route(f"{basePath}/getImages", methods=['POST'])
-async def getImages():
-    data = request.get_json()
-    searchQuery = data['content']
-    driver = setDriver()
-    accountManager = AccountManager()
-    
-    twitterLogin(driver, searchQuery['twitterID'], accountManager.getSingleData('twitter_password'))
-    tweetInfo = getTweet(driver, searchQuery)
-    driver.quit()
-    return tweetInfo
-
-@twitterController.route('/twitter/downloadImages', methods=['POST'])
-async def downloadImages():
-    data = request.get_json()
-    illusts = data['content']
-    twitterPath = createPath('imagedler', 'twitter')
-    imageDirPath = createPath(twitterPath, 'images')
-    
-    # 先に作成しているimagesフォルダを削除
-    if os.path.exists(imageDirPath):
-        shutil.rmtree(imageDirPath)
-    
-    dlResult = await dlImages(imageDirPath, illusts)
-    if dlResult['error']:
-        return jsonify({
-            'error': True,
-            'content': 'download failed'
-        })
-    else:
-        zipFilePath = makeZip(imageDirPath, twitterPath)
-        return jsonify({
-            'error': False,
-            'content': 'download Success'
-        })
+@twitterController.route(f"{basePath}/getTweet", methods=['GET'])
+def getTweet():
+    try:
+        searchQuery = request.get_json()
+        user = getUser(session['user_id'])
+        tweets = api.service.twitter.twitter.getTweet(user, searchQuery)
         
-@twitterController.route('/twitter/getZip', methods=['GET'])
-def getZip():
-    zip_path = createPath('imagedler', 'twitter', 'images.zip')
+        return res_404 if not tweets else jsonify(tweets), 200
+    except Exception as e:
+        return res_400(e)
+
+@twitterController.route(f"{basePath}/download", methods=['POST'])
+async def download():
+    images = request.get_json()
+    
+    zipPath = api.service.twitter.twitter.download(images)
+    if not zipPath:
+        return res_400('Download failed')
     
     response = make_response()
     response.headers['Content-Type'] = 'application/octet-stream'
-    response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zip_path)}'
-    response.data = open(zip_path, 'rb').read()
-
+    response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zipPath)}'
+    response.data = open(zipPath, 'rb').read()
+    
     return response

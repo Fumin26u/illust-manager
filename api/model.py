@@ -68,8 +68,8 @@ class UserPlatformAccountDlLog(db.Model):
         return {
             'id': self.id,
             'user_platform_account_id': self.user_platform_account_id,
-            'post_id': self.user_image_id,
+            'post_id': self.post_id,
             'filename': self.filename,
             'downloaded_at': self.downloaded_at.isoformat(),
-            'delete_fg': self.delete_fg.isoformat()
+            'delete_fg': self.delete_fg
         }

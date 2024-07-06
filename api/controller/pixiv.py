@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, make_response
 from api.imagedler.pixiv.getImage import main as getImage
 from api.imagedler.pixiv.dlImage import main as downloadImage
 from api.utils.makeZip import makeZip, deleteZipFiles, getZipFileName
-from api.utils.createPath import createPath
+from api.utils.rootdir import createPath
 
 import os, shutil
 from urllib.parse import quote

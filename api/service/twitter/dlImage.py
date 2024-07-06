@@ -1,14 +1,12 @@
 import sys, os, random, string
 import requests, asyncio, aiohttp, aiofiles
-from api.utils.createPath import createPath
 
 def generateRandomString(strLength: int) -> str:
     strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]
     return ''.join(strArray)
 
 # format引数が付いている画像URLから、どの形式でフォーマットされているかを取得
-def getFormatMethod(url):
-    print(url)
+def __getFormatMethod(url):
     target = 'format='
     index = url.find(target)
     if (index != -1) and index + len(target) + 3 <= len(url):
@@ -33,8 +31,8 @@ async def dlImage(session, illust, savePath):
         await asyncio.sleep(1)
         async with session.get(illust, timeout=30, ssl=False) as response:
             if response.status == 200:
-                fileName = generateRandomString(12) + '.' + getFormatMethod(illust)
-                filePath = createPath(savePath, fileName)
+                fileName = f"{generateRandomString(12)}.{__getFormatMethod(illust)}"
+                filePath = f"{savePath}/{fileName}"
                 async with aiofiles.open(filePath, 'wb') as file:
                     while True:
                         chunk = await response.content.read(8192)
