@@ -37,9 +37,13 @@ def updateUser(user_id: int, userInfo):
         if not user:
             return jsonify({'error': 'User not found'}), 404
             
-        user.user_name = userInfo['user_name']
-        user.password = userInfo['password']
-        user.email = userInfo['email']
+        if 'user_name' in userInfo:
+            user.user_name = userInfo['user_name']
+        if 'password' in userInfo:
+            user.password = userInfo['password']
+        if 'email' in userInfo:
+            user.email = userInfo['email']
+            
         user.updated_at = datetime.now()
         
         db.session.commit()
