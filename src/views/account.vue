@@ -4,38 +4,32 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import '@/assets/scss/account.scss'
 
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import ApiManager from '@/server/apiManager'
 import { apiPath } from '@/assets/ts/paths'
-import { UserInfo } from '@/types'
+import { getUserInfo } from '@/assets/ts/getUserInfo'
+import { useAccountStore } from '@/store/accountStore'
 
 const isOpenTwitter = ref<boolean>(false)
 const isOpenPixiv = ref<boolean>(false)
+const accountStore = useAccountStore()
 
-const userInfo = ref<UserInfo>({
-    created_at: '',
-    updated_at: '',
-    dl_count: 0,
-    images_count: 0,
-    pixiv: [],
-    twitter: [],
-    twitter_password: '',
-    pixiv_password: '',
-    user_name: '',
-})
+const userInfo = accountStore.userInfo
+
 const apiManager = new ApiManager()
-const getUserInfo = async () => {
-    const response = await apiManager.get(`${apiPath}/api/getUserInfo`)
-    return response.content.content
-}
 
 const saveUserInfo = async () => {
     const response = await apiManager.post(`${apiPath}/api/updateUserInfo`, {
-        user_name: userInfo.value.user_name,
-        twitter_password: userInfo.value.twitter_password,
+        user_name: userInfo.user_name,
+        twitter_password: userInfo.twitter_password,
+        pixiv_password: userInfo.pixiv_password,
     })
 
-    if (!response.error) userInfo.value = await getUserInfo()
+    if (!response.error) {
+        accountStore.$patch({
+            userInfo: await getUserInfo(),
+        })
+    }
 }
 
 const deleteUserInfo = async () => {
@@ -45,13 +39,11 @@ const deleteUserInfo = async () => {
 
     if (!response.error) {
         alert('アカウントを削除しました。')
-        userInfo.value = await getUserInfo()
+        accountStore.$patch({
+            userInfo: await getUserInfo(),
+        })
     }
 }
-
-onMounted(async () => {
-    userInfo.value = await getUserInfo()
-})
 </script>
 
 <template>

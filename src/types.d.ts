@@ -206,7 +206,7 @@ export interface PixPostInfo {
     post_time: boolean
     user: string
     text: string
-    images: TweetImage[]
+    images: PixPostImage[]
     url: string
 }
 
@@ -214,10 +214,4 @@ export interface PixPostImage {
     id: string
     url: string
     selected: boolean
-}
-
-// pixiv fanbox
-export interface FanboxSearch {
-    userID: string
-    url: string
 }

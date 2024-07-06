@@ -37,4 +37,3 @@ class AccountInfo:
             'twitter': self.twitter,
             'pixiv': self.pixiv
         }
-              
