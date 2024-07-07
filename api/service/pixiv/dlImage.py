@@ -1,4 +1,4 @@
-import sys, json, os, random, string, time, asyncio
+import os, random, string, asyncio
 # pixivpy: pixivからデータを抽出するAPI
 from pixivpy3 import *
 # import APIkey

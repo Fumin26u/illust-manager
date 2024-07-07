@@ -1,8 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
-import { useAccountStore } from '@/store/userStore'
-import { getUserInfo } from '@/assets/ts/getUserInfo'
+import { useUserStore } from '@/store/userStore'
 
 import App from './App.vue'
 import router from './router'
@@ -12,12 +11,10 @@ const app = createApp(App)
 app.use(router)
 app.use(createPinia())
 
-const accountStore = useAccountStore()
+const userStore = useUserStore()
 // アプリケーションの起動
 const initApp = async () => {
-    accountStore.$patch({
-        userInfo: await getUserInfo(),
-    })
+    await userStore.getUser()
     app.use(vuetify).mount('#app')
 }
 

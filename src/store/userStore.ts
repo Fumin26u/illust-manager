@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { User } from '@/types/user'
+import axios from 'axios'
 
 export const useUserStore = defineStore('user', () => {
     const user = ref<User>({
@@ -12,5 +13,14 @@ export const useUserStore = defineStore('user', () => {
         updated_at: '',
     })
 
-    return { user }
+    const getUser = async (endPoint = '/api/user') => {
+        try {
+            const response = await axios.get(`${endPoint}/${user.value.id}`)
+            user.value = response.data
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    return { user, getUser }
 })

@@ -37,7 +37,7 @@ async def download(images):
     zipFilePath = makeZip(f"{downloadPath['image']}", f"{downloadPath['zip']}")
     return zipFilePath
 
-def update(user_id, latestGetTweets, downloadImagesCount, platform = 'pixiv'):
+def update(user_id, latestGetPosts, downloadImagesCount, platform = 'pixiv'):
     userPlatformAccount = __getUserPlatformAccount(user_id, platform)
     if not userPlatformAccount:
         return False
@@ -55,11 +55,11 @@ def update(user_id, latestGetTweets, downloadImagesCount, platform = 'pixiv'):
         ))
     )
     
-    for tweet in latestGetTweets:
+    for post in latestGetPosts:
         db.session.add(
             UserPlatformAccountDlLog(
                 user_platform_account_id = userPlatformAccount['id'],
-                post_id = tweet['post_id'],
+                post_id = post['post_id'],
                 downloaded_at = nowTime
             )
         )

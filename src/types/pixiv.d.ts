@@ -6,20 +6,19 @@ export interface PixSearch {
     minBookmarks: number
     isGetFromPreviousPost: boolean
     includeTags: boolean
-    suspendID: string
     isIgnoreSensitive: boolean
 }
 
-export interface PixPostInfo {
+export interface PixivPost {
     postID: string
     post_time: boolean
     user: string
     text: string
-    images: PixPostImage[]
+    images: PixivPostImage[]
     url: string
 }
 
-export interface PixPostImage {
+export interface PixivPostImage {
     id: string
     url: string
     selected: boolean

@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { PixSearch } from '@/types/types'
+import { PixSearch } from '@/types/pixiv'
 
 export const usePixivStore = defineStore('pixiv', () => {
     const searchQuery = ref<PixSearch>({
@@ -11,7 +11,6 @@ export const usePixivStore = defineStore('pixiv', () => {
         minBookmarks: 2000,
         isGetFromPreviousPost: true,
         includeTags: false,
-        suspendID: '',
         isIgnoreSensitive: false,
     })
 

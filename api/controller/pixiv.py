@@ -16,18 +16,25 @@ async def getPost():
         return res_400(e)
 
 @pixivController.route(f"{basePath}/download", methods=['POST'])
-def update():
+def download():
     try:
-        req = request.get_json()
-        if not req: 
+        query = request.get_json()
+        if not query: 
             return res_400('No data provided')
         
+        images = [query['illust']['images']['url'] for query in query['illust']['images']]
+        post_ids = [query['illust']['postID'] for query in query['illust']]
+        
+        zipPath = api.service.pixiv.pixiv.download(images)
+        if not zipPath:
+            return res_400('Download failed')
+            
         response = api.service.pixiv.pixiv.update(
             session['user_id'], 
-            req['latestGetTweets'], 
-            req['downloadImagesCount']
+            post_ids, 
+            len(images)
         )
         
-        return res_404 if not response else jsonify(response), 200
+        return res_404 if not response else jsonify({'zip_path': zipPath}), 200
     except Exception as e:
         return res_400(e)

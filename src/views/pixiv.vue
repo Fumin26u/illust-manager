@@ -2,31 +2,19 @@
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 
-import { ref, onBeforeMount } from 'vue'
-import ApiManager from '@/server/apiManager'
-import { PixPostInfo, PixPostImage } from '@/types/types/types'
-import { apiPath } from '@/assets/ts/paths'
+import axios from 'axios'
+import { ref } from 'vue'
+import { createEndPoint } from '@/assets/ts/paths'
+import { PixivPost, PixivPostImage } from '@/types/pixiv'
 import { usePixivStore } from '@/store/pixivStore'
-import { useAccountStore } from '@/store/userStore
 
 import '@/assets/scss/imagedler/pixForm.scss'
 
 const errorMessage = ref<string>('')
 const pixivStore = usePixivStore()
-const accountStore = useAccountStore()
 
-const userInfo = accountStore.userInfo
 const searchQuery = pixivStore.searchQuery
-
-// pixivユーザーID・中断IDを取得
-onBeforeMount(() => {
-    pixivStore.$patch({
-        searchQuery: {
-            userID: parseInt(userInfo.pixiv[0].id),
-            suspendID: userInfo.pixiv[0].post,
-        },
-    })
-})
+const endPoint = createEndPoint('/api/pixiv')
 
 // 入力フォームのバリデーション
 const inputValidation = (): string => {
@@ -45,8 +33,7 @@ const inputValidation = (): string => {
     return error
 }
 
-const apiManager = new ApiManager()
-const pixPostInfo = ref<PixPostInfo[]>([])
+const pixivPosts = ref<PixivPost[]>([])
 const isLoadImages = ref<boolean>(false)
 const dlName = ref<string>('')
 // 画像情報の取得
@@ -55,84 +42,61 @@ const getImage = async () => {
     errorMessage.value = inputValidation()
     if (errorMessage.value !== '') return
 
-    const response = await apiManager.post(`${apiPath}/pixiv/getImages`, {
-        content: searchQuery,
-    })
+    try {
+        const response = await axios.get(`${endPoint}/getPost`, {
+            params: searchQuery,
+        })
 
-    pixPostInfo.value = response.map((post: PixPostInfo) => {
-        return {
-            postID: post.postID,
-            post_time: post.post_time,
-            user: post.user,
-            text: post.text,
-            url: post.url,
-            images: post.images.map((image: PixPostImage, index: number) => {
-                return {
-                    id: `${post.postID}_${index}`,
-                    url: image,
-                    selected: true,
-                }
-            }),
+        if (response.status !== 200) {
+            throw new Error('画像情報の取得に失敗しました')
         }
-    })
+
+        pixivPosts.value = response.data.map((post: PixivPost) => {
+            return {
+                postID: post.postID,
+                post_time: post.post_time,
+                user: post.user,
+                text: post.text,
+                url: post.url,
+                images: post.images.map(
+                    (image: PixivPostImage, index: number) => {
+                        return {
+                            id: `${post.postID}_${index}`,
+                            url: image,
+                            selected: true,
+                        }
+                    }
+                ),
+            }
+        })
+    } catch (error) {
+        console.error(error)
+    }
+
     isLoadImages.value = false
     dlName.value = searchQuery.tag !== '' ? searchQuery.tag : ''
-}
-
-// 画像情報から画像URLのみを抜き出す
-const getSelectedImagesFromPosts = (pixPosts: PixPostInfo[]) => {
-    const images: string[] = []
-    pixPosts.map((post) => {
-        post.images.map((image) => {
-            if (image.selected) images.push(image.url)
-        })
-    })
-
-    return images
 }
 
 // 画像のダウンロード
 const dlImage = async () => {
     isLoadImages.value = true
-    // 画像URL一覧の作成
-    const imagePaths = getSelectedImagesFromPosts(pixPostInfo.value)
 
     // 画像URL一覧をAPIに送り画像をDL
-    const downloadResponse = await apiManager.post(
-        `${apiPath}/pixiv/downloadImages`,
-        {
-            content: imagePaths,
-            dlName: dlName.value,
-        }
-    )
+    const response = await axios.post(`${endPoint}/download`, {
+        downloadImagesCount: pixivPosts.value.length,
+        illust: pixivPosts.value,
+    })
 
-    // 画像のDLとzipファイルの作成に成功した場合、zipをDLする
-    if (downloadResponse.error) {
-        errorMessage.value = downloadResponse.content
-        return
+    if (response.status !== 200) {
+        throw new Error('画像情報の取得に失敗しました')
     }
 
     const link = document.createElement('a')
-    link.href = `${apiPath}/pixiv/getZip`
+    link.href = response.data.zip_path
     document.body.appendChild(link)
     link.click()
     link.setAttribute('download', ``)
     document.body.removeChild(link)
-
-    const posts = {
-        imageCount: imagePaths.length,
-        latestID:
-            searchQuery.getPostType === 'tag'
-                ? pixPostInfo.value[pixPostInfo.value.length - 1].postID
-                : pixPostInfo.value[0].postID,
-        getPostType: searchQuery.getPostType,
-        tag: searchQuery.tag,
-        pixUserID: searchQuery.userID,
-    }
-
-    // DL完了時、DL回数・枚数と最新DL画像の投稿IDを更新
-    await apiManager.post(`${apiPath}/api/updatePixivInfo`, posts)
-    isLoadImages.value = false
 }
 </script>
 <template>
@@ -212,16 +176,6 @@ const dlImage = async () => {
                     </dd>
                 </div>
                 <div>
-                    <dt>取得を中断するID</dt>
-                    <dd>
-                        <input
-                            type="number"
-                            id="suspend-id"
-                            v-model="searchQuery.suspendID"
-                        />
-                    </dd>
-                </div>
-                <div>
                     <dt>詳細設定</dt>
                     <dd>
                         <input
@@ -253,12 +207,12 @@ const dlImage = async () => {
             </dl>
         </section>
         <p>{{ errorMessage }}</p>
-        <section v-if="pixPostInfo.length > 0" class="post-list">
+        <section v-if="pixivPosts.length > 0" class="post-list">
             <div v-show="isLoadImages" class="btn-cover"></div>
             <div class="title-area">
                 <h2>取得投稿一覧</h2>
-                <p v-if="pixPostInfo.length > 0" class="caption">
-                    取得投稿数: {{ pixPostInfo.length }}
+                <p v-if="pixivPosts.length > 0" class="caption">
+                    取得投稿数: {{ pixivPosts.length }}
                 </p>
             </div>
             <div class="dl-image-area">
@@ -272,7 +226,7 @@ const dlImage = async () => {
                 <p class="caption">※選択している画像をDLします。</p>
             </div>
             <div
-                v-for="pixPost in pixPostInfo"
+                v-for="pixPost in pixivPosts"
                 :key="pixPost.postID"
                 class="post-info"
             >

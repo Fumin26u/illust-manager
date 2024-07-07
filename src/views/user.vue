@@ -20,21 +20,13 @@ const saveUser = async () => {
             throw new Error('ユーザー情報の更新に失敗しました')
         }
 
-        getUser()
+        userStore.getUser()
     } catch (error) {
         console.error(error)
     }
 }
 
-const getUser = async () => {
-    try {
-        const response = await axios.get(`${endPoint}/${user.id}`)
-        userStore.$patch(response.data)
-    } catch (error) {
-        console.error(error)
-    }
-}
-getUser()
+userStore.getUser()
 </script>
 
 <template>
