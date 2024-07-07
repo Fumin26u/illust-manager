@@ -2,21 +2,22 @@
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 
-import { ref, onMounted } from 'vue'
-import ApiManager from '@/server/apiManager'
-import { TweetInfo, TweetImage, TwiSearch } from '@/types/types/types'
-import { apiPath } from '@/assets/ts/paths'
+import axios from 'axios'
+import { createEndPoint } from '@/assets/ts/paths'
+import { ref } from 'vue'
+import { Tweet, TweetImage, Search } from '@/types/twitter'
 
 import '@/assets/scss/imagedler/twiForm.scss'
 
 const errorMessage = ref<string>('')
-const search = ref<TwiSearch>({
+const search = ref<Search>({
     twitterID: '',
     getTweetType: 'liked_tweets',
     getNumberOfTweet: '150',
     isGetFromPreviousTweet: true,
-    suspendID: '',
 })
+
+const endPoint = createEndPoint('/api/twitter')
 
 // 入力フォームのバリデーション
 const inputValidation = (): string => {
@@ -35,15 +36,8 @@ const inputValidation = (): string => {
     return error
 }
 
-// twitterユーザーID・中断IDを取得
-const apiManager = new ApiManager()
-const getUserInfo = async () => {
-    const response = await apiManager.get(`${apiPath}/api/getTwitterInfo`)
-    return response.content
-}
-
 // APIから画像付きツイートを取得
-const tweetInfo = ref<TweetInfo[]>([])
+const tweets = ref<Tweet[]>([])
 const isLoadImages = ref<boolean>(false)
 const getTweet = async () => {
     isLoadImages.value = true
@@ -51,79 +45,55 @@ const getTweet = async () => {
     errorMessage.value = inputValidation()
     if (errorMessage.value !== '') return
 
-    const response = await apiManager.post(`${apiPath}/twitter/getImages`, {
-        content: search.value,
-    })
-    // それぞれの画像にDL可否判定の値を追加
-    tweetInfo.value = response.map((tweet: TweetInfo) => {
-        return {
-            postID: tweet.postID,
-            post_time: tweet.post_time,
-            user: tweet.user,
-            text: tweet.text,
-            url: tweet.url,
-            images: tweet.images.map((image: TweetImage, index: number) => {
-                return {
-                    id: `${tweet.postID}_${index}`,
-                    url: image,
-                    selected: true,
-                }
-            }),
-        }
-    })
-    isLoadImages.value = false
-}
-
-// 画像のダウンロード
-const getSelectedImagesFromTweets = (tweets: TweetInfo[]) => {
-    const images: string[] = []
-    tweets.map((tweet) => {
-        tweet.images.map((image) => {
-            if (image.selected) images.push(image.url)
+    try {
+        const response = await axios.get(`${endPoint}/getTweet`, {
+            params: search.value,
         })
-    })
 
-    return images
+        if (response.status !== 200) {
+            throw new Error('Tweet情報の取得に失敗しました')
+        }
+
+        tweets.value = response.data.map((tweet: Tweet) => {
+            return {
+                postID: tweet.postID,
+                post_time: tweet.post_time,
+                user: tweet.user,
+                text: tweet.text,
+                url: tweet.url,
+                images: tweet.images.map((image: TweetImage, index: number) => {
+                    return {
+                        id: `${tweet.postID}_${index}`,
+                        url: image,
+                        selected: true,
+                    }
+                }),
+            }
+        })
+        isLoadImages.value = false
+    } catch (error) {
+        console.error(error)
+    }
 }
 
 const dlImage = async () => {
     isLoadImages.value = true
-    // 選択した画像一覧の配列を作成
-    const imagePaths = getSelectedImagesFromTweets(tweetInfo.value)
-    // 画像URL一覧をAPIに送り画像をDL
-    const downloadResponse = await apiManager.post(
-        `${apiPath}/twitter/downloadImages`,
-        {
-            content: imagePaths,
-        }
-    )
 
-    // 画像のDLとzipファイルの作成に成功した場合、zipをDLする
-    if (downloadResponse.error) {
-        errorMessage.value = downloadResponse.content
-        return
+    // 画像URL一覧をAPIに送り画像をDL
+    const response = await axios.post(`${endPoint}/download`, {
+        tweet: tweets.value,
+    })
+
+    if (response.status !== 200) {
+        throw new Error('ダウンロードに失敗しました')
     }
 
     const link = document.createElement('a')
-    link.href = `${apiPath}/twitter/getZip`
+    link.href = response.data.zip_path
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
-
-    // APIを叩いて保存回数と画像保存枚数、最新取得画像を更新
-    await apiManager.post(`${apiPath}/api/updateTwitterInfo`, {
-        imageCount: imagePaths.length,
-        latestID: tweetInfo.value[0].postID,
-        twitterID: search.value.twitterID,
-    })
-    isLoadImages.value = false
 }
-
-onMounted(async () => {
-    const userInfo = await getUserInfo()
-    search.value.twitterID = userInfo[0]['id']
-    search.value.suspendID = userInfo[0]['post']
-})
 </script>
 <template>
     <HeaderComponent />
@@ -192,16 +162,6 @@ onMounted(async () => {
                     </dd>
                 </div>
                 <div>
-                    <dt>取得を中断するID</dt>
-                    <dd>
-                        <input
-                            type="number"
-                            id="suspend-id"
-                            v-model="search.suspendID"
-                        />
-                    </dd>
-                </div>
-                <div>
                     <dt>詳細設定</dt>
                     <dd>
                         <input
@@ -221,12 +181,12 @@ onMounted(async () => {
             </dl>
         </section>
         <p>{{ errorMessage }}</p>
-        <section v-if="tweetInfo.length > 0" class="tweet-list post-list">
+        <section v-if="tweets.length > 0" class="tweet-list post-list">
             <div v-show="isLoadImages" class="btn-cover"></div>
             <div class="title-area">
                 <h2>取得ツイート一覧</h2>
-                <p v-if="tweetInfo.length > 0" class="caption">
-                    取得ツイート数: {{ tweetInfo.length }}
+                <p v-if="tweets.length > 0" class="caption">
+                    取得ツイート数: {{ tweets.length }}
                 </p>
             </div>
             <div class="dl-image-area">
@@ -237,11 +197,7 @@ onMounted(async () => {
                 />
                 <p class="caption">※選択している画像をDLします。</p>
             </div>
-            <div
-                v-for="tweet in tweetInfo"
-                :key="tweet.postID"
-                class="post-info"
-            >
+            <div v-for="tweet in tweets" :key="tweet.postID" class="post-info">
                 <h3 class="user-name">{{ tweet.user }}</h3>
                 <p class="tweet-text">{{ tweet.text }}</p>
                 <div

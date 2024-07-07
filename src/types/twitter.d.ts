@@ -1,9 +1,8 @@
-export interface TwiSearch {
+export interface Search {
     twitterID: string
     getTweetType: 'liked_tweets' | 'tweets' | 'bookmarks'
     getNumberOfTweet: string
     isGetFromPreviousTweet: boolean
-    suspendID: string
 }
 
 export interface TweetImage {
@@ -12,7 +11,7 @@ export interface TweetImage {
     selected: boolean
 }
 
-export interface TweetInfo {
+export interface Tweet {
     postID: string
     post_time: boolean
     user: string

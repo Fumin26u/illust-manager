@@ -20,32 +20,29 @@ def getTweet():
 
 @twitterController.route(f"{basePath}/download", methods=['POST'])
 async def download():
-    images = request.get_json()
-    
-    zipPath = api.service.twitter.twitter.download(images)
-    if not zipPath:
-        return res_400('Download failed')
-    
-    response = make_response()
-    response.headers['Content-Type'] = 'application/octet-stream'
-    response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zipPath)}'
-    response.data = open(zipPath, 'rb').read()
-    
-    return response
-
-@twitterController.route(f"{basePath}/", methods=['PUT'])
-def update():
-    try:
-        req = request.get_json()
-        if not req: 
+    try:    
+        query = request.get_json()
+        if not query: 
             return res_400('No data provided')
         
+        images = [query['illust']['images']['url'] for query in query['illust']['images']]
+        post_ids = [query['illust']['postID'] for query in query['illust']]
+        
+        zipPath = api.service.twitter.twitter.download(images)
+        if not zipPath:
+            return res_400('Download failed')
+                
         response = api.service.twitter.twitter.update(
             session['user_id'], 
-            req['latestGetTweets'], 
-            req['downloadImagesCount']
+            post_ids, 
+            len(images)
         )
         
-        return res_404 if not response else jsonify(response), 200
+        response = make_response()
+        response.headers['Content-Type'] = 'application/octet-stream'
+        response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zipPath)}'
+        response.data = open(zipPath, 'rb').read()
+        
+        return res_404 if not response else jsonify({'zip_path': zipPath}), 200
     except Exception as e:
         return res_400(e)

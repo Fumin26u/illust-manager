@@ -83,7 +83,6 @@ const dlImage = async () => {
 
     // 画像URL一覧をAPIに送り画像をDL
     const response = await axios.post(`${endPoint}/download`, {
-        downloadImagesCount: pixivPosts.value.length,
         illust: pixivPosts.value,
     })
 
