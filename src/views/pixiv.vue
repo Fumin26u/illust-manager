@@ -8,7 +8,7 @@ import { createEndPoint } from '@/assets/ts/paths'
 import { PixivPost, PixivPostImage } from '@/types/pixiv'
 import { usePixivStore } from '@/store/pixivStore'
 
-import '@/assets/scss/imagedler/pixForm.scss'
+import '@/assets/scss/pixForm.scss'
 
 const errorMessage = ref<string>('')
 const pixivStore = usePixivStore()

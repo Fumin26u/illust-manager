@@ -7,7 +7,7 @@ import { createEndPoint } from '@/assets/ts/paths'
 import { ref } from 'vue'
 import { Tweet, TweetImage, Search } from '@/types/twitter'
 
-import '@/assets/scss/imagedler/twiForm.scss'
+import '@/assets/scss/twiForm.scss'
 
 const errorMessage = ref<string>('')
 const search = ref<Search>({
