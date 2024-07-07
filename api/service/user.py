@@ -32,7 +32,7 @@ def updateUser(user_id: int, userInfo):
         .filter_by(id = user_id)
         .update(dict(
             user_name = userInfo['user_name'],
-            password = userInfo['password'],
+            password = '' if 'password' not in userInfo else userInfo['password'],
             email = userInfo['email'],
             updated_at = datetime.now()
         ))

@@ -36,3 +36,4 @@ api/**/*.txt
 # Python
 __pycache__/
 *.pyc
+pixiv_auth.py

@@ -2,23 +2,17 @@ import os, sys, asyncio
 from time import sleep
 # pixivpy: pixivからデータを抽出するAPI
 from pixivpy3 import *
-# import APIkey
-from dotenv import load_dotenv
-
-# Auth接続
-aapi = AppPixivAPI()
-aapi.auth(refresh_token = os.getenv('PIXIVPY_REFRESH_TOKEN'))
 
 # 画像の取得先設定(ブックマークor作品)
-def __getImageInfo(id: int, postType: str, word: str = None):
+def __getImageInfo(pixivpy, id: int, postType: str, word: str = None):
     if postType == "bookmark":
-        return aapi.user_bookmarks_illust(id, 'public')
+        return pixivpy.user_bookmarks_illust(id, 'public')
     elif postType == "post":
-        return aapi.user_illusts(id)
+        return pixivpy.user_illusts(id)
     elif postType == "tag":
         if word == None:
             return False
-        return aapi.search_illust(word = word, search_target = 'exact_match_for_tags', sort='date_asc')
+        return pixivpy.search_illust(word = word, search_target = 'exact_match_for_tags', sort='date_asc')
     else:
         return False
 
@@ -26,8 +20,8 @@ def __getImageInfo(id: int, postType: str, word: str = None):
 def __formatPostDate(date: str) -> str:
     return str(date).split('+')[0].replace('T', ' ')
 
-async def getImage(query, latestGetPosts = None):
-    imagesInfo = __getImageInfo(int(query['userID']), query['getPostType'], query['tag'])
+async def getImage(pixivpy, query, latestGetPosts = None):
+    imagesInfo = __getImageInfo(pixivpy, int(query['userID']), query['getPostType'], query['tag'])
     if imagesInfo == False:
         print('画像URLの取得に失敗しました。')
         sys.exit()
@@ -52,15 +46,15 @@ async def getImage(query, latestGetPosts = None):
                 nextUrl = imagesInfo['next_url']
                 await asyncio.sleep(1)
                 print(f'redirecting to next page...')
-                nextQs = aapi.parse_qs(nextUrl)
+                nextQs = pixivpy.parse_qs(nextUrl)
                 await asyncio.sleep(1)
                 print(f'get Image Infomations... remaining: {remaining}')
                 if query['getPostType'] == "bookmark":
-                    imagesInfo = aapi.user_bookmarks_illust(**nextQs)
+                    imagesInfo = pixivpy.user_bookmarks_illust(**nextQs)
                 elif query['getPostType'] == "post":
-                    imagesInfo = aapi.user_illusts(**nextQs)
+                    imagesInfo = pixivpy.user_illusts(**nextQs)
                 elif query['getPostType'] == "tag":
-                    imagesInfo = aapi.search_illust(**nextQs)
+                    imagesInfo = pixivpy.search_illust(**nextQs)
                 else:
                     isContinueRefers = False
                     break
