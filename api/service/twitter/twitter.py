@@ -8,34 +8,43 @@ from api.utils.getNowTime import getNowTime
 from api.utils.getRootDir import getRootDir
 from api.utils.makeZip import makeZip 
 
+import os
+from dotenv import load_dotenv
+
 rootDir = getRootDir()
+load_dotenv()
     
-def getTweet(user, searchQuery):
-    userPlatformAccount = __getUserPlatformAccount(user['id'])
+def getTweet(user_id, searchQuery):
+    userPlatformAccount = getUserPlatformAccount(user_id)
     if not userPlatformAccount:
         return False
     
     latestGetTweets = __getUserPlatformAccountDlLog(userPlatformAccount['id'])
     if not latestGetTweets:
         return False
+    latestGetTweets = [item for latestGetTweet in latestGetTweets for item in latestGetTweet]
+    
+    print(f"latestGetTweets: {latestGetTweets}")
+    print('1808838234358886527' in latestGetTweets)
     
     DRIVER = setDriver()
     # Twitterのリンク
-    TWITTER_PATH = 'https://x.com/'
+    TWITTER_PATH = 'https://x.com'
     
     try:
         api.service.twitter.selenium.login.login(
             DRIVER, 
             userPlatformAccount['platform_id'],
             userPlatformAccount['platform_password'], 
-            f"{TWITTER_PATH}i/flow/login"
+            f"{TWITTER_PATH}/i/flow/login",
+            os.getenv('TEL')
         )   
         
         tweets = api.service.twitter.selenium.getTweet.getTweet(
             DRIVER,
             searchQuery,
             latestGetTweets,
-            f"{TWITTER_PATH}/likes"
+            f"{TWITTER_PATH}/{searchQuery['twitterID']}/likes"
         )
         
         return tweets
@@ -54,11 +63,11 @@ async def download(images):
     if dlResult['error']:
         return False
     
-    zipFilePath = makeZip(f"{downloadPath['image']}", f"{downloadPath['zip']}")
-    return zipFilePath
+    makeZip(f"{downloadPath['image']}", f"{downloadPath['zip']}.zip")
+    return nowTime
 
 def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
-    userPlatformAccount = __getUserPlatformAccount(user_id, platform)
+    userPlatformAccount = getUserPlatformAccount(user_id, platform)
     if not userPlatformAccount:
         return False
     
@@ -70,8 +79,8 @@ def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
         .query(UserPlatformAccount)
         .filter_by(id = userPlatformAccount['id'])
         .update(dict(
-            dl_count = dlCount,
-            images_count = imagesCount
+            dl_count = str(dlCount),
+            get_images_count = str(imagesCount)
         ))
     )
     
@@ -79,7 +88,7 @@ def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
         db.session.add(
             UserPlatformAccountDlLog(
                 user_platform_account_id = userPlatformAccount['id'],
-                post_id = tweet['post_id'],
+                post_id = tweet,
                 downloaded_at = nowTime
             )
         )
@@ -87,7 +96,16 @@ def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
     db.session.commit()
     return {'content': 'update success'}
 
-def __getUserPlatformAccount(user_id, platform = 'twitter'):
+def downloadZip(response, timestamp):
+    zipPath = f"{rootDir}/downloads/twitter/zip/{timestamp}.zip"
+    
+    response.headers['Content-Type'] = 'application/octet-stream'
+    response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zipPath)}'
+    response.data = open(zipPath, 'rb').read()
+    
+    return response
+
+def getUserPlatformAccount(user_id, platform = 'twitter'):
     return (
         UserPlatformAccount.query
             .filter_by(
@@ -95,6 +113,7 @@ def __getUserPlatformAccount(user_id, platform = 'twitter'):
                 platform = platform
             )
             .first()
+            .to_dict()
     )
     
 def __getUserPlatformAccountDlLog(userPlatformAccountId, limit = 10):

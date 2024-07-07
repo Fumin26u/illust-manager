@@ -32,7 +32,7 @@ const links = [
                 </a>
             </div>
             <nav class="header-nav">
-                <a href="./account" class="btn-small blue">アカウント管理</a>
+                <a href="./" class="btn-small blue">アカウント管理</a>
                 <v-menu
                     open-on-hover
                     offset-y

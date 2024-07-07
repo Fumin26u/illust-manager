@@ -1,8 +1,6 @@
 import os, subprocess
 from time import sleep
-def makeZip(imageDirPath, zipSavePath, zipFileName = 'images.zip'):
-    zipFilePath = os.path.join(zipSavePath, zipFileName)
-    
+def makeZip(imageDirPath, zipFilePath):    
     try:
         subprocess.run(['zip', '-r', zipFilePath, '.'], cwd=imageDirPath, check=True)
         return zipFilePath

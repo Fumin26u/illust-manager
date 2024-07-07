@@ -11,8 +11,6 @@ def getTweet(driver: webdriver, query, latestGetTweets, url):
     randomSleep()
     # 初期リンク
     initUrl = url
-    if query['getTweetType'] == 'liked_tweets':
-        initUrl += '/likes'
 
     driver.get(initUrl)
     WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.TAG_NAME, 'article')))
@@ -46,7 +44,6 @@ def getTweet(driver: webdriver, query, latestGetTweets, url):
             if result == 'continue':
                 continue
 
-            print("append tweet: ", result['images'])
             gotTweetIds.append(result['postID'])
             tweetInfo.append(result)
             tweetRemains -= 1
@@ -89,9 +86,9 @@ def __getTweetInfo(article, query, latestGetTweets):
         # 前回取得した画像以降を取得したい場合、
         # この時点でツイートIDが前回取得したツイートのID一覧に含まれていた場合、
         # falseを返してツイート取得終了
+        print("append Post: " + postID)
         if (
             query['isGetFromPreviousTweet'] and
-            'suspendID' in query and
             postID in latestGetTweets
         ): 
             print('前回取得した画像です。')

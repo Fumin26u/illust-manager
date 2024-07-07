@@ -7,12 +7,21 @@ import api.service.twitter.twitter
 twitterController = Blueprint('twitterController', __name__)
 basePath = '/api/twitter'
 
-@twitterController.route(f"{basePath}/getTweet", methods=['GET'])
-def getTweet():
+@twitterController.route(f"{basePath}/<int:user_id>", methods=['GET'])
+def getUserPlatformAccount(user_id):
+    try:
+        userPlatformAccount = api.service.twitter.twitter.getUserPlatformAccount(user_id)
+        return res_404 if not userPlatformAccount else jsonify(userPlatformAccount), 200
+    except Exception as e:
+        return res_400(e)
+
+@twitterController.route(f"{basePath}/getTweet/<int:user_id>", methods=['POST'])
+def getTweet(user_id):
     try:
         searchQuery = request.get_json()
-        user = getUser(session['user_id'])
-        tweets = api.service.twitter.twitter.getTweet(user, searchQuery)
+        print(f"SEARCH QUERY: {searchQuery}")
+        
+        tweets = api.service.twitter.twitter.getTweet(user_id, searchQuery)
         
         return res_404 if not tweets else jsonify(tweets), 200
     except Exception as e:
@@ -25,24 +34,34 @@ async def download():
         if not query: 
             return res_400('No data provided')
         
-        images = [query['illust']['images']['url'] for query in query['illust']['images']]
-        post_ids = [query['illust']['postID'] for query in query['illust']]
+        images = [image['url'] for tweet in query['tweet'] for image in tweet['images']][::-1]
+        post_ids = [tweet['postID'] for tweet in query['tweet']][::-1]
         
-        zipPath = api.service.twitter.twitter.download(images)
-        if not zipPath:
+        nowTime = await api.service.twitter.twitter.download(images)
+        if not nowTime:
             return res_400('Download failed')
                 
         response = api.service.twitter.twitter.update(
-            session['user_id'], 
+            1, 
             post_ids, 
             len(images)
         )
         
-        response = make_response()
-        response.headers['Content-Type'] = 'application/octet-stream'
-        response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zipPath)}'
-        response.data = open(zipPath, 'rb').read()
+        return res_404 if not response else jsonify({'zip_path': nowTime}), 200
+    except Exception as e:
+        return res_400(e)
+    
+@twitterController.route(f"{basePath}/downloadZip", methods=['GET'])
+async def downloadZip():
+    try:
+        timestamp = request.args.get('timestamp')
+        if not timestamp:
+            return res_400('No timestamp provided')
         
-        return res_404 if not response else jsonify({'zip_path': zipPath}), 200
+        print (f"TIMESTAMP: {timestamp}")
+        
+        response = api.service.twitter.twitter.downloadZip(make_response(), timestamp)
+        
+        return res_404 if not response else response, 200
     except Exception as e:
         return res_400(e)

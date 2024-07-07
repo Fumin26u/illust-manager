@@ -19,6 +19,22 @@ const search = ref<Search>({
 
 const endPoint = createEndPoint('/api/twitter')
 
+// twitter IDを取得
+const getTwitterID = async () => {
+    try {
+        const response = await axios.get(
+            `${endPoint}/${localStorage.getItem('user_id')}`
+        )
+        if (response.status !== 200) {
+            throw new Error('Twitter IDの取得に失敗しました')
+        }
+        search.value.twitterID = response.data.platform_id
+    } catch (error) {
+        console.error(error)
+    }
+}
+getTwitterID()
+
 // 入力フォームのバリデーション
 const inputValidation = (): string => {
     let error = ''
@@ -46,9 +62,10 @@ const getTweet = async () => {
     if (errorMessage.value !== '') return
 
     try {
-        const response = await axios.get(`${endPoint}/getTweet`, {
-            params: search.value,
-        })
+        const response = await axios.post(
+            `${endPoint}/getTweet/${localStorage.getItem('user_id')}`,
+            search.value
+        )
 
         if (response.status !== 200) {
             throw new Error('Tweet情報の取得に失敗しました')
@@ -89,7 +106,8 @@ const dlImage = async () => {
     }
 
     const link = document.createElement('a')
-    link.href = response.data.zip_path
+    link.href = `${endPoint}/downloadZip?timestamp=${response.data.zip_path}`
+    link.target = '_blank'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)

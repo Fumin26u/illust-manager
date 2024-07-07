@@ -49,7 +49,7 @@ class UserPlatformAccount(db.Model):
             'platform_id': self.platform_id,
             'platform_password': self.platform_password,
             'dl_count': self.dl_count,
-            'get_images_count': self.images_count,
+            'get_images_count': self.get_images_count,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
         }

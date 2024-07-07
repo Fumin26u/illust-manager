@@ -17,8 +17,12 @@ export const useUserStore = defineStore('user', () => {
     const getUser = async (endPoint = createEndPoint('/api/user')) => {
         try {
             const response = await axios.get(`${endPoint}/${user.value.id}`)
+            if (response.status !== 200) {
+                throw new Error('Failed to fetch user')
+            }
+
             user.value = response.data
-            console.log(response.data)
+            localStorage.setItem('user_id', JSON.stringify(user.value.id))
         } catch (error) {
             console.error(error)
         }

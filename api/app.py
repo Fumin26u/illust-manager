@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
+from datetime import timedelta
 
 load_dotenv()
 
@@ -12,6 +13,7 @@ def create_app():
     from api.config.mysql import MYSQL_CONFIG
     app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{MYSQL_CONFIG['user']}:{MYSQL_CONFIG['password']}@{MYSQL_CONFIG['host']}/{MYSQL_CONFIG['database']}"
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.permanent_session_lifetime = timedelta(minutes=30)
     
     from api.sqlAlchemy import db
     db.init_app(app)
