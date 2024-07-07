@@ -24,9 +24,6 @@ def getTweet(user_id, searchQuery):
         return False
     latestGetTweets = [item for latestGetTweet in latestGetTweets for item in latestGetTweet]
     
-    print(f"latestGetTweets: {latestGetTweets}")
-    print('1808838234358886527' in latestGetTweets)
-    
     DRIVER = setDriver()
     # Twitterのリンク
     TWITTER_PATH = 'https://x.com'

@@ -1,7 +1,5 @@
-from flask import Blueprint, request, session, jsonify, make_response
-import os
+from flask import Blueprint, request, jsonify, make_response
 from api.error.response import res_400, res_404
-from api.service.user import getUser
 import api.service.twitter.twitter
 
 twitterController = Blueprint('twitterController', __name__)
@@ -19,7 +17,6 @@ def getUserPlatformAccount(user_id):
 def getTweet(user_id):
     try:
         searchQuery = request.get_json()
-        print(f"SEARCH QUERY: {searchQuery}")
         
         tweets = api.service.twitter.twitter.getTweet(user_id, searchQuery)
         

@@ -10,9 +10,6 @@ def index(user_id):
     try:
         user = api.service.user.getUser(user_id)
         
-        session['user_id'] = user_id
-        print(session)
-        
         return res_404 if not user else jsonify(user), 200
     except Exception as e:
         return res_400(e)
