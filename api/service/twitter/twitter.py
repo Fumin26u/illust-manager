@@ -1,7 +1,10 @@
-from api.model import db, UserPlatformAccount, UserPlatformAccountDlLog
+from api.model import db
 import api.service.twitter.selenium.getTweet
 import api.service.twitter.selenium.login
 from api.service.twitter.dlImage import dlImages
+
+import api.service.userPlatformAccount
+import api.service.userPlatformAccountDlLog
 
 from api.utils.driver import setDriver
 from api.utils.getNowTime import getNowTime
@@ -15,11 +18,11 @@ rootDir = getRootDir()
 load_dotenv()
     
 def getTweet(user_id, searchQuery):
-    userPlatformAccount = getUserPlatformAccount(user_id)
+    userPlatformAccount = api.service.userPlatformAccount.select(user_id, 'twitter')
     if not userPlatformAccount:
         return False
     
-    latestGetTweets = __getUserPlatformAccountDlLog(userPlatformAccount['id'])
+    latestGetTweets = api.service.userPlatformAccountDlLog.select(userPlatformAccount['id'])
     if not latestGetTweets:
         return False
     latestGetTweets = [item for latestGetTweet in latestGetTweets for item in latestGetTweet]
@@ -64,7 +67,7 @@ async def download(images):
     return nowTime
 
 def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
-    userPlatformAccount = getUserPlatformAccount(user_id, platform)
+    userPlatformAccount = api.service.userPlatformAccount.select(user_id, platform)
     if not userPlatformAccount:
         return False
     
@@ -72,22 +75,16 @@ def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
     imagesCount = userPlatformAccount['get_images_count'] + downloadImagesCount 
     nowTime = getNowTime()
     
-    (db.session
-        .query(UserPlatformAccount)
-        .filter_by(id = userPlatformAccount['id'])
-        .update(dict(
-            dl_count = str(dlCount),
-            get_images_count = str(imagesCount)
-        ))
-    )
+    api.service.userPlatformAccount.update(userPlatformAccount['id'], dict(
+        dl_count = dlCount,
+        get_images_count = imagesCount,    
+    ))
     
     for tweet in latestGetTweets:
-        db.session.add(
-            UserPlatformAccountDlLog(
-                user_platform_account_id = userPlatformAccount['id'],
-                post_id = tweet,
-                downloaded_at = nowTime
-            )
+        api.service.userPlatformAccountDlLog.create(
+            userPlatformAccount['id'],
+            tweet,
+            nowTime
         )
     
     db.session.commit()
@@ -101,24 +98,3 @@ def downloadZip(response, timestamp):
     response.data = open(zipPath, 'rb').read()
     
     return response
-
-def getUserPlatformAccount(user_id, platform = 'twitter'):
-    return (
-        UserPlatformAccount.query
-            .filter_by(
-                user_id = user_id, 
-                platform = platform
-            )
-            .first()
-            .to_dict()
-    )
-    
-def __getUserPlatformAccountDlLog(userPlatformAccountId, limit = 10):
-    return (
-        UserPlatformAccountDlLog.query
-            .with_entities(UserPlatformAccountDlLog.post_id)
-            .filter_by(user_platform_account_id = userPlatformAccountId)
-            .order_by(UserPlatformAccountDlLog.downloaded_at.desc())
-            .limit(limit)
-            .all()
-    )

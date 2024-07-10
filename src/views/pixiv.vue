@@ -13,21 +13,36 @@ import '@/assets/scss/pixForm.scss'
 const errorMessage = ref<string>('')
 const pixivStore = usePixivStore()
 
-const searchQuery = pixivStore.searchQuery
+const search = pixivStore.searchQuery
 const endPoint = createEndPoint('/api/pixiv')
+const userId = localStorage.getItem('user_id')
+
+// pixiv IDを取得
+const getPixivID = async () => {
+    try {
+        const response = await axios.get(`${endPoint}/${userId}`)
+        if (response.status !== 200) {
+            throw new Error('pixiv IDの取得に失敗しました')
+        }
+        search.userID = response.data.platform_id
+    } catch (error) {
+        console.error(error)
+    }
+}
+getPixivID()
 
 // 入力フォームのバリデーション
 const inputValidation = (): string => {
     let error = ''
-    if (searchQuery.userID === null || searchQuery.userID === 0) {
+    if (search.userID === null || search.userID === 0) {
         error = 'ユーザーIDが入力されていません。'
     }
 
-    const numPost = parseInt(searchQuery.getNumberOfPost)
+    const numPost = parseInt(search.getNumberOfPost)
     if (isNaN(numPost)) {
         error = '取得作品数は数値で入力してください。'
     }
-    if (numPost < 10 || numPost > 300) {
+    if (numPost < 2 || numPost > 300) {
         error = '取得できる作品の最小値は10, 最大値は300です。'
     }
     return error
@@ -43,9 +58,10 @@ const getImage = async () => {
     if (errorMessage.value !== '') return
 
     try {
-        const response = await axios.get(`${endPoint}/getPost`, {
-            params: searchQuery,
-        })
+        const response = await axios.post(
+            `${endPoint}/getPost/${userId}`,
+            search
+        )
 
         if (response.status !== 200) {
             throw new Error('画像情報の取得に失敗しました')
@@ -74,7 +90,7 @@ const getImage = async () => {
     }
 
     isLoadImages.value = false
-    dlName.value = searchQuery.tag !== '' ? searchQuery.tag : ''
+    dlName.value = search.tag !== '' ? search.tag : ''
 }
 
 // 画像のダウンロード
@@ -82,7 +98,7 @@ const dlImage = async () => {
     isLoadImages.value = true
 
     // 画像URL一覧をAPIに送り画像をDL
-    const response = await axios.post(`${endPoint}/download`, {
+    const response = await axios.post(`${endPoint}/download/${userId}`, {
         illust: pixivPosts.value,
     })
 
@@ -91,10 +107,10 @@ const dlImage = async () => {
     }
 
     const link = document.createElement('a')
-    link.href = response.data.zip_path
+    link.href = `${endPoint}/downloadZip?timestamp=${response.data.now_time}`
+    link.target = '_blank'
     document.body.appendChild(link)
     link.click()
-    link.setAttribute('download', ``)
     document.body.removeChild(link)
 }
 </script>
@@ -112,7 +128,7 @@ const dlImage = async () => {
                         <div>
                             <input
                                 id="get-bookmark"
-                                v-model="searchQuery.getPostType"
+                                v-model="search.getPostType"
                                 type="radio"
                                 value="bookmark"
                             />
@@ -121,7 +137,7 @@ const dlImage = async () => {
                         <div>
                             <input
                                 id="get-post"
-                                v-model="searchQuery.getPostType"
+                                v-model="search.getPostType"
                                 type="radio"
                                 value="post"
                             />
@@ -130,7 +146,7 @@ const dlImage = async () => {
                         <div>
                             <input
                                 id="get-keyword"
-                                v-model="searchQuery.getPostType"
+                                v-model="search.getPostType"
                                 type="radio"
                                 value="tag"
                             />
@@ -138,19 +154,19 @@ const dlImage = async () => {
                         </div>
                     </dd>
                 </div>
-                <div v-if="searchQuery.getPostType === 'tag'">
+                <div v-if="search.getPostType === 'tag'">
                     <dt>タグキーワード</dt>
                     <dd>
-                        <input type="text" id="tag" v-model="searchQuery.tag" />
+                        <input type="text" id="tag" v-model="search.tag" />
                     </dd>
                 </div>
-                <div v-if="searchQuery.getPostType === 'tag'">
+                <div v-if="search.getPostType === 'tag'">
                     <dt>ブックマーク数下限</dt>
                     <dd>
                         <input
                             type="number"
                             id="min-bookmark"
-                            v-model="searchQuery.minBookmarks"
+                            v-model="search.minBookmarks"
                         />
                     </dd>
                 </div>
@@ -160,7 +176,7 @@ const dlImage = async () => {
                         <input
                             type="number"
                             id="user-id"
-                            v-model="searchQuery.userID"
+                            v-model="search.userID"
                         />
                     </dd>
                 </div>
@@ -170,7 +186,7 @@ const dlImage = async () => {
                         <input
                             type="number"
                             id="get-post-num"
-                            v-model="searchQuery.getNumberOfPost"
+                            v-model="search.getNumberOfPost"
                         />
                     </dd>
                 </div>
@@ -179,19 +195,19 @@ const dlImage = async () => {
                     <dd>
                         <input
                             id="get-pre"
-                            v-model="searchQuery.isGetFromPreviousPost"
+                            v-model="search.isGetFromPreviousPost"
                             type="checkbox"
                         />
                         <label for="get-pre">取得を中断するIDを設定</label>
                         <input
                             id="include-tags"
-                            v-model="searchQuery.includeTags"
+                            v-model="search.includeTags"
                             type="checkbox"
                         />
                         <label for="include-tags">タグフィルターを設定</label>
                         <input
                             id="ignore-sensitive"
-                            v-model="searchQuery.isIgnoreSensitive"
+                            v-model="search.isIgnoreSensitive"
                             type="checkbox"
                         />
                         <label for="ignore-sensitive">R-18作品を除外する</label>

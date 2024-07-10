@@ -4,7 +4,7 @@ import { PixSearch } from '@/types/pixiv'
 
 export const usePixivStore = defineStore('pixiv', () => {
     const searchQuery = ref<PixSearch>({
-        userID: 13936467,
+        userID: 0,
         tag: '',
         getPostType: 'bookmark',
         getNumberOfPost: '200',

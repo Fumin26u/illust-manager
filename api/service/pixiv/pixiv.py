@@ -1,6 +1,9 @@
-from api.model import db, UserPlatformAccount, UserPlatformAccountDlLog
+from api.model import db
 from api.service.pixiv.dlImage import dlImage
 from api.service.pixiv.getImage import getImage
+
+import api.service.userPlatformAccount
+import api.service.userPlatformAccountDlLog
 
 from api.utils.getNowTime import getNowTime
 from api.utils.getRootDir import getRootDir
@@ -8,23 +11,23 @@ from api.utils.makeZip import makeZip
 
 import os
 from pixivpy3 import AppPixivAPI
-from dotenv import load_dotenv
 
 rootDir = getRootDir()
     
-def getPost(user, searchQuery):
-    userPlatformAccount = __getUserPlatformAccount(user['id'])
+async def getPost(user_id, searchQuery):
+    userPlatformAccount = api.service.userPlatformAccount.select(user_id, 'pixiv')
     if not userPlatformAccount:
         return False
     
-    latestGetPosts = __getUserPlatformAccountDlLog(userPlatformAccount['id'])
+    latestGetPosts = api.service.userPlatformAccountDlLog.select(userPlatformAccount['id'])
     if not latestGetPosts:
         return False
+    latestGetPosts = [item for latestGetPost in latestGetPosts for item in latestGetPost]
         
     try:
         pixivpy = __connect_pixivpy_api()
         
-        illust = getImage(pixivpy, searchQuery, latestGetPosts)
+        illust = await getImage(pixivpy, searchQuery, latestGetPosts)
         return illust
     except Exception as e:
         return False
@@ -36,20 +39,17 @@ async def download(images):
         zip = f"{rootDir}/downloads/pixiv/zip/{nowTime}"
     )
     
-    try:
-        pixivpy = __connect_pixivpy_api()
-        
-        dlResult = await dlImage(pixivpy, f"{downloadPath['image']}", images)
-        if dlResult['error']:
-            return False
-        
-        zipFilePath = makeZip(f"{downloadPath['image']}", f"{downloadPath['zip']}")
-        return zipFilePath
-    except Exception as e:
+    pixivpy = __connect_pixivpy_api()
+    
+    dlResult = await dlImage(pixivpy, f"{downloadPath['image']}", images)
+    if dlResult['error']:
         return False
 
+    print(makeZip(f"{downloadPath['image']}", f"{downloadPath['zip']}.zip"))
+    return nowTime
+
 def update(user_id, latestGetPosts, downloadImagesCount, platform = 'pixiv'):
-    userPlatformAccount = __getUserPlatformAccount(user_id, platform)
+    userPlatformAccount = api.service.userPlatformAccount.select(user_id, platform)
     if not userPlatformAccount:
         return False
     
@@ -57,49 +57,32 @@ def update(user_id, latestGetPosts, downloadImagesCount, platform = 'pixiv'):
     imagesCount = userPlatformAccount['get_images_count'] + downloadImagesCount 
     nowTime = getNowTime()
     
-    (db.session
-        .query(UserPlatformAccount)
-        .filter_by(id = userPlatformAccount['id'])
-        .update(dict(
-            dl_count = dlCount,
-            images_count = imagesCount
-        ))
-    )
+    api.service.userPlatformAccount.update(userPlatformAccount['id'], dict(
+        dl_count = dlCount,
+        get_images_count = imagesCount,    
+    ))
     
     for post in latestGetPosts:
-        db.session.add(
-            UserPlatformAccountDlLog(
-                user_platform_account_id = userPlatformAccount['id'],
-                post_id = post['post_id'],
-                downloaded_at = nowTime
-            )
+        api.service.userPlatformAccountDlLog.create(
+            userPlatformAccount['id'],
+            post,
+            nowTime
         )
     
     db.session.commit()
     return {'content': 'update success'}
+
+def downloadZip(response, timestamp):
+    zipPath = f"{rootDir}/downloads/pixiv/zip/{timestamp}.zip"
+    
+    response.headers['Content-Type'] = 'application/octet-stream'
+    response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zipPath)}'
+    response.data = open(zipPath, 'rb').read()
+    
+    return response
 
 def __connect_pixivpy_api():
     pixivpy = AppPixivAPI()
     pixivpy.auth(refresh_token = os.getenv('PIXIVPY_REFRESH_TOKEN'))
     
     return pixivpy
-
-def __getUserPlatformAccount(user_id, platform = 'pixiv'):
-    return (
-        UserPlatformAccount.query
-            .filter_by(
-                user_id = user_id, 
-                platform = platform
-            )
-            .first()
-    )
-    
-def __getUserPlatformAccountDlLog(userPlatformAccountId, limit = 10):
-    return (
-        UserPlatformAccountDlLog.query
-            .with_entities(UserPlatformAccountDlLog.post_id)
-            .filter_by(user_platform_account_id = userPlatformAccountId)
-            .order_by(UserPlatformAccountDlLog.downloaded_at.desc())
-            .limit(limit)
-            .all()
-    )

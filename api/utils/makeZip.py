@@ -2,6 +2,7 @@ import os, subprocess
 from time import sleep
 def makeZip(imageDirPath, zipFilePath):    
     try:
+        print(f"imageDirPath: {imageDirPath}" + f"zipFilePath: {zipFilePath}")
         subprocess.run(['zip', '-r', zipFilePath, '.'], cwd=imageDirPath, check=True)
         return zipFilePath
     except subprocess.CalledProcessError as e:

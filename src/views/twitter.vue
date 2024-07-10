@@ -18,6 +18,7 @@ const search = ref<Search>({
 })
 
 const endPoint = createEndPoint('/api/twitter')
+const userId = localStorage.getItem('user_id')
 
 // twitter IDを取得
 const getTwitterID = async () => {
@@ -63,7 +64,7 @@ const getTweet = async () => {
 
     try {
         const response = await axios.post(
-            `${endPoint}/getTweet/${localStorage.getItem('user_id')}`,
+            `${endPoint}/getTweet/${userId}`,
             search.value
         )
 
@@ -97,16 +98,16 @@ const dlImage = async () => {
     isLoadImages.value = true
 
     // 画像URL一覧をAPIに送り画像をDL
-    const response = await axios.post(`${endPoint}/download`, {
+    const response = await axios.post(`${endPoint}/download/${userId}`, {
         tweet: tweets.value,
     })
 
     if (response.status !== 200) {
-        throw new Error('ダウンロードに失敗しました')
+        throw new Error('画像情報の取得に失敗しました')
     }
 
     const link = document.createElement('a')
-    link.href = `${endPoint}/downloadZip?timestamp=${response.data.zip_path}`
+    link.href = `${endPoint}/downloadZip?timestamp=${response.data.now_time}`
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()

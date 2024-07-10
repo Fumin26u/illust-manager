@@ -1,14 +1,17 @@
 from flask import Blueprint, request, jsonify, make_response
+
 from api.error.response import res_400, res_404
 import api.service.twitter.twitter
+import api.service.userPlatformAccount
 
 twitterController = Blueprint('twitterController', __name__)
-basePath = '/api/twitter'
+platform = 'twitter'
+basePath = f"/api/{platform}"
 
 @twitterController.route(f"{basePath}/<int:user_id>", methods=['GET'])
 def getUserPlatformAccount(user_id):
     try:
-        userPlatformAccount = api.service.twitter.twitter.getUserPlatformAccount(user_id)
+        userPlatformAccount = api.service.userPlatformAccount.select(user_id, platform)
         return res_404 if not userPlatformAccount else jsonify(userPlatformAccount), 200
     except Exception as e:
         return res_400(e)
@@ -24,8 +27,8 @@ def getTweet(user_id):
     except Exception as e:
         return res_400(e)
 
-@twitterController.route(f"{basePath}/download", methods=['POST'])
-async def download():
+@twitterController.route(f"{basePath}/download/<int:user_id>", methods=['POST'])
+async def download(user_id):
     try:    
         query = request.get_json()
         if not query: 
@@ -39,12 +42,12 @@ async def download():
             return res_400('Download failed')
                 
         response = api.service.twitter.twitter.update(
-            1, 
+            user_id, 
             post_ids, 
             len(images)
         )
         
-        return res_404 if not response else jsonify({'zip_path': nowTime}), 200
+        return res_404 if not response else jsonify({'now_time': nowTime}), 200
     except Exception as e:
         return res_400(e)
     

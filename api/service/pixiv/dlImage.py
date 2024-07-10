@@ -24,6 +24,6 @@ async def dlImage(pixivpy, savePath, illusts):
             pixivpy.download(illust, path = savePath, name = file_name)
             await asyncio.sleep(1)
 
-        return {'content': 'download success'}
+        return {'error': False, 'content': 'download success'}
     except Exception as e:
         return {'error': True, 'content': e}
