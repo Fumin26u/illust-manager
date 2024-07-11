@@ -14,14 +14,16 @@ const errorMessage = ref<string>('')
 const pixivStore = usePixivStore()
 
 const search = pixivStore.searchQuery
+
 const platform = 'pixiv'
-const endPoint = createEndPoint(`/api/${platform}`)
+const endPoint = createEndPoint(`/api`)
+const pixivEndPoint = `${endPoint}/${platform}`
 const userId = localStorage.getItem('user_id')
 
 // pixiv IDを取得
 const getPixivID = async () => {
     try {
-        const response = await axios.get(`${endPoint}/${userId}`)
+        const response = await axios.get(`${pixivEndPoint}/${userId}`)
         if (response.status !== 200) {
             throw new Error('pixiv IDの取得に失敗しました')
         }
@@ -60,7 +62,7 @@ const getImage = async () => {
 
     try {
         const response = await axios.post(
-            `${endPoint}/getPost/${userId}`,
+            `${pixivEndPoint}/getPost/${userId}`,
             search
         )
 
@@ -112,7 +114,7 @@ const dlImage = async () => {
     const images = extractImages(pixivPosts.value)
 
     // 画像URL一覧をAPIに送り画像をDL
-    const response = await axios.post(`${endPoint}/download`, {
+    const response = await axios.post(`${endPoint}/download/image`, {
         images: images,
         platform: platform,
     })
@@ -122,7 +124,7 @@ const dlImage = async () => {
     }
 
     const link = document.createElement('a')
-    link.href = `${endPoint}/downloadZip?timestamp=${response.data.now_time}?platform=${platform}`
+    link.href = `${endPoint}/download/zip?timestamp=${response.data.now_time}?platform=${platform}`
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()

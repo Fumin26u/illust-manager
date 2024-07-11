@@ -18,14 +18,15 @@ const search = ref<Search>({
 })
 
 const platform = 'twitter'
-const endPoint = createEndPoint(`/api/${platform}`)
+const endPoint = createEndPoint(`/api`)
+const twitterEndPoint = `${endPoint}/${platform}`
 const userId = localStorage.getItem('user_id')
 
 // twitter IDを取得
 const getTwitterID = async () => {
     try {
         const response = await axios.get(
-            `${endPoint}/${localStorage.getItem('user_id')}`
+            `${twitterEndPoint}/${localStorage.getItem('user_id')}`
         )
         if (response.status !== 200) {
             throw new Error('Twitter IDの取得に失敗しました')
@@ -65,7 +66,7 @@ const getTweet = async () => {
 
     try {
         const response = await axios.post(
-            `${endPoint}/getTweet/${userId}`,
+            `${twitterEndPoint}/getTweet/${userId}`,
             search.value
         )
 
@@ -112,7 +113,7 @@ const dlImage = async () => {
     const images = extractImages(tweets.value)
 
     // 画像URL一覧をAPIに送り画像をDL
-    const response = await axios.post(`${endPoint}/download`, {
+    const response = await axios.post(`${endPoint}/download/image`, {
         images: images,
         platform: platform,
     })
@@ -122,7 +123,7 @@ const dlImage = async () => {
     }
 
     const link = document.createElement('a')
-    link.href = `${endPoint}/downloadZip?timestamp=${response.data.now_time}?platform=${platform}`
+    link.href = `${endPoint}/download/zip?timestamp=${response.data.now_time}?platform=${platform}`
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()
