@@ -1,4 +1,4 @@
-from flask import Blueprint, request, session, jsonify
+from flask import Blueprint, request, jsonify
 import api.service.user
 from api.error.response import res_400, res_404
 

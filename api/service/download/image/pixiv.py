@@ -1,6 +1,7 @@
 import os, random, string, asyncio
 # pixivpy: pixivからデータを抽出するAPI
 from pixivpy3 import *
+from api.driver.connectPixivpyApi import connect_pixivpy_api
 # import APIkey
 from dotenv import load_dotenv
 
@@ -9,7 +10,7 @@ def generateRandomString(strLength: int) -> str:
     strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]
     return ''.join(strArray)
 
-async def dlImage(pixivpy, savePath, illusts):
+async def downloadImage(savePath, illusts):
     try:
         # 指定されたフォルダが存在しない場合新規作成
         if not os.path.exists(savePath):
@@ -17,6 +18,7 @@ async def dlImage(pixivpy, savePath, illusts):
         await asyncio.sleep(1)
         
         # ダウンロード処理
+        pixivpy = connect_pixivpy_api()
         for illust in illusts:
             # ファイル名の設定
             file_name = generateRandomString(12) + '.jpg'

@@ -2,6 +2,7 @@ import os, sys, asyncio
 from time import sleep
 # pixivpy: pixivからデータを抽出するAPI
 from pixivpy3 import *
+from api.driver.connectPixivpyApi import connect_pixivpy_api
 
 # 画像の取得先設定(ブックマークor作品)
 def __getImageInfo(pixivpy, id: int, postType: str, word: str = None):
@@ -20,7 +21,8 @@ def __getImageInfo(pixivpy, id: int, postType: str, word: str = None):
 def __formatPostDate(date: str) -> str:
     return str(date).split('+')[0].replace('T', ' ')
 
-async def getImage(pixivpy, query, latestGetPosts = None):
+async def getImage(query, latestGetPosts = None):
+    pixivpy = connect_pixivpy_api()
     imagesInfo = __getImageInfo(pixivpy, int(query['userID']), query['getPostType'], query['tag'])
     if imagesInfo == False:
         print('画像URLの取得に失敗しました。')
@@ -111,5 +113,3 @@ async def getImage(pixivpy, query, latestGetPosts = None):
     
     print('done get images info')
     return illusts
-
-# print(json.dumps(illusts))

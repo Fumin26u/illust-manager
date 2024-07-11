@@ -1,9 +1,6 @@
 import os, random, string
 import asyncio, aiohttp, aiofiles
-
-def generateRandomString(strLength: int) -> str:
-    strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]
-    return ''.join(strArray)
+from api.utils.string import generateRandomString
 
 # format引数が付いている画像URLから、どの形式でフォーマットされているかを取得
 def __getFormatMethod(url):
@@ -26,7 +23,7 @@ def __getFormatMethod(url):
     else:
         return 'jpg'
 
-async def dlImage(session, illust, savePath):
+async def download(session, illust, savePath):
     try:
         await asyncio.sleep(1)
         async with session.get(illust, timeout=30, ssl=False) as response:
@@ -47,13 +44,13 @@ async def dlImage(session, illust, savePath):
         print(f'画像の保存中にエラーが発生しました: {str(e)}')
         return {'error': True}
 
-async def dlImages(savePath, illusts):
+async def downloadImage(savePath, illusts):
     # 指定されたフォルダが存在しない場合新規作成
     if not os.path.exists(savePath):
         os.mkdir(savePath)
     async with aiohttp.ClientSession() as session:
         for illust in illusts:
-            response = await dlImage(session, illust, savePath)
+            response = await download(session, illust, savePath)
             if response['error']:
                 return {'error': True, 'content': 'download failed'}
     return {'error': False, 'content': 'download success'}

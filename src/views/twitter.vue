@@ -17,7 +17,8 @@ const search = ref<Search>({
     isGetFromPreviousTweet: true,
 })
 
-const endPoint = createEndPoint('/api/twitter')
+const platform = 'twitter'
+const endPoint = createEndPoint(`/api/${platform}`)
 const userId = localStorage.getItem('user_id')
 
 // twitter IDを取得
@@ -94,12 +95,26 @@ const getTweet = async () => {
     }
 }
 
+// 画像情報から画像URLのみを抜き出す
+const extractImages = (posts: Tweet[]) => {
+    const images: string[] = []
+    posts.map((post) => {
+        post.images.map((image) => {
+            if (image.selected) images.push(image.url)
+        })
+    })
+
+    return images
+}
+
 const dlImage = async () => {
     isLoadImages.value = true
+    const images = extractImages(tweets.value)
 
     // 画像URL一覧をAPIに送り画像をDL
-    const response = await axios.post(`${endPoint}/download/${userId}`, {
-        tweet: tweets.value,
+    const response = await axios.post(`${endPoint}/download`, {
+        images: images,
+        platform: platform,
     })
 
     if (response.status !== 200) {
@@ -107,11 +122,41 @@ const dlImage = async () => {
     }
 
     const link = document.createElement('a')
-    link.href = `${endPoint}/downloadZip?timestamp=${response.data.now_time}`
+    link.href = `${endPoint}/downloadZip?timestamp=${response.data.now_time}?platform=${platform}`
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
+
+    await updateCounter(images.length)
+    await createDownloadLog()
+
+    isLoadImages.value = false
+}
+
+// ダウンロード数の更新
+const updateCounter = async (get_images_count: number) => {
+    const response = await axios.post(
+        `${endPoint}/userPlatformAccount/update/${userId}`,
+        {
+            platform: platform,
+            get_images_count: get_images_count,
+        }
+    )
+    return response
+}
+
+// ダウンロードログの追加
+const createDownloadLog = async () => {
+    const response = await axios.post(
+        `${endPoint}/userPlatformAccountDlLog/insert`,
+        {
+            user_id: userId,
+            platform: platform,
+            post_id: tweets.value.map((post) => post.postID),
+        }
+    )
+    return response
 }
 </script>
 <template>

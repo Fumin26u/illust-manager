@@ -1,15 +1,12 @@
 from api.model import db
 import api.service.twitter.selenium.getTweet
 import api.service.twitter.selenium.login
-from api.service.twitter.dlImage import dlImages
 
 import api.service.userPlatformAccount
 import api.service.userPlatformAccountDlLog
 
 from api.utils.driver import setDriver
-from api.utils.getNowTime import getNowTime
-from api.utils.getRootDir import getRootDir
-from api.utils.makeZip import makeZip 
+from api.utils.string import getNowTime, getRootDir
 
 import os
 from dotenv import load_dotenv
@@ -52,20 +49,6 @@ def getTweet(user_id, searchQuery):
     except Exception as e:
         return False
     
-async def download(images):       
-    nowTime = getNowTime()
-    downloadPath = dict(
-        image = f"{rootDir}/downloads/twitter/images/{nowTime}",
-        zip = f"{rootDir}/downloads/twitter/zip/{nowTime}"
-    )
-    
-    dlResult = await dlImages(f"{downloadPath['image']}", images)
-    if dlResult['error']:
-        return False
-    
-    makeZip(f"{downloadPath['image']}", f"{downloadPath['zip']}.zip")
-    return nowTime
-
 def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
     userPlatformAccount = api.service.userPlatformAccount.select(user_id, platform)
     if not userPlatformAccount:
@@ -89,12 +72,3 @@ def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
     
     db.session.commit()
     return {'content': 'update success'}
-
-def downloadZip(response, timestamp):
-    zipPath = f"{rootDir}/downloads/twitter/zip/{timestamp}.zip"
-    
-    response.headers['Content-Type'] = 'application/octet-stream'
-    response.headers['Content-Disposition'] = f'attachment; filename={os.path.basename(zipPath)}'
-    response.data = open(zipPath, 'rb').read()
-    
-    return response
