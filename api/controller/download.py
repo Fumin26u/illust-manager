@@ -18,7 +18,8 @@ async def downloadImage():
         response = await api.service.download.image.main.download(query['images'], query['platform'])
         if response['error']:
             return res_400('Download failed')
-                        
+                    
+        print(response)    
         return jsonify(response), 200
     except Exception as e:
         return res_400(e)

@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify
 
 import api.service.pixiv.main
 import api.service.userPlatformAccount

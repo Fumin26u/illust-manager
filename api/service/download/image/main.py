@@ -7,16 +7,18 @@ async def download(images, platform):
     nowTime = getNowTime()
     rootDir = getRootDir()
     downloadPath = dict(
-        image = f"{rootDir}/downloads/pixiv/images/{nowTime}",
-        zip = f"{rootDir}/downloads/pixiv/zip/{nowTime}"
+        image = f"{rootDir}/downloads/{platform}/images/{nowTime}",
+        zip = f"{rootDir}/downloads/{platform}/zip/{nowTime}"
     )
     
-    if platform is 'twitter':
-        nowTime = await api.service.download.image.twitter.downloadImage(images, downloadPath['image'])
-    elif platform is 'pixiv':
-        nowTime = await api.service.download.image.pixiv.downloadImage(images, downloadPath['image'])
+    if platform == 'twitter':
+        response = await api.service.download.image.twitter.downloadImage(downloadPath['image'], images)
+    elif platform == 'pixiv':
+        response = await api.service.download.image.pixiv.downloadImage(downloadPath['image'], images)
     else:
         return {'error': True, 'content': 'invalid platform'}
+    if response['error']:
+        return response
     
     response = createZip(downloadPath['image'], downloadPath['zip'])
     if response['error']:

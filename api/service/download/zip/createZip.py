@@ -3,7 +3,7 @@ from time import sleep
 def createZip(imageDirPath, zipFilePath):    
     try:
         subprocess.run(['zip', '-r', zipFilePath, '.'], cwd=imageDirPath, check=True)
-        return zipFilePath
+        return {'error': False, 'zip_path': zipFilePath}
     except subprocess.CalledProcessError as e:
         return {'error': True, 'content': e}
     

@@ -124,7 +124,7 @@ const dlImage = async () => {
     }
 
     const link = document.createElement('a')
-    link.href = `${endPoint}/download/zip?timestamp=${response.data.now_time}?platform=${platform}`
+    link.href = `${endPoint}/download/zip?timestamp=${response.data.now_time}&platform=${platform}`
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()

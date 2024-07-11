@@ -22,6 +22,7 @@ def getTweet(user_id):
         searchQuery = request.get_json()
         
         tweets = api.service.twitter.main.getTweet(user_id, searchQuery)
+        print(tweets)
         
         return res_404 if not tweets else jsonify(tweets), 200
     except Exception as e:

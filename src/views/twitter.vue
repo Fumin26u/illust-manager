@@ -114,7 +114,7 @@ const dlImage = async () => {
 
     // 画像URL一覧をAPIに送り画像をDL
     const response = await axios.post(`${endPoint}/download/image`, {
-        images: images,
+        images: images.reverse(),
         platform: platform,
     })
 
@@ -123,7 +123,7 @@ const dlImage = async () => {
     }
 
     const link = document.createElement('a')
-    link.href = `${endPoint}/download/zip?timestamp=${response.data.now_time}?platform=${platform}`
+    link.href = `${endPoint}/download/zip?timestamp=${response.data.now_time}&platform=${platform}`
     link.target = '_blank'
     document.body.appendChild(link)
     link.click()

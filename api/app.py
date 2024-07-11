@@ -28,12 +28,14 @@ def create_app():
     from api.controller.user import userController
     from api.controller.twitter import twitterController
     from api.controller.pixiv import pixivController
+    from api.controller.download import downloadController
     from api.controller.userPlatformAccount import userPlatformAccountController
     from api.controller.userPlatformAccountDlLog import userPlatformAccountDlLogController
 
     app.register_blueprint(userController)
     app.register_blueprint(twitterController)
     app.register_blueprint(pixivController)
+    app.register_blueprint(downloadController)
     app.register_blueprint(userPlatformAccountController)
     app.register_blueprint(userPlatformAccountDlLogController)
 

@@ -19,12 +19,12 @@ async def insert():
         userPlatformAccount = api.service.userPlatformAccount.select(user_id, query['platform'])
         
         for post_id in query['post_id']:
-            response = api.service.userPlatformAccountDlLog.create(
+            api.service.userPlatformAccountDlLog.create(
                 userPlatformAccount['id'],
                 post_id,
                 datetime.now()
             )
         
-        return res_404 if not response else jsonify(response), 200
+        return jsonify({'error': False, 'content': 'insert done'}), 200
     except Exception as e:
         return res_400(e)
