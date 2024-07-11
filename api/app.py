@@ -28,10 +28,14 @@ def create_app():
     from api.controller.user import userController
     from api.controller.twitter import twitterController
     from api.controller.pixiv import pixivController
+    from api.controller.userPlatformAccount import userPlatformAccountController
+    from api.controller.userPlatformAccountDlLog import userPlatformAccountDlLogController
 
     app.register_blueprint(userController)
     app.register_blueprint(twitterController)
     app.register_blueprint(pixivController)
+    app.register_blueprint(userPlatformAccountController)
+    app.register_blueprint(userPlatformAccountDlLogController)
 
     from api.config.origin import ORIGIN
     CORS(app, resources={r"/*": {"origins": ORIGIN}})
