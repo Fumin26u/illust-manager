@@ -1,25 +1,9 @@
 <script setup lang="ts">
 import '@/assets/scss/header.scss'
-import { VMenu, VList, VListItem, VListItemTitle } from 'vuetify/components'
 import { useUserStore } from '@/store/userStore'
 
 const userStore = useUserStore()
 const user = userStore.user
-
-const links = [
-    {
-        name: 'twitter',
-        path: './twitter',
-    },
-    {
-        name: 'pixiv',
-        path: './pixiv',
-    },
-    {
-        name: 'fanbox',
-        path: './fanbox',
-    },
-]
 </script>
 
 <template>
@@ -33,29 +17,7 @@ const links = [
             </div>
             <nav class="header-nav">
                 <a href="./" class="btn-small blue">アカウント管理</a>
-                <v-menu
-                    open-on-hover
-                    offset-y
-                    :open-delay="50"
-                    :close-delay="50"
-                >
-                    <template v-slot:activator="{ props }">
-                        <p v-bind="props">ImageDLer</p>
-                    </template>
-
-                    <v-list>
-                        <v-list-item
-                            v-for="(imageDLerLink, index) in links"
-                            :key="index"
-                            link
-                            :href="imageDLerLink.path"
-                        >
-                            <v-list-item-title>
-                                {{ imageDLerLink.name }}
-                            </v-list-item-title>
-                        </v-list-item>
-                    </v-list>
-                </v-menu>
+                <a href="./imagedler" class="btn-small blue">imagedler</a>
             </nav>
         </div>
         <div class="header-account">

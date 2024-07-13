@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 
 # ツイート情報の取得
 def getTweet(driver: webdriver, query, latestGetTweets, url):
+    print(f"driver: {driver} query: {query} latestGetTweets: {latestGetTweets} url: {url}")
     randomSleep()
     # 初期リンク
     initUrl = url
@@ -19,7 +20,7 @@ def getTweet(driver: webdriver, query, latestGetTweets, url):
     tweetInfo = []
     
     # 読み込んだツイートからツイート情報を取得する
-    tweetRemains = int(query['getNumberOfTweet'])
+    tweetRemains = int(query['getNumberOfPost'])
     
     # 取得したツイートのID
     gotTweetIds = []
@@ -44,7 +45,7 @@ def getTweet(driver: webdriver, query, latestGetTweets, url):
             if result == 'continue':
                 continue
 
-            gotTweetIds.append(result['postID'])
+            gotTweetIds.append(result['id'])
             tweetInfo.append(result)
             tweetRemains -= 1
         
@@ -88,13 +89,13 @@ def __getTweetInfo(article, query, latestGetTweets):
         # falseを返してツイート取得終了
         print("append Post: " + postID)
         if (
-            query['isGetFromPreviousTweet'] and
+            query['isGetFromPreviousPost'] and
             postID in latestGetTweets
         ): 
             print('前回取得した画像です。')
             return False 
         
-        tweetInfo['postID'] = postID
+        tweetInfo['id'] = postID
         tweetInfo['url'] = tweetRelativePath
         
         # 画像を取得
@@ -127,6 +128,6 @@ def __getTweetInfo(article, query, latestGetTweets):
     # # ツイート内容を取得
     tweetInfo['text'] = '-'
     # 投稿日時はこの情報から取得できないのでnullに設定
-    tweetInfo['post_time'] = None
+    tweetInfo['created_at'] = None
 
     return tweetInfo

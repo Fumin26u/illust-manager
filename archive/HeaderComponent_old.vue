@@ -1,0 +1,71 @@
+<script setup lang="ts">
+import '@/assets/scss/header.scss'
+// import { VMenu, VList, VListItem, VListItemTitle } from 'vuetify/components'
+import { useUserStore } from '@/store/userStore'
+
+const userStore = useUserStore()
+const user = userStore.user
+
+const links = [
+    {
+        name: 'twitter',
+        path: './twitter',
+    },
+    {
+        name: 'pixiv',
+        path: './pixiv',
+    },
+    {
+        name: 'fanbox',
+        path: './fanbox',
+    },
+]
+</script>
+
+<template>
+    <header class="header-container">
+        <div class="header-left">
+            <div class="title-area">
+                <a href="./">
+                    <h1>IllustManager(仮)</h1>
+                    <p class="caption">イラスト保存・管理統合ツール(仮)</p>
+                </a>
+            </div>
+            <nav class="header-nav">
+                <a href="./" class="btn-small blue">アカウント管理</a>
+                <a href="./imagedler" class="btn-small blue">imagedler</a>
+                <!-- <v-menu
+                    open-on-hover
+                    offset-y
+                    :open-delay="50"
+                    :close-delay="50"
+                >
+                    <template v-slot:activator="{ props }">
+                        <p v-bind="props">ImageDLer</p>
+                    </template>
+
+                    <v-list>
+                        <v-list-item
+                            v-for="(imageDLerLink, index) in links"
+                            :key="index"
+                            link
+                            :href="imageDLerLink.path"
+                        >
+                            <v-list-item-title>
+                                {{ imageDLerLink.name }}
+                            </v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </v-menu> -->
+            </nav>
+        </div>
+        <div class="header-account">
+            <div v-if="user.user_name !== ''">
+                <p>{{ user.user_name }}さん</p>
+            </div>
+            <div v-else>
+                <a href="./account" class="btn-small green">アカウント登録</a>
+            </div>
+        </div>
+    </header>
+</template>

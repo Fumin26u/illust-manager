@@ -41,7 +41,7 @@ def getTweet(user_id, searchQuery):
             DRIVER,
             searchQuery,
             latestGetTweets,
-            f"{TWITTER_PATH}/{searchQuery['twitterID']}/likes"
+            f"{TWITTER_PATH}/{searchQuery['id']}/likes"
         )
         
         return tweets
