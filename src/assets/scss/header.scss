@@ -1,0 +1,85 @@
+@import './style.scss';
+
+.header-container {
+    @include horizontalAlignFlex();
+    padding: 0 16px;
+    // border-bottom: 1px dashed $border-color;
+    box-shadow: 0 2px 4px #888;
+    position: relative;
+}
+
+.header-container > .header-left {
+    width: 80%;
+    > .title-area,
+    > .header-nav {
+        @include horizontalAlign();
+    }
+    > .title-area {
+        margin-right: 3em;
+        > a {
+            color: black;
+            &:hover {
+                text-decoration: none;
+            }
+            > .caption {
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+.header-container > .header-account > div {
+    > a,
+    p {
+        @include horizontalAlign();
+        margin-left: 1em;
+        height: 58px;
+        line-height: 52px;
+        font-size: 18px;
+    }
+}
+
+// Header nav
+.header-nav {
+    height: 58px;
+    > a, p {
+        display: inline-block;
+        vertical-align: middle;
+        padding: 0 1em;
+        margin: 0;
+        font-size: 18px;
+        position: relative;
+        height: 58px;
+        line-height: 52px;
+    }
+}
+.nav-menu {
+    position: absolute;
+    height: auto;
+    width: 90%;
+    line-height: normal;
+    top: 57.5px;
+    left: -12px;
+    padding: 0 1em;
+    background-color: white;
+    border: 2px solid #822822;
+    border-radius: 8px;
+    z-index: 99;
+    > a {
+        text-align: center;
+        background-color: white;
+        width: 100%;
+        display: block;
+        border-bottom: 1px solid #888;
+        margin: 8px auto;
+        padding: 8px 0;
+    }
+}
+.header-nav > div:hover {
+    background: #f5f5f5;
+}
+
+.header-nav > div:hover > .nav-menu,
+.header-nav .nav-menu:hover {
+    display: block;
+}

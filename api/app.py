@@ -1,30 +1,49 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
-from api.account.accountRoutes import accountRoutes
-# from api.evaluate.evaluateRoutes import evaluateRoutes
-from api.imagedler.pixiv.pixivRoutes import pixivRoutes
-from api.imagedler.twitter.twitterRoutes import twitterRoutes
-# from api.crop.cropRoutes import cropRoutes
-# from api.train.trainRoutes import trainRoutes
+from dotenv import load_dotenv
+import os
+from datetime import timedelta
 
-from api.account.accountManager import AccountManager
-from api.utils.createPath import createPath
+load_dotenv()
 
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
+def create_app():
+    app = Flask(__name__)
+    app.secret_key = os.getenv('SECRET_KEY')
+    
+    from api.config.mysql import MYSQL_CONFIG
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{MYSQL_CONFIG['user']}:{MYSQL_CONFIG['password']}@{MYSQL_CONFIG['host']}/{MYSQL_CONFIG['database']}"
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.permanent_session_lifetime = timedelta(minutes=30)
+    
+    from api.sqlAlchemy import db
+    db.init_app(app)
+    
+    with app.app_context():
+        from api.model import User
+        from api.model import UserImage
+        from api.model import UserImageTag
+        from api.model import UserPlatformAccount
+        from api.model import UserPlatformAccountDlLog
+        
+    from api.controller.user import userController
+    from api.controller.twitter import twitterController
+    from api.controller.pixiv import pixivController
+    from api.controller.download import downloadController
+    from api.controller.userPlatformAccount import userPlatformAccountController
+    from api.controller.userPlatformAccountDlLog import userPlatformAccountDlLogController
 
-app.register_blueprint(accountRoutes)
-# app.register_blueprint(evaluateRoutes)
-app.register_blueprint(pixivRoutes)
-app.register_blueprint(twitterRoutes)
-# app.register_blueprint(cropRoutes)
-# app.register_blueprint(trainRoutes)
+    app.register_blueprint(userController)
+    app.register_blueprint(twitterController)
+    app.register_blueprint(pixivController)
+    app.register_blueprint(downloadController)
+    app.register_blueprint(userPlatformAccountController)
+    app.register_blueprint(userPlatformAccountDlLogController)
 
-accountManager = AccountManager(createPath('account', 'userdata.json'))
-
-@app.route('/', methods=['GET'])
-def index():
-    return 'This is an Index Page!'
+    from api.config.origin import ORIGIN
+    CORS(app, resources={r"/*": {"origins": ORIGIN}})
+    
+    return app
 
 if __name__ == '__main__':
+    app = create_app()
     app.run(debug=True)
