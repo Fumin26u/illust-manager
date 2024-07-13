@@ -1,6 +1,0 @@
-path: faces_2024-01-06-05-38-01-ba
-referencePath: F:\xamppdocs\aicv_webui\api\save\face_images\faces_2024-01-06-05-38-01-ba
-isSetDetail: True
-dataset: {'trainFlows': {'resize_resolution': [224, 224], 'batch_size': 32, 'class_mode': 'categorical'}, 'imageDataGenerator': {'rescale': 1, 'shear_range': 0, 'zoom_range': 0.2, 'horizontal_flip': False, 'validation_split': 0.2}}
-train_model: {'batchNormalization': True, 'flatten': True, 'cnn': [{'conv2d': {'filters': 32, 'kernel_size': [3, 3], 'activation': 'relu', 'input_shape': [224, 224, 3]}, 'maxPooling2d': {'pool_size': [2, 2]}, 'dropout': 0.05, 'uuid': 'd26a9492-2705-43fe-a6d6-9bfaaccd8fc8'}], 'dense': [{'units': 'class_length', 'activation': 'softmax', 'uuid': '7718b236-91a2-4771-9b92-86bfcd956553', 'isUsingClassLength': True}], 'final_dropout': 0.05}
-train_parameter: {'epochs': 32, 'optimizer': 'adam', 'isSetEarlyStopping': True, 'earlyStopping': {'monitor': 'val_loss', 'patience': 3, 'verbose': 1, 'mode': 'auto', 'restore_best_weights': True}}
