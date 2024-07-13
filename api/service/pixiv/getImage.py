@@ -23,7 +23,8 @@ def __formatPostDate(date: str) -> str:
 
 async def getImage(query, latestGetPosts = None):
     pixivpy = connect_pixivpy_api()
-    imagesInfo = __getImageInfo(pixivpy, int(query['userID']), query['getPostType'], query['tag'])
+    imagesInfo = __getImageInfo(pixivpy, int(query['id']), query['type'], query['tag'])
+
     if imagesInfo == False:
         print('画像URLの取得に失敗しました。')
         sys.exit()
@@ -51,11 +52,11 @@ async def getImage(query, latestGetPosts = None):
                 nextQs = pixivpy.parse_qs(nextUrl)
                 await asyncio.sleep(1)
                 print(f'get Image Infomations... remaining: {remaining}')
-                if query['getPostType'] == "bookmark":
+                if query['type'] == "bookmark":
                     imagesInfo = pixivpy.user_bookmarks_illust(**nextQs)
-                elif query['getPostType'] == "post":
+                elif query['type'] == "post":
                     imagesInfo = pixivpy.user_illusts(**nextQs)
-                elif query['getPostType'] == "tag":
+                elif query['type'] == "tag":
                     imagesInfo = pixivpy.search_illust(**nextQs)
                 else:
                     isContinueRefers = False
@@ -78,12 +79,12 @@ async def getImage(query, latestGetPosts = None):
                 break
             
             # タグ検索時、ブックマーク数が指定された数より少ない場合スルー
-            if query['getPostType'] == "tag" and imageInfo['total_bookmarks'] < int(query['minBookmarks']):
+            if query['type'] == "tag" and imageInfo['total_bookmarks'] < int(query['minBookmarks']):
                 continue
             
             # ユーザーまたはタグ検索時かつR-18タグを除外する場合、R-18カテゴリをスルー
             tagList = [tag['name'] for tag in imageInfo['tags'] if 'name' in tag]
-            if query['getPostType'] == "post" or query['getPostType'] == "tag":
+            if query['type'] == "post" or query['type'] == "tag":
                 if query['isIgnoreSensitive'] and "R-18" in tagList:
                     print(f'ignore R-18 image: {imageInfo["id"]}')
                     continue
@@ -93,8 +94,8 @@ async def getImage(query, latestGetPosts = None):
 
             # 上記バリデーションを全て通過した場合画像情報を作成して配列に追加
             illustsInfoQueue = dict()
-            illustsInfoQueue['postID'] = imageInfo['id']
-            illustsInfoQueue['post_time'] = imageInfo['create_date']
+            illustsInfoQueue['id'] = imageInfo['id']
+            illustsInfoQueue['created_at'] = imageInfo['create_date']
             illustsInfoQueue['user'] = imageInfo['user']['name']
             illustsInfoQueue['text'] = imageInfo['title']
             illustsInfoQueue['url'] = 'https://www.pixiv.net/artworks/' + str(imageInfo['id'])

@@ -17,12 +17,12 @@ async def getPost(user_id, searchQuery):
     if not latestGetPosts:
         return False
     latestGetPosts = [item for latestGetPost in latestGetPosts for item in latestGetPost]
-        
+            
     try:        
         illust = await getImage(searchQuery, latestGetPosts)
         return illust
     except Exception as e:
-        return False
+        return e
     
 def update(user_id, latestGetPosts, downloadImagesCount, platform = 'pixiv'):
     userPlatformAccount = api.service.userPlatformAccount.select(user_id, platform)

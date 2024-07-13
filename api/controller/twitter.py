@@ -16,13 +16,11 @@ def getUserPlatformAccount(user_id):
     except Exception as e:
         return res_400(e)
 
-@twitterController.route(f"{basePath}/getTweet/<int:user_id>", methods=['POST'])
-def getTweet(user_id):
+@twitterController.route(f"{basePath}/getPost/<int:user_id>", methods=['POST'])
+def getPost(user_id):
     try:
         searchQuery = request.get_json()
-        
         tweets = api.service.twitter.main.getTweet(user_id, searchQuery)
-        print(tweets)
         
         return res_404 if not tweets else jsonify(tweets), 200
     except Exception as e:

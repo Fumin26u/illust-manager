@@ -1,0 +1,16 @@
+@import '../commonForm.scss';
+
+.common-form {
+    > .switch-platform {
+        margin-bottom: 8px;
+        > a {
+            font-size: 20px;
+            cursor: pointer;
+            user-select: none;
+        }
+    }
+
+    > .btn-common.get-posts {
+        margin-top: 8px;
+    }
+}

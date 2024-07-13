@@ -12,7 +12,7 @@ basePath = f"/api/{platform}"
 def getUserPlatformAccount(user_id):
     try:
         userPlatformAccount = api.service.userPlatformAccount.select(user_id, platform)
-        return res_404 if not userPlatformAccount else jsonify(userPlatformAccount), 200
+        return res_404() if not userPlatformAccount else jsonify(userPlatformAccount), 200
     except Exception as e:
         return res_400(e)
 
@@ -21,6 +21,7 @@ async def getPost(user_id):
     try:
         searchQuery = request.get_json()
         illust = await api.service.pixiv.main.getPost(user_id, searchQuery)
-        return res_404 if not illust else jsonify(illust), 200
+        
+        return res_404() if not illust else jsonify(illust), 200
     except Exception as e:
         return res_400(e)

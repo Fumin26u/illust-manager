@@ -1,19 +1,21 @@
-@import './commonForm.scss';
-.post-list {
-    > .post-info {
-        > .tweet-text {
+@import '../main.scss';
+.post-list .twitter {
+    width: 100%;
+    
+    .post-info {
+        > .post-text {
             height: 52px;
             overflow-y: auto;
         }
 
-        > .tweet-image {
+        > .post-image {
             @include horizontalAlign;
             max-width: 160px;
         }
-        > .tweet-image > input {
+        > .post-image > input {
             display: none;
         }
-        > .tweet-image > label {
+        > .post-image > label {
             cursor: pointer;
             height: 160px;
             &:hover, &.not-selected {
@@ -23,7 +25,7 @@
                 transition: all .2s;
             }
         }
-        > .tweet-image img {
+        > .post-image img {
             max-width: 160px;
             max-height: 100%;
             object-fit: cover;
