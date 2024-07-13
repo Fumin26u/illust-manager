@@ -93,7 +93,7 @@ const dlImage = async () => {
     // 画像URL一覧をAPIに送り画像をDL
     const response = await axios.post(`${endPoint}/download/image`, {
         images: images,
-        platform: platform,
+        platform: platform.value,
     })
 
     if (response.status !== 200) {
@@ -118,7 +118,7 @@ const updateCounter = async (get_images_count: number) => {
     const response = await axios.post(
         `${endPoint}/userPlatformAccount/update/${userId}`,
         {
-            platform: platform,
+            platform: platform.value,
             get_images_count: get_images_count,
         }
     )
@@ -131,7 +131,7 @@ const createDownloadLog = async () => {
         `${endPoint}/userPlatformAccountDlLog/insert`,
         {
             user_id: userId,
-            platform: platform,
+            platform: platform.value,
             post_id: postStore.posts.map((post) => post.id),
         }
     )
