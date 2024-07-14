@@ -1,11 +1,11 @@
-interface ImageTag {
+export interface ImageTag {
     id: number
     user_image_id: number
     name_en: string
     name_ja: string
 }
 
-interface RawImage {
+export interface RawImage {
     id?: number
     name: string
     tags?: ImageTag[]
@@ -13,7 +13,7 @@ interface RawImage {
     updated_at?: string
 }
 
-interface Image {
+export interface Image {
     id: number
     user_id: number
     name: string
