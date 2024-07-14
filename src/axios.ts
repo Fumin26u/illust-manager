@@ -5,7 +5,7 @@ axios.interceptors.request.use(
     (config) => {
         const userId = localStorage.getItem('user_id')
         if (userId) {
-            config.headers['user_id'] = userId
+            config.headers['user-id'] = userId
         }
         return config
     },

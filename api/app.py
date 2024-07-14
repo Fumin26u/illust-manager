@@ -42,7 +42,8 @@ CORS(app, resources={r"/*": {"origins": ORIGIN}})
 
 @app.before_request
 def before_request():
-    user_id = request.headers.get('user_id')
+    user_id = request.headers.get('user-id')
+    print('user_id:', user_id)
     if user_id:
         g.user_id = user_id
     else:

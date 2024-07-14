@@ -4,7 +4,7 @@ import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import '@/assets/scss/user.scss'
 
-import axios from 'axios'
+import axios from '@/axios'
 import { createEndPoint } from '@/assets/ts/paths'
 import { useUserStore } from '@/store/userStore'
 
@@ -15,7 +15,7 @@ const endPoint = createEndPoint('/api/user')
 
 const saveUser = async () => {
     try {
-        const response = await axios.put(`${endPoint}/${user.id}`, user)
+        const response = await axios.put(`${endPoint}`, user)
         if (response.status !== 200) {
             throw new Error('ユーザー情報の更新に失敗しました')
         }
@@ -25,8 +25,6 @@ const saveUser = async () => {
         console.error(error)
     }
 }
-
-userStore.getUser()
 </script>
 
 <template>

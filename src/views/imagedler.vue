@@ -6,7 +6,7 @@ import SearchPixivForm from '@/components/search/SearchPixivForm.vue'
 import TwitterPost from '@/components/post/TwitterPost.vue'
 import PixivPost from '@/components/post/PixivPost.vue'
 
-import axios from 'axios'
+import axios from '@/axios'
 import { ref } from 'vue'
 import { createEndPoint } from '@/assets/ts/paths'
 import { useSearchStore } from '@/store/searchStore'
@@ -31,9 +31,7 @@ const switchPlatform = (pf: string) => {
 // pixiv or twitterのuserIDを取得
 const getPlatformID = async () => {
     try {
-        const response = await axios.get(
-            `${endPoint}/${platform.value}/${userId}`
-        )
+        const response = await axios.get(`${endPoint}/${platform.value}`)
         if (response.status !== 200) {
             throw new Error('Platform IDの取得に失敗しました')
         }
@@ -70,7 +68,7 @@ const getPosts = async () => {
 
     try {
         const response = await axios.post(
-            `${endPoint}/${platform.value}/getPost/${userId}`,
+            `${endPoint}/${platform.value}/getPost`,
             searchStore.search
         )
 
@@ -116,7 +114,7 @@ const dlImage = async () => {
 // ダウンロード数の更新
 const updateCounter = async (get_images_count: number) => {
     const response = await axios.post(
-        `${endPoint}/userPlatformAccount/update/${userId}`,
+        `${endPoint}/userPlatformAccount/update`,
         {
             platform: platform.value,
             get_images_count: get_images_count,
