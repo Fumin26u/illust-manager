@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useImageStore } from '@/store/imageStore'
+import { defineEmits } from 'vue'
 
+const emit = defineEmits(['switchIsImported'])
 const imageStore = useImageStore()
 
 const importImage = (event: Event) => {
@@ -12,6 +14,7 @@ const importImage = (event: Event) => {
             imageStore.getRawImageInfo(file)
         })
     }
+    emit('switchIsImported', false)
 }
 </script>
 

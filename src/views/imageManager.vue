@@ -17,7 +17,11 @@ const images = computed(() => imageStore.rawImages)
 
 const endPoint = createEndPoint(`/api`)
 const platform = 'local'
-const isImported = ref<boolean>(false)
+const isImported = ref<boolean>(true)
+
+const switchIsImported = (flag: boolean) => {
+    isImported.value = flag
+}
 
 const loadImage = async (directoryName: string) => {
     try {
@@ -30,7 +34,7 @@ const loadImage = async (directoryName: string) => {
         }
 
         imageStore.loadImages(response.data.images)
-        isImported.value = true
+        switchIsImported(true)
     } catch (error) {
         console.error(error)
     }
@@ -81,6 +85,7 @@ const generateTagsFromImage = async () => {
         const response = await axios.post(`${endPoint}/image/tag/generate`, {
             images: images.value,
         })
+        console.log(response.data)
     } catch (error) {
         console.error(error)
     }
@@ -90,7 +95,7 @@ const generateTagsFromImage = async () => {
     <HeaderComponent />
     <main class="main-container" id="page-image-manager">
         <section class="section-import-image">
-            <ImportImage />
+            <ImportImage @switchIsImported="switchIsImported" />
             <ImportedImageList :platform="platform" @loadImage="loadImage" />
         </section>
         <section class="section-image-list" v-if="images.length !== 0">

@@ -45,3 +45,19 @@ def getImage(platform, directory, filename):
         return send_from_directory(targetImageDirPath, filename)
     except Exception as e:
         return res_400(e)
+    
+@imageController.route(f"{basePath}/tag/generate", methods=['POST'])
+def generateTagsFromImage():
+    try:
+        query = request.get_json()
+        images = query['images']
+        if not images:        
+            return res_400('必要な情報が提供されませんでした。')
+        
+        response = api.service.image.generateTagsFromImage(images)
+        if not response:
+            Exception('タグの生成に失敗しました。')
+        
+        return jsonify({'error': False, 'content': response}), 200
+    except Exception as e:
+        return res_400(e)
