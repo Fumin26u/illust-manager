@@ -73,6 +73,18 @@ const updateCounter = async (get_images_count: number) => {
     )
     return response
 }
+
+// 画像からタグを生成
+const generateTagsFromImage = async () => {
+    console.log(images.value)
+    try {
+        const response = await axios.post(`${endPoint}/image/tag/generate`, {
+            images: images.value,
+        })
+    } catch (error) {
+        console.error(error)
+    }
+}
 </script>
 <template>
     <HeaderComponent />
@@ -88,6 +100,12 @@ const updateCounter = async (get_images_count: number) => {
                 @click="importImageToApp()"
                 text="アプリにインポート"
                 :buttonClass="'btn-common green'"
+            />
+            <ButtonComponent
+                v-else
+                @click="generateTagsFromImage()"
+                text="タグを生成"
+                :buttonClass="'btn-common blue'"
             />
             <dl class="image-list">
                 <div v-for="(image, index) in images" :key="index">

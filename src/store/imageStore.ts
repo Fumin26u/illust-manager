@@ -29,6 +29,8 @@ export const useImageStore = defineStore('image', () => {
             return {
                 path: `${apiOrigin}/${image.path}`,
                 name: image.name,
+                platform: image.platform,
+                directory: image.directory,
             }
         })
     }

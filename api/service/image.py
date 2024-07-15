@@ -31,6 +31,8 @@ def loadImages(directory, platform = 'local'):
         for image in images:
             response.append({
                 'name': image,
+                'platform': platform,
+                'directory': directory,
                 'path': f"{apiPath}/{directory}/{image}"
             })
             
