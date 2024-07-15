@@ -8,7 +8,9 @@ export interface ImageTag {
 export interface RawImage {
     id?: number
     name: string
+    path: string
     tags?: ImageTag[]
+    image?: any
     created_at?: string
     updated_at?: string
 }
@@ -18,6 +20,7 @@ export interface Image {
     user_id: number
     name: string
     tags: ImageTag[]
+    image?: any
     created_at: Date
     updated_at: Date
 }

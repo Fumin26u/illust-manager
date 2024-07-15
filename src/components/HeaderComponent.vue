@@ -19,7 +19,7 @@ const user = userStore.user
                 <a href="./" class="btn-small blue">アカウント管理</a>
                 <a href="./imagedler" class="btn-small blue">imagedler</a>
                 <a href="./image-manager" class="btn-small blue">
-                    image-manager
+                    image manager
                 </a>
             </nav>
         </div>
