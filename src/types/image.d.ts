@@ -1,3 +1,8 @@
+export interface Directory {
+    name: string
+    count: number
+}
+
 export interface ImageTag {
     id: number
     user_image_id: number

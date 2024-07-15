@@ -29,6 +29,7 @@ from api.controller.pixiv import pixivController
 from api.controller.download import downloadController
 from api.controller.userPlatformAccount import userPlatformAccountController
 from api.controller.userPlatformAccountDlLog import userPlatformAccountDlLogController
+from api.controller.image import imageController
 
 app.register_blueprint(userController)
 app.register_blueprint(twitterController)
@@ -36,6 +37,7 @@ app.register_blueprint(pixivController)
 app.register_blueprint(downloadController)
 app.register_blueprint(userPlatformAccountController)
 app.register_blueprint(userPlatformAccountDlLogController)
+app.register_blueprint(imageController)
 
 from api.config.origin import ORIGIN
 CORS(app, resources={r"/*": {"origins": ORIGIN}})

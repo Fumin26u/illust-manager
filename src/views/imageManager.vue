@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import HeaderComponent from '@/components/HeaderComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
-import GetLocalImage from '@/components/file/ImportImage.vue'
+import ImportImage from '@/components/file/ImportImage.vue'
+import ImportedImageList from '@/components/file/ImportedImageList.vue'
 
 import axios from '@/axios'
 import { ref, computed } from 'vue'
@@ -15,6 +16,25 @@ const imageStore = useImageStore()
 const images = computed(() => imageStore.rawImages)
 
 const endPoint = createEndPoint(`/api`)
+const platform = 'local'
+const isImported = ref<boolean>(false)
+
+const loadImage = async (directoryName: string) => {
+    try {
+        const response = await axios.post(`${endPoint}/image/load`, {
+            platform: platform,
+            directory_name: directoryName,
+        })
+        if (response.status !== 200) {
+            throw new Error('画像の取得に失敗しました')
+        }
+
+        imageStore.loadImages(response.data.images)
+        isImported.value = true
+    } catch (error) {
+        console.error(error)
+    }
+}
 
 const importImageToApp = async () => {
     const importImages = await Promise.all(
@@ -36,7 +56,7 @@ const importImageToApp = async () => {
 
         await updateCounter(images.value.length)
         imageStore.insertImportedPaths(response.data.imported_paths)
-        console.log(images.value)
+        isImported.value = true
     } catch (error) {
         console.error(error)
     }
@@ -58,12 +78,13 @@ const updateCounter = async (get_images_count: number) => {
     <HeaderComponent />
     <main class="main-container" id="page-image-manager">
         <section class="section-import-image">
-            <h2>画像のインポート</h2>
-            <GetLocalImage />
+            <ImportImage />
+            <ImportedImageList :platform="platform" @loadImage="loadImage" />
         </section>
         <section class="section-image-list" v-if="images.length !== 0">
             <h2>画像一覧</h2>
             <ButtonComponent
+                v-if="!isImported"
                 @click="importImageToApp()"
                 text="アプリにインポート"
                 :buttonClass="'btn-common green'"
@@ -72,7 +93,14 @@ const updateCounter = async (get_images_count: number) => {
                 <div v-for="(image, index) in images" :key="index">
                     <dt>{{ image.name }}</dt>
                     <dd>
-                        <img :src="image.path" :alt="image.name" />
+                        <img
+                            :src="
+                                image.imported_path !== undefined
+                                    ? image.imported_path
+                                    : image.path
+                            "
+                            :alt="image.name"
+                        />
                     </dd>
                 </div>
             </dl>

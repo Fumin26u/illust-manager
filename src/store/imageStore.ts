@@ -2,6 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { RawImage, Image, ImageTag } from '@/types/image'
 import { formatCurrentTime, formatUnixTime } from '@/assets/ts/formatDate'
+import { apiOrigin } from '@/assets/ts/paths'
 
 export const useImageStore = defineStore('image', () => {
     const rawImages = ref<RawImage[]>([])
@@ -23,10 +24,25 @@ export const useImageStore = defineStore('image', () => {
         rawImages.value.push(imageInfo.value)
     }
 
+    const loadImages = (images: RawImage[]) => {
+        rawImages.value = images.map((image: RawImage) => {
+            return {
+                path: `${apiOrigin}/${image.path}`,
+                name: image.name,
+            }
+        })
+    }
+
     const insertImportedPaths = (imported_paths: string[]) => {
         rawImages.value.forEach((image, index) => {
             image.imported_path = imported_paths[index]
         })
     }
-    return { rawImages, images, getRawImageInfo, insertImportedPaths }
+    return {
+        rawImages,
+        images,
+        getRawImageInfo,
+        loadImages,
+        insertImportedPaths,
+    }
 })

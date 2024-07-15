@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import { useImageStore } from '@/store/imageStore'
 
 const imageStore = useImageStore()
 
 const importImage = (event: Event) => {
     const input = event.target as HTMLInputElement
+    imageStore.rawImages = []
     if (input.files) {
         const files = Array.from(input.files)
         files.forEach((file) => {
@@ -17,8 +17,9 @@ const importImage = (event: Event) => {
 
 <template>
     <div>
-        <dd>
+        <h2>画像のインポート</h2>
+        <div>
             <input type="file" webkitdirectory @change="importImage" />
-        </dd>
+        </div>
     </div>
 </template>
