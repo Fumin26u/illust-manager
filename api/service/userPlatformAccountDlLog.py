@@ -1,6 +1,6 @@
 from api.model import db, UserPlatformAccountDlLog
     
-def select(userPlatformAccountId, limit = 10):
+def select(userPlatformAccountId, limit = 200):
     return (
         UserPlatformAccountDlLog.query
             .with_entities(UserPlatformAccountDlLog.post_id)

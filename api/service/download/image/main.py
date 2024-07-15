@@ -21,6 +21,8 @@ async def download(images, platform):
     else:
         return {'error': True, 'content': 'invalid platform'}
     
+    createZip(downloadPath['image'], downloadPath['zip'])
+    
     if platform == 'local':
         return response
     if response['error']:
