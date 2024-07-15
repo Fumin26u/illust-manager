@@ -11,7 +11,6 @@ const importImage = (event: Event) => {
         files.forEach((file) => {
             imageStore.getRawImageInfo(file)
         })
-        console.log(imageStore.rawImages)
     }
 }
 </script>

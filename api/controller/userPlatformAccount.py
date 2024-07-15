@@ -13,6 +13,8 @@ async def update():
         if not query: 
             return res_400('No data provided')
         
+        print(query)
+        
         userPlatformAccount = api.service.userPlatformAccount.select(g.user_id, query['platform'])
         
         api.service.userPlatformAccount.update(userPlatformAccount['id'], dict(

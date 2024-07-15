@@ -16,17 +16,17 @@ export const useImageStore = defineStore('image', () => {
         imageInfo.value.created_at = file.lastModified
             ? formatUnixTime(file.lastModified)
             : formatCurrentTime()
+        imageInfo.value.updated_at = imageInfo.value.created_at
         imageInfo.value.name = file.name
         imageInfo.value.path = URL.createObjectURL(file)
-
-        const reader = new FileReader()
-        reader.onload = (e) => {
-            imageInfo.value.image = e.target?.result || ''
-        }
-        reader.readAsDataURL(file)
 
         rawImages.value.push(imageInfo.value)
     }
 
-    return { rawImages, images, getRawImageInfo }
+    const insertImportedPaths = (imported_paths: string[]) => {
+        rawImages.value.forEach((image, index) => {
+            image.imported_path = imported_paths[index]
+        })
+    }
+    return { rawImages, images, getRawImageInfo, insertImportedPaths }
 })

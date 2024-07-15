@@ -1,14 +1,10 @@
-import os, random, string, asyncio
+import os, asyncio
 # pixivpy: pixivからデータを抽出するAPI
 from pixivpy3 import *
 from api.driver.connectPixivpyApi import connect_pixivpy_api
 # import APIkey
 from dotenv import load_dotenv
-
-# ランダム文字列の生成
-def generateRandomString(strLength: int) -> str:
-    strArray = [random.choice(string.ascii_letters + string.digits) for i in range(strLength)]
-    return ''.join(strArray)
+from api.utils.string import generateRandomString
 
 async def downloadImage(savePath, illusts):
     try:

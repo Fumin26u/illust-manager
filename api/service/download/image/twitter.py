@@ -45,7 +45,6 @@ async def download(session, illust, savePath):
         return {'error': True}
 
 async def downloadImage(savePath, illusts):
-    # 指定されたフォルダが存在しない場合新規作成
     if not os.path.exists(savePath):
         os.mkdir(savePath)
     async with aiohttp.ClientSession() as session:

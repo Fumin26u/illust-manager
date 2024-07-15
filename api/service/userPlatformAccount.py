@@ -12,6 +12,7 @@ def select(user_id, platform):
     )
     
 def update(userPlatformAccountId, args):
+    print(args)
     (db.session
         .query(UserPlatformAccount)
         .filter_by(id = userPlatformAccountId)
