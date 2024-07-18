@@ -16,6 +16,7 @@ async def insert():
             return res_400('No data provided')
         
         userPlatformAccount = api.service.userPlatformAccount.select(g.user_id, query['platform'])
+        print(userPlatformAccount)
         
         for post_id in query['post_id']:
             api.service.userPlatformAccountDlLog.create(
