@@ -20,8 +20,7 @@ def getUserPlatformAccount():
 def getPost():
     try:
         searchQuery = request.get_json()
-        tweets = api.service.twitter.main.getTweet(g.user_id, searchQuery)[::-1]
-        print(tweets)
+        tweets = api.service.twitter.main.getTweet(g.user_id, searchQuery)
         
         return res_404 if not tweets else jsonify(tweets), 200
     except Exception as e:

@@ -17,8 +17,6 @@ async def insert():
         
         userPlatformAccount = api.service.userPlatformAccount.select(g.user_id, query['platform'])
         
-        print(f"user_id: {g.user_id}, query: {userPlatformAccount}")
-        
         for post_id in query['post_id']:
             api.service.userPlatformAccountDlLog.create(
                 userPlatformAccount['id'],

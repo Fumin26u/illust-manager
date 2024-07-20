@@ -12,9 +12,7 @@ async def update():
         query = request.get_json()
         if not query: 
             return res_400('No data provided')
-        
-        print(f"user_id: {g.user_id}, query: {query}")
-        
+                
         userPlatformAccount = api.service.userPlatformAccount.select(g.user_id, query['platform'])
         dl_count = userPlatformAccount['dl_count'] + 1
         get_images_count = userPlatformAccount['get_images_count'] + int(query['get_images_count'])

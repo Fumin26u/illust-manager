@@ -16,11 +16,9 @@ async def getPost(user_id, searchQuery):
     if not latestGetPosts:
         return False
     latestGetPosts = [latestGetPost['post_id'] for latestGetPost in latestGetPosts]
-    print(latestGetPosts)
             
     try:        
         illust = await getImage(searchQuery, latestGetPosts)
-        print(illust)
         return illust
     except Exception as e:
         return e

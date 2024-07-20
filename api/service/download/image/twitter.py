@@ -48,7 +48,7 @@ async def downloadImage(savePath, illusts):
     if not os.path.exists(savePath):
         os.mkdir(savePath)
     async with aiohttp.ClientSession() as session:
-        for illust in illusts:
+        for illust in illusts[::-1]:
             response = await download(session, illust, savePath)
             if response['error']:
                 return {'error': True, 'content': 'download failed'}

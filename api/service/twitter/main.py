@@ -22,7 +22,6 @@ def getTweet(user_id, searchQuery):
     if not latestGetPosts:
         return False
     latestGetPosts = [latestGetPost['post_id'] for latestGetPost in latestGetPosts]
-    print(latestGetPosts)
     
     DRIVER = setDriver()
     # Twitterのリンク
