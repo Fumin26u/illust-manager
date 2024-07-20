@@ -15,7 +15,7 @@ const endPoint = createEndPoint('/api/user')
 
 const saveUser = async () => {
     try {
-        const response = await axios.put(`${endPoint}`, user)
+        const response = await axios.put(`${endPoint}/${user.id}`, user)
         if (response.status !== 200) {
             throw new Error('ユーザー情報の更新に失敗しました')
         }

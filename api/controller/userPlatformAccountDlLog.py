@@ -16,13 +16,14 @@ async def insert():
             return res_400('No data provided')
         
         userPlatformAccount = api.service.userPlatformAccount.select(g.user_id, query['platform'])
-        print(userPlatformAccount)
+        
+        print(f"user_id: {g.user_id}, query: {userPlatformAccount}")
         
         for post_id in query['post_id']:
             api.service.userPlatformAccountDlLog.create(
                 userPlatformAccount['id'],
                 post_id,
-                datetime.now()
+                datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             )
         
         return jsonify({'error': False, 'content': 'insert done'}), 200
