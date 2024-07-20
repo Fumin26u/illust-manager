@@ -1,4 +1,3 @@
-from api.model import db
 from api.service.pixiv.getImage import getImage
 
 import api.service.userPlatformAccount
@@ -16,10 +15,12 @@ async def getPost(user_id, searchQuery):
     latestGetPosts = api.service.userPlatformAccountDlLog.select(userPlatformAccount['id'])
     if not latestGetPosts:
         return False
-    latestGetPosts = [item for latestGetPost in latestGetPosts for item in latestGetPost]
+    latestGetPosts = [latestGetPost['post_id'] for latestGetPost in latestGetPosts]
+    print(latestGetPosts)
             
     try:        
         illust = await getImage(searchQuery, latestGetPosts)
+        print(illust)
         return illust
     except Exception as e:
         return e
@@ -45,5 +46,4 @@ def update(user_id, latestGetPosts, downloadImagesCount, platform = 'pixiv'):
             nowTime
         )
     
-    db.session.commit()
     return {'content': 'update success'}

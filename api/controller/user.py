@@ -23,7 +23,7 @@ def create():
     except Exception as e:
         return res_400(e)
     
-@userController.route(f"{basePath}", methods=['PUT'])
+@userController.route(f"{basePath}/<int:user_id>", methods=['PUT'])
 def update(user_id):
     try:
         userInfo = request.get_json()

@@ -1,4 +1,3 @@
-from api.model import db
 import api.service.twitter.selenium.getTweet
 import api.service.twitter.selenium.login
 
@@ -19,10 +18,11 @@ def getTweet(user_id, searchQuery):
     if not userPlatformAccount:
         return False
     
-    latestGetTweets = api.service.userPlatformAccountDlLog.select(userPlatformAccount['id'])
-    if not latestGetTweets:
+    latestGetPosts = api.service.userPlatformAccountDlLog.select(userPlatformAccount['id'])
+    if not latestGetPosts:
         return False
-    latestGetTweets = [item for latestGetTweet in latestGetTweets for item in latestGetTweet]
+    latestGetPosts = [latestGetPost['post_id'] for latestGetPost in latestGetPosts]
+    print(latestGetPosts)
     
     DRIVER = setDriver()
     # Twitterのリンク
@@ -40,7 +40,7 @@ def getTweet(user_id, searchQuery):
         tweets = api.service.twitter.selenium.getTweet.getTweet(
             DRIVER,
             searchQuery,
-            latestGetTweets,
+            latestGetPosts,
             f"{TWITTER_PATH}/{searchQuery['id']}/likes"
         )
         
@@ -70,5 +70,4 @@ def update(user_id, latestGetTweets, downloadImagesCount, platform = 'twitter'):
             nowTime
         )
     
-    db.session.commit()
     return {'content': 'update success'}
