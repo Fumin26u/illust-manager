@@ -3,9 +3,14 @@ import uuid, os, string, random
 from datetime import datetime
 
 # 現在時刻
-def getNowTime():
-    return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-
+def getNowTime(format = 'directory'):
+    if format == 'directory':
+        return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    elif format == 'mysql':
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
 # UUID
 def createUuid(length):
     return str(uuid.uuid4())[:length]

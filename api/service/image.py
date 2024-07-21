@@ -2,10 +2,11 @@ import os
 import numpy as np
 import deepdanbooru.project as ddproject
 import deepdanbooru.data as dddata
+import concurrent.futures
 from tensorflow import keras
 from keras.models import load_model
 from PIL import Image
-from api.utils.string import getRootDir
+from api.utils.string import getRootDir, getNowTime
 from api.config.deepdanbooru import MODEL_PATH
 
 def getDirectories(platform = 'local'):
@@ -46,37 +47,47 @@ def loadImages(directory, platform = 'local'):
     except Exception as e:
         return e
     
-def generateTagsFromImage(images):
-    rootDir = getRootDir()
-    response = []
+def __process_image(index, image, user_id, rootDir):
     try:
-        for image in images:
-            result = dict({
-                'name': image['name'],
-                'platform': image['platform'],
-                'directory': image['directory'],
-                'tags': dict()
-            })
+        result = dict({
+            'user_id': user_id,
+            'name': image['name'],
+            'platform': image['platform'],
+            'directory': image['directory'],
+            'tags': dict(),
+            'created_at': getNowTime('mysql'),
+            'updated_at': getNowTime('mysql')
+        })
+        
+        platform = image['platform']
+        directory = image['directory']
+        filename = image['name']
+        
+        path = f"{rootDir}/downloads/{platform}/images/{directory}/{filename}"
+        
+        targetImage = Image.open(path).convert('RGB')
+        
+        tags = __predict_tags(path, targetImage)
+        result['tags'] = tags
+        print(f"===== Tags generated for {filename}, index: {index} ===== ")
             
-            platform = image['platform']
-            directory = image['directory']
-            filename = image['name']
-            
-            path = f"{rootDir}/downloads/{platform}/images/{directory}/{filename}"
-            
-            targetImage = Image.open(path).convert('RGB')
-            
-            tags = __predict_tags(path, targetImage)
-            result['tags'] = tags
-            response.append(result)
-            
-        return response
+        return index, result
     except Exception as e:
-        return {'error': True, 'content': e}
-
-def __predict_tags(path, image, threshold = 0.5):
-    # load tag/model
+        print(f"Error processing image at index {index}: {e}")
+        return index, {'error': True, 'content': str(e)}
     
+def generateTagsFromImage(images, user_id):
+    rootDir = getRootDir()
+    response = [None] * len(images)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = {executor.submit(__process_image, i, image, user_id, rootDir): 
+            i for i, image in enumerate(images)}
+        for future in concurrent.futures.as_completed(futures):
+            index, result = future.result()
+            response[index] = result
+    return response
+
+def __predict_tags(path, image, threshold = 0.5):    
     model = ddproject.load_model_from_project(MODEL_PATH, compile_model=False)
     tags = ddproject.load_tags_from_project(MODEL_PATH)
     

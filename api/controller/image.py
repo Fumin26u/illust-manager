@@ -1,7 +1,7 @@
 import os
 import api.service.image
 
-from flask import Blueprint, request, jsonify, send_from_directory
+from flask import Blueprint, request, jsonify, send_from_directory, g
 from api.error.response import res_400, res_404
 from api.utils.string import getRootDir
 
@@ -54,7 +54,7 @@ def generateTagsFromImage():
         if not images:        
             return res_400('必要な情報が提供されませんでした。')
         
-        response = api.service.image.generateTagsFromImage(images)
+        response = api.service.image.generateTagsFromImage(images, g.user_id)
         if not response:
             Exception('タグの生成に失敗しました。')
         

@@ -6,8 +6,7 @@ export interface Directory {
 export interface ImageTag {
     id: number
     user_image_id: number
-    name_en: string
-    name_ja: string
+    tag_id: number
 }
 
 export interface RawImage {
@@ -24,11 +23,13 @@ export interface RawImage {
 }
 
 export interface Image {
-    id: number
+    id?: number
     user_id: number
+    directory: string
     name: string
     tags: ImageTag[]
-    base64: string | unknown
+    base64?: string | unknown
+    delete_fg?: boolean
     created_at: Date
     updated_at: Date
 }
