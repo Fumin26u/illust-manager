@@ -7,6 +7,7 @@ export interface ImageTag {
     id: number
     user_image_id: number
     tag_id: number
+    checked: boolean
 }
 
 export interface RawImage {
@@ -27,7 +28,7 @@ export interface Image {
     user_id: number
     directory: string
     name: string
-    tags: ImageTag[]
+    tags: any
     base64?: string | unknown
     delete_fg?: boolean
     created_at: Date

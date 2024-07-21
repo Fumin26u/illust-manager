@@ -33,6 +33,7 @@ export const useImageStore = defineStore('image', () => {
                 directory: image.directory,
             }
         })
+        console.log(rawImages.value)
     }
 
     const insertImportedPaths = (imported_paths: string[]) => {
@@ -40,11 +41,17 @@ export const useImageStore = defineStore('image', () => {
             image.imported_path = imported_paths[index]
         })
     }
+
+    const insertImages = (taggedImages: Image[]) => {
+        taggedImages.forEach((image) => images.value.push(image))
+    }
+
     return {
         rawImages,
         images,
         getRawImageInfo,
         loadImages,
         insertImportedPaths,
+        insertImages,
     }
 })
