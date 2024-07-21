@@ -44,6 +44,7 @@ export const useImageStore = defineStore('image', () => {
 
     const insertImages = (taggedImages: Image[]) => {
         taggedImages.forEach((image) => images.value.push(image))
+        console.log(images.value)
     }
 
     return {

@@ -10,6 +10,12 @@ export interface ImageTag {
     checked: boolean
 }
 
+export interface RawTag {
+    name_en: string
+    confidence: string
+    is_saved: boolean
+}
+
 export interface RawImage {
     id?: number
     name: string
@@ -28,7 +34,7 @@ export interface Image {
     user_id: number
     directory: string
     name: string
-    tags: any
+    tags: RawTag[]
     base64?: string | unknown
     delete_fg?: boolean
     created_at: Date

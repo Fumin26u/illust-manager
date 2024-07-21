@@ -101,12 +101,16 @@ const generateTagsFromImage = async () => {
             throw new Error('タグの生成に失敗しました')
         }
 
-        console.log(response.data.content)
         imageStore.insertImages(response.data.content)
         isTagged.value = true
     } catch (error) {
         console.error(error)
     }
+}
+
+// 画像にタグを付与して保存
+const saveTagsInImage = async () => {
+    console.log(taggedImages.value)
 }
 </script>
 <template>
@@ -169,14 +173,28 @@ const generateTagsFromImage = async () => {
                         <li class="tags">
                             <div
                                 v-for="(
-                                    confidence, tagName
+                                    tag, tagIndex
                                 ) in selectedTaggedImage.tags"
-                                :key="tagName"
+                                :key="tagIndex"
                             >
-                                <p>{{ `${tagName}: ${confidence}` }}</p>
+                                <input
+                                    :id="tag.name_en"
+                                    type="checkbox"
+                                    v-model="tag.is_saved"
+                                />
+                                <label :for="tag.name_en">
+                                    {{ tag.name_en }} (信頼度:
+                                    {{ tag.confidence }})
+                                </label>
                             </div>
                         </li>
                     </div>
+                    <ButtonComponent
+                        v-if="selectedTaggedImage !== null"
+                        @click="saveTagsInImage()"
+                        text="タグを付与して保存"
+                        :buttonClass="'btn-common blue'"
+                    />
                 </ul>
             </div>
         </section>

@@ -68,7 +68,16 @@ def __process_image(index, image, user_id, rootDir):
         targetImage = Image.open(path).convert('RGB')
         
         tags = __predict_tags(path, targetImage)
-        result['tags'] = tags
+        
+        shaped_tags = []
+        for i, (name, confidence) in enumerate(tags.items()):
+            args = dict()
+            args['name_en'] = name
+            args['confidence'] = round(confidence, 5)
+            args['is_saved'] = True if confidence >= 0.8 else False
+            shaped_tags.append(args)
+                    
+        result['tags'] = shaped_tags
         print(f"===== Tags generated for {filename}, index: {index} ===== ")
             
         return index, result
