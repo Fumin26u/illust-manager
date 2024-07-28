@@ -197,8 +197,6 @@ def saveImage(image, filename, user_id):
     except Exception as e:
         return {'error': True, 'content': str(e)}
     
-    
-    
 def getFileExtension(path):
     _, extension = os.path.splitext(path)
     return extension
