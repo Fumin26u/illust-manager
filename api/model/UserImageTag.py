@@ -9,6 +9,7 @@ class UserImageTag:
             'user_image_id': row['user_image_id'],
             'tag_name': row['tag_name'],
             'tag_name_jp': row['tag_name_jp'],
+            'confidence': row['confidence'],
         }
 
     @staticmethod

@@ -61,3 +61,18 @@ def generateTagsFromImage():
         return jsonify({'error': False, 'content': response}), 200
     except Exception as e:
         return res_400(e)
+    
+@imageController.route(f"{basePath}/save", methods=['GET'])
+def saveImage():
+    try:
+        query = request.get_json()
+        if not query:
+            return res_400('No data provided')
+        
+        response = api.service.image.saveImage(query['image'], query['tags'], g.user_id)
+        if not response:
+            Exception('画像の保存に失敗しました。')
+        
+        return jsonify({'error': False, 'content': response}), 200
+    except Exception as e:
+        return res_400(e)

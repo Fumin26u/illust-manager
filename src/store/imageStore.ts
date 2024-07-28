@@ -1,15 +1,14 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { RawImage, Image, ImageTag } from '@/types/image'
+import { Image, ImageTag } from '@/types/image'
 import { formatCurrentTime, formatUnixTime } from '@/assets/ts/formatDate'
 import { apiOrigin } from '@/assets/ts/paths'
 
 export const useImageStore = defineStore('image', () => {
-    const rawImages = ref<RawImage[]>([])
     const images = ref<Image[]>([])
 
-    const getRawImageInfo = (file: File) => {
-        const imageInfo = ref<RawImage>({
+    const getImageInfo = (file: File) => {
+        const imageInfo = ref<Image>({
             name: '',
             path: '',
             tags: [],
@@ -21,36 +20,50 @@ export const useImageStore = defineStore('image', () => {
         imageInfo.value.name = file.name
         imageInfo.value.path = URL.createObjectURL(file)
 
-        rawImages.value.push(imageInfo.value)
+        images.value.push(imageInfo.value)
     }
 
-    const loadImages = (images: RawImage[]) => {
-        rawImages.value = images.map((image: RawImage) => {
+    const loadImages = (rawImages: Image[]) => {
+        images.value = rawImages.map((rawImage: Image) => {
             return {
-                path: `${apiOrigin}/${image.path}`,
-                name: image.name,
-                platform: image.platform,
-                directory: image.directory,
+                path: `${apiOrigin}/${rawImage.path}`,
+                name: rawImage.name,
+                platform: rawImage.platform,
+                directory: rawImage.directory,
             }
         })
-        console.log(rawImages.value)
+        console.log(images.value)
     }
 
     const insertImportedPaths = (imported_paths: string[]) => {
-        rawImages.value.forEach((image, index) => {
+        images.value.forEach((image, index) => {
             image.imported_path = imported_paths[index]
         })
     }
 
     const insertImages = (taggedImages: Image[]) => {
-        taggedImages.forEach((image) => images.value.push(image))
+        const map = new Map<string, Image>()
+        images.value.forEach((image) => {
+            map.set(image.name, image)
+        })
+
+        taggedImages.forEach((taggedImage) => {
+            if (map.has(taggedImage.name)) {
+                map.set(taggedImage.name, {
+                    ...map.get(taggedImage.name),
+                    ...taggedImage,
+                })
+            } else {
+                map.set(taggedImage.name, taggedImage)
+            }
+        })
+        images.value = Array.from(map.values())
         console.log(images.value)
     }
 
     return {
-        rawImages,
         images,
-        getRawImageInfo,
+        getImageInfo,
         loadImages,
         insertImportedPaths,
         insertImages,

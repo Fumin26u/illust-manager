@@ -1,10 +1,7 @@
 import os
 import numpy as np
 import deepdanbooru.project as ddproject
-import deepdanbooru.data as dddata
 import concurrent.futures
-from tensorflow import keras
-from keras.models import load_model
 from PIL import Image
 from api.utils.string import getRootDir, getNowTime
 from api.config.deepdanbooru import MODEL_PATH
@@ -74,7 +71,7 @@ def __process_image(index, image, user_id, rootDir):
             args = dict()
             args['name_en'] = name
             args['confidence'] = round(confidence, 5)
-            args['is_saved'] = True if confidence >= 0.8 else False
+            args['is_saved'] = True if confidence >= 0.5 else False
             shaped_tags.append(args)
                     
         result['tags'] = shaped_tags
@@ -118,3 +115,6 @@ def __resize_and_transform_image(model, image: Image):
     
 def __getFileCount(directory):
     return len(os.listdir(directory)) if os.path.isdir(directory) else 0
+
+def saveImage():
+    pass

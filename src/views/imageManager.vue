@@ -3,6 +3,7 @@ import HeaderComponent from '@/components/HeaderComponent.vue'
 import ButtonComponent from '@/components/ButtonComponent.vue'
 import ImportImage from '@/components/file/ImportImage.vue'
 import ImportedImageList from '@/components/file/ImportedImageList.vue'
+import VImage from '@/components/file/VImage.vue'
 
 import axios from '@/axios'
 import { ref, computed } from 'vue'
@@ -13,21 +14,19 @@ import { convertImageToBase64 } from '@/assets/ts/base64'
 import '@/assets/scss/imageManager/main.scss'
 
 const imageStore = useImageStore()
-const rawImages = computed(() => imageStore.rawImages)
-const taggedImages = computed(() => imageStore.images)
+const images = computed(() => imageStore.images)
 
 const endPoint = createEndPoint(`/api`)
 const platform = 'local'
 const isImported = ref<boolean>(true)
 const isTagged = ref<boolean>(false)
+
 const selectedIndex = ref<number>(-1)
-const selectedRawImage = computed(() => {
-    if (rawImages.value.length === 0) return null
-    return rawImages.value[selectedIndex.value]
-})
-const selectedTaggedImage = computed(() => {
-    if (taggedImages.value.length === 0) return null
-    return taggedImages.value[selectedIndex.value]
+const selectIndex = (index: number) => (selectedIndex.value = index)
+
+const selectedImage = computed(() => {
+    if (images.value.length === 0) return null
+    return images.value[selectedIndex.value]
 })
 
 const switchIsImported = (flag: boolean) => {
@@ -54,10 +53,10 @@ const loadImage = async (directoryName: string) => {
 
 const importImageToApp = async () => {
     const importImages = await Promise.all(
-        rawImages.value.map(async (rawImage) => {
+        images.value.map(async (image) => {
             return {
-                base64: await convertImageToBase64(rawImage.path),
-                ...rawImage,
+                base64: await convertImageToBase64(image.path),
+                ...image,
             }
         })
     )
@@ -70,7 +69,7 @@ const importImageToApp = async () => {
             throw new Error('画像のインポートに失敗しました')
         }
 
-        await updateCounter(rawImages.value.length)
+        await updateCounter(images.value.length)
         imageStore.insertImportedPaths(response.data.imported_paths)
         isImported.value = true
     } catch (error) {
@@ -94,7 +93,7 @@ const updateCounter = async (get_images_count: number) => {
 const generateTagsFromImage = async () => {
     try {
         const response = await axios.post(`${endPoint}/image/tag/generate`, {
-            images: rawImages.value,
+            images: images.value,
         })
 
         if (response.status !== 200) {
@@ -110,7 +109,18 @@ const generateTagsFromImage = async () => {
 
 // 画像にタグを付与して保存
 const saveTagsInImage = async () => {
-    console.log(taggedImages.value)
+    try {
+        const response = await axios.post(`${endPoint}/image/save`, {
+            images: images.value,
+        })
+        console.log(response)
+
+        if (response.status !== 200) {
+            throw new Error('タグの保存に失敗しました')
+        }
+    } catch (error) {
+        console.error(error)
+    }
 }
 </script>
 <template>
@@ -120,7 +130,7 @@ const saveTagsInImage = async () => {
             <ImportImage @switchIsImported="switchIsImported" />
             <ImportedImageList :platform="platform" @loadImage="loadImage" />
         </section>
-        <section class="section-image-list" v-if="rawImages.length !== 0">
+        <section class="section-image-list" v-if="images.length !== 0">
             <h2>画像一覧</h2>
             <ButtonComponent
                 v-if="!isImported"
@@ -136,45 +146,37 @@ const saveTagsInImage = async () => {
             />
             <div class="image-management">
                 <dl class="image-list">
-                    <div v-for="(rawImage, index) in rawImages" :key="index">
-                        <dt>{{ rawImage.name }}</dt>
-                        <dd @click="selectedIndex = index">
-                            <img
-                                :src="
-                                    rawImage.imported_path !== undefined
-                                        ? rawImage.imported_path
-                                        : rawImage.path
-                                "
-                                :alt="rawImage.name"
-                            />
-                        </dd>
-                    </div>
+                    <VImage
+                        v-for="(image, index) in images"
+                        :key="index"
+                        :image="image"
+                        :index="index"
+                        @select="selectIndex"
+                    />
                 </dl>
                 <ul class="image-detail">
-                    <div class="no-image" v-if="selectedRawImage === null">
+                    <div class="no-image" v-if="selectedImage === null">
                         <p>画像が選択されていません</p>
                     </div>
                     <div v-else>
                         <li class="filename">
-                            <p>{{ selectedRawImage.name }}</p>
+                            <p>{{ selectedImage.name }}</p>
                         </li>
                         <li class="image">
                             <img
                                 :src="
-                                    selectedRawImage.imported_path !== undefined
-                                        ? selectedRawImage.imported_path
-                                        : selectedRawImage.path
+                                    selectedImage.imported_path !== undefined
+                                        ? selectedImage.imported_path
+                                        : selectedImage.path
                                 "
-                                :alt="selectedRawImage.name"
+                                :alt="selectedImage.name"
                             />
                         </li>
                     </div>
-                    <div v-if="selectedTaggedImage !== null">
+                    <div v-if="selectedImage !== null">
                         <li class="tags">
                             <div
-                                v-for="(
-                                    tag, tagIndex
-                                ) in selectedTaggedImage.tags"
+                                v-for="(tag, tagIndex) in selectedImage.tags"
                                 :key="tagIndex"
                             >
                                 <input
@@ -190,7 +192,7 @@ const saveTagsInImage = async () => {
                         </li>
                     </div>
                     <ButtonComponent
-                        v-if="selectedTaggedImage !== null"
+                        v-if="selectedImage !== null"
                         @click="saveTagsInImage()"
                         text="タグを付与して保存"
                         :buttonClass="'btn-common blue'"
