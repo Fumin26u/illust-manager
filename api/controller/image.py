@@ -3,7 +3,7 @@ import api.service.image
 
 from flask import Blueprint, request, jsonify, send_from_directory, g
 from api.error.response import res_400, res_404
-from api.utils.string import getRootDir
+from api.utils.string import getRootDir, getNowTime
 
 imageController = Blueprint('imageController', __name__)
 basePath = "/api/image"
@@ -70,10 +70,11 @@ def saveImage():
             return res_400('No data provided')
         
         # 以下の順序で画像を保存する
-        # 画像ファイルにタグを付与 (TODO:とりあえず信頼度上位10個)
+        # 画像ファイルにタグを付与 (TODO: 作る / とりあえず信頼度上位10個)
         # 画像ファイルをimages/${Y-m-d_H-i-s}/${Y-m-d_H-i-s_${index}}.${extension}として保存
         # user_image, user_image_tagテーブルに画像情報をINSERT
         
+        timestamp = getNowTime()
         images = query['images']
         for (index, image) in enumerate(images):
             if (
@@ -84,8 +85,7 @@ def saveImage():
             ):
                 return res_400('必要情報が提供されませんでした。')
             # response = api.service.image.addTagsToImage(imagePath, tags)
-            newFilename = api.service.image.verifyImage(index, image)
-            print(newFilename)
+            newFilename = api.service.image.verifyImage(index, image, timestamp)
             response = api.service.image.saveImage(image, newFilename, g.user_id)
             
             if response['error']:

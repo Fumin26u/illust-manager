@@ -16,13 +16,18 @@ import '@/assets/scss/imageManager/main.scss'
 const imageStore = useImageStore()
 const images = computed(() => imageStore.images)
 
+type Platform = 'local' | 'twitter' | 'pixiv'
 const endPoint = createEndPoint(`/api`)
-const platform = 'local'
+const platform = ref<Platform>('local')
 const isImported = ref<boolean>(true)
 const isTagged = ref<boolean>(false)
 
 const selectedIndex = ref<number>(-1)
 const selectIndex = (index: number) => (selectedIndex.value = index)
+
+const switchPlatform = (pf: Platform) => {
+    platform.value = pf
+}
 
 const selectedImage = computed(() => {
     if (images.value.length === 0) return null
@@ -36,7 +41,7 @@ const switchIsImported = (flag: boolean) => {
 const loadImage = async (directoryName: string) => {
     try {
         const response = await axios.post(`${endPoint}/image/load`, {
-            platform: platform,
+            platform: platform.value,
             directory_name: directoryName,
         })
         if (response.status !== 200) {
@@ -113,7 +118,6 @@ const saveTagsInImage = async () => {
         const response = await axios.post(`${endPoint}/image/save`, {
             images: images.value,
         })
-        console.log(response)
 
         if (response.status !== 200) {
             throw new Error('タグの保存に失敗しました')
@@ -128,7 +132,10 @@ const saveTagsInImage = async () => {
     <main class="main-container" id="page-image-manager">
         <section class="section-import-image">
             <ImportImage @switchIsImported="switchIsImported" />
-            <ImportedImageList :platform="platform" @loadImage="loadImage" />
+            <ImportedImageList
+                @loadImage="loadImage"
+                @switch-platform="switchPlatform"
+            />
         </section>
         <section class="section-image-list" v-if="images.length !== 0">
             <h2>画像一覧</h2>

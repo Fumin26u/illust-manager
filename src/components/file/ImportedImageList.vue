@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import ButtonComponent from '@/components/ButtonComponent.vue'
 
-import { ref, computed, defineEmits } from 'vue'
+import { ref, computed, watch, defineEmits } from 'vue'
 import axios from '@/axios'
 import { createEndPoint } from '@/assets/ts/paths'
 import { Directory } from '@/types/image'
 
-const props = defineProps<{
-    platform: string
-}>()
-const emits = defineEmits(['loadImage'])
+type Platform = 'local' | 'twitter' | 'pixiv'
+
+const emits = defineEmits(['loadImage', 'switchPlatform'])
 
 const endPoint = createEndPoint(`/api/image`)
 const directories = ref<Directory[]>([])
@@ -21,10 +20,16 @@ const fileCount = computed(() => {
     return directory ? directory.count : 0
 })
 
+const platform = ref<Platform>('local')
+watch(platform, () => {
+    getDirectories()
+    switchPlatform(platform.value)
+})
+
 const getDirectories = async () => {
     try {
         const response = await axios.get(
-            `${endPoint}/directories?platform=${props.platform}`
+            `${endPoint}/directories?platform=${platform.value}`
         )
         if (response.status !== 200) {
             throw new Error('ディレクトリ情報の取得に失敗しました')
@@ -40,11 +45,39 @@ getDirectories()
 const loadImage = () => {
     emits('loadImage', selectedDirectory.value)
 }
+
+const switchPlatform = (platform: string) => {
+    emits('switchPlatform', platform)
+}
 </script>
 
 <template>
     <div>
         <h2>インポート済みの画像フォルダを選択</h2>
+        <div>
+            <span>プラットフォーム: {{ platform }}</span>
+            <input
+                type="radio"
+                :value="'local'"
+                :id="'pf-local'"
+                v-model="platform"
+            />
+            <label for="pf-local">ローカル</label>
+            <input
+                type="radio"
+                :value="'twitter'"
+                :id="'pf-twitter'"
+                v-model="platform"
+            />
+            <label for="pf-twitter">twitter</label>
+            <input
+                type="radio"
+                :value="'pixiv'"
+                :id="'pf-pixiv'"
+                v-model="platform"
+            />
+            <label for="pf-pixiv">pixiv</label>
+        </div>
         <div>
             <select v-model="selectedDirectory">
                 <option v-for="(directory, index) in directories" :key="index">

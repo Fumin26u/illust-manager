@@ -136,7 +136,7 @@ def addTagsToImage(imagePath, tags):
                 exif_key = key
                 break
 
-def verifyImage(index, image):
+def verifyImage(index, image, timestamp):
     rootDir = getRootDir()
     platform = image['platform']
     directory = image['directory']
@@ -146,8 +146,8 @@ def verifyImage(index, image):
         path = f"{rootDir}/downloads/{platform}/images/{directory}/{filename}"
         # 画像をpathからimages/${Y-m-d_H-i-s}/${Y-m-d_H-i-s_${index}}.${extension}として保存
         extension = getFileExtension(path)
-        newDir = f"{rootDir}/images/{getNowTime()}"
-        newFilename = f"{getNowTime()}_{index}{extension}"
+        newDir = f"{rootDir}/images/{timestamp}"
+        newFilename = f"{timestamp}_{index}{extension}"
         newPath = f"{newDir}/{newFilename}"
         
         if not os.path.exists(newDir):
@@ -178,7 +178,6 @@ def saveImage(image, filename, user_id):
         for (index, tag) in enumerate(tags):
             if tag['is_saved'] == False:
                 continue
-            print(tag)
             
             name_ja = None
             if 'name_ja' in tag:
