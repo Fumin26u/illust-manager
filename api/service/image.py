@@ -1,10 +1,13 @@
-import os
+import os, shutil
 import numpy as np
 import deepdanbooru.project as ddproject
 import concurrent.futures
 from PIL import Image
+from PIL.ExifTags import TAGS
 from api.utils.string import getRootDir, getNowTime
 from api.config.deepdanbooru import MODEL_PATH
+import api.model.UserImage
+import api.model.UserImageTag
 
 def getDirectories(platform = 'local'):
     rootDir = getRootDir()
@@ -116,5 +119,84 @@ def __resize_and_transform_image(model, image: Image):
 def __getFileCount(directory):
     return len(os.listdir(directory)) if os.path.isdir(directory) else 0
 
-def saveImage():
-    pass
+
+def addTagsToImage(imagePath, tags):
+    rootDir = getRootDir()
+    path = f"{rootDir}/downloads/{path}"
+    
+    img = Image.open(path)
+    exif = img.info.get('exif')
+    
+    for (index, tag) in enumerate(tags):
+        if index >= 10:
+            break
+        exif_key = None
+        for key, tag_name in TAGS.items():
+            if tag_name == tag['tag_name']:
+                exif_key = key
+                break
+
+def verifyImage(index, image):
+    rootDir = getRootDir()
+    platform = image['platform']
+    directory = image['directory']
+    filename = image['name']
+    
+    try:
+        path = f"{rootDir}/downloads/{platform}/images/{directory}/{filename}"
+        # 画像をpathからimages/${Y-m-d_H-i-s}/${Y-m-d_H-i-s_${index}}.${extension}として保存
+        extension = getFileExtension(path)
+        newDir = f"{rootDir}/images/{getNowTime()}"
+        newFilename = f"{getNowTime()}_{index}{extension}"
+        newPath = f"{newDir}/{newFilename}"
+        
+        if not os.path.exists(newDir):
+            os.mkdir(newDir)
+        shutil.move(path, newPath)
+        
+        return newFilename
+    except Exception as e:
+        return {'error': True, 'content': f"Error saving image at index {index}: {e}"}
+    
+def saveImage(image, filename, user_id):
+    created_at = image['created_at'] if 'created_at' in image else getNowTime('mysql')
+    updated_at = image['updated_at'] if 'updated_at' in image else getNowTime('mysql')
+    try:
+        user_image_id = api.model.UserImage.create(
+            user_id,
+            filename,
+            False,
+            created_at,
+            updated_at
+        )
+        
+        if user_image_id == False:
+            Exception('画像の保存に失敗しました。')
+        
+        tags = image['tags']
+        
+        for (index, tag) in enumerate(tags):
+            if tag['is_saved'] == False:
+                continue
+            print(tag)
+            
+            name_ja = None
+            if 'name_ja' in tag:
+                name_ja = tag['name_ja']
+            
+            api.model.UserImageTag.create(
+                user_image_id,
+                tag['name_en'],
+                name_ja,
+                tag['confidence']
+            )
+            
+        return {'error': False, 'content': 'save success'}
+    except Exception as e:
+        return {'error': True, 'content': str(e)}
+    
+    
+    
+def getFileExtension(path):
+    _, extension = os.path.splitext(path)
+    return extension
