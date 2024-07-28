@@ -18,9 +18,12 @@ def getDirectories(platform = 'local'):
         response = []
         for directory in directories:
             targetPath = f"{path}/{directory}"
+            fileCount = __getFileCount(targetPath)
+            if fileCount == 0:
+                continue
             response.append({
                 'name': directory,
-                'count': __getFileCount(targetPath)
+                'count': fileCount
             })
             
         return response
