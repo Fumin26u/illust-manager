@@ -1,20 +1,7 @@
-from api.model import db, UserPlatformAccountDlLog
+import api.model.UserPlatformAccountDlLog
     
-def select(userPlatformAccountId, limit = 10):
-    return (
-        UserPlatformAccountDlLog.query
-            .with_entities(UserPlatformAccountDlLog.post_id)
-            .filter_by(user_platform_account_id = userPlatformAccountId)
-            .order_by(UserPlatformAccountDlLog.downloaded_at.desc())
-            .limit(limit)
-            .all()
-    )
+def select(userPlatformAccountId, limit = 100):
+    return api.model.UserPlatformAccountDlLog.select(userPlatformAccountId, limit)
     
 def create(userPlatformAccountId, postId, downloadedAt):
-    db.session.add(
-        UserPlatformAccountDlLog(
-            user_platform_account_id = userPlatformAccountId,
-            post_id = postId,
-            downloaded_at = downloadedAt
-        )
-    )
+    return api.model.UserPlatformAccountDlLog.create(userPlatformAccountId, postId, downloadedAt)

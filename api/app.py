@@ -1,49 +1,52 @@
-from flask import Flask, jsonify
+from flask import Flask, request, g
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
-from datetime import timedelta
+import api.db.connect
 
 load_dotenv()
 
-def create_app():
-    app = Flask(__name__)
-    app.secret_key = os.getenv('SECRET_KEY')
-    
-    from api.config.mysql import MYSQL_CONFIG
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+pymysql://{MYSQL_CONFIG['user']}:{MYSQL_CONFIG['password']}@{MYSQL_CONFIG['host']}/{MYSQL_CONFIG['database']}"
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.permanent_session_lifetime = timedelta(minutes=30)
-    
-    from api.sqlAlchemy import db
-    db.init_app(app)
-    
-    with app.app_context():
-        from api.model import User
-        from api.model import UserImage
-        from api.model import UserImageTag
-        from api.model import UserPlatformAccount
-        from api.model import UserPlatformAccountDlLog
+app = Flask(__name__)
+app.secret_key = os.getenv('SECRET_KEY')
+
+from api.controller.user import userController
+from api.controller.twitter import twitterController
+from api.controller.pixiv import pixivController
+from api.controller.download import downloadController
+from api.controller.userPlatformAccount import userPlatformAccountController
+from api.controller.userPlatformAccountDlLog import userPlatformAccountDlLogController
+from api.controller.image import imageController
+
+app.register_blueprint(userController)
+app.register_blueprint(twitterController)
+app.register_blueprint(pixivController)
+app.register_blueprint(downloadController)
+app.register_blueprint(userPlatformAccountController)
+app.register_blueprint(userPlatformAccountDlLogController)
+app.register_blueprint(imageController)
+
+from api.config.origin import ORIGIN
+CORS(app, resources={r"/*": {"origins": ORIGIN}})
+
+@app.before_request
+def before_request():
+    user_id = request.headers.get('user-id')
+    g.db = api.db.connect.connect_db()
+    if user_id:
+        g.user_id = user_id
+    else:
+        g.user_id = None
         
-    from api.controller.user import userController
-    from api.controller.twitter import twitterController
-    from api.controller.pixiv import pixivController
-    from api.controller.download import downloadController
-    from api.controller.userPlatformAccount import userPlatformAccountController
-    from api.controller.userPlatformAccountDlLog import userPlatformAccountDlLogController
-
-    app.register_blueprint(userController)
-    app.register_blueprint(twitterController)
-    app.register_blueprint(pixivController)
-    app.register_blueprint(downloadController)
-    app.register_blueprint(userPlatformAccountController)
-    app.register_blueprint(userPlatformAccountDlLogController)
-
-    from api.config.origin import ORIGIN
-    CORS(app, resources={r"/*": {"origins": ORIGIN}})
-    
-    return app
-
+@app.teardown_request
+def teardown_request(exception):
+    db = getattr(g, 'db', None)
+    if db is not None:
+        db.close()
+        
+def get_db():
+    if 'db' not in g:
+        g.db = api.db.connect.connect_db()
+    return g.db
+        
 if __name__ == '__main__':
-    app = create_app()
     app.run(debug=True)

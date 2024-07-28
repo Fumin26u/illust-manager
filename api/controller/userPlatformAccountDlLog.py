@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 
 import api.service.userPlatformAccountDlLog
 import api.service.userPlatformAccount
@@ -15,14 +15,13 @@ async def insert():
         if not query: 
             return res_400('No data provided')
         
-        user_id = query['user_id']
-        userPlatformAccount = api.service.userPlatformAccount.select(user_id, query['platform'])
+        userPlatformAccount = api.service.userPlatformAccount.select(g.user_id, query['platform'])
         
         for post_id in query['post_id']:
             api.service.userPlatformAccountDlLog.create(
                 userPlatformAccount['id'],
                 post_id,
-                datetime.now()
+                datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             )
         
         return jsonify({'error': False, 'content': 'insert done'}), 200

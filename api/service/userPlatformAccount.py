@@ -1,19 +1,7 @@
-from api.model import db, UserPlatformAccount
+import api.model.UserPlatformAccount
 
 def select(user_id, platform):
-    return (
-        UserPlatformAccount.query
-            .filter_by(
-                user_id = user_id, 
-                platform = platform
-            )
-            .first()
-            .to_dict()
-    )
+    return api.model.UserPlatformAccount.select(user_id, platform)
     
 def update(userPlatformAccountId, args):
-    (db.session
-        .query(UserPlatformAccount)
-        .filter_by(id = userPlatformAccountId)
-        .update(args)
-    )
+    return api.model.UserPlatformAccount.update(userPlatformAccountId, args)

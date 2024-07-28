@@ -1,0 +1,211 @@
+<script setup lang="ts">
+import HeaderComponent from '@/components/HeaderComponent.vue'
+import ButtonComponent from '@/components/ButtonComponent.vue'
+import ImportImage from '@/components/file/ImportImage.vue'
+import ImportedImageList from '@/components/file/ImportedImageList.vue'
+import VImage from '@/components/file/VImage.vue'
+
+import axios from '@/axios'
+import { ref, computed } from 'vue'
+import { createEndPoint } from '@/assets/ts/paths'
+import { useImageStore } from '@/store/imageStore'
+import { convertImageToBase64 } from '@/assets/ts/base64'
+
+import '@/assets/scss/imageManager/main.scss'
+
+const imageStore = useImageStore()
+const images = computed(() => imageStore.images)
+
+type Platform = 'local' | 'twitter' | 'pixiv'
+const endPoint = createEndPoint(`/api`)
+const platform = ref<Platform>('local')
+const isImported = ref<boolean>(true)
+const isTagged = ref<boolean>(false)
+
+const selectedIndex = ref<number>(-1)
+const selectIndex = (index: number) => (selectedIndex.value = index)
+
+const switchPlatform = (pf: Platform) => {
+    platform.value = pf
+}
+
+const selectedImage = computed(() => {
+    if (images.value.length === 0) return null
+    return images.value[selectedIndex.value]
+})
+
+const switchIsImported = (flag: boolean) => {
+    isImported.value = flag
+}
+
+const loadImage = async (directoryName: string) => {
+    try {
+        const response = await axios.post(`${endPoint}/image/load`, {
+            platform: platform.value,
+            directory_name: directoryName,
+        })
+        if (response.status !== 200) {
+            throw new Error('画像の取得に失敗しました')
+        }
+
+        imageStore.loadImages(response.data.images)
+        selectedIndex.value = 0
+        switchIsImported(true)
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+const importImageToApp = async () => {
+    const importImages = await Promise.all(
+        images.value.map(async (image) => {
+            return {
+                base64: await convertImageToBase64(image.path),
+                ...image,
+            }
+        })
+    )
+
+    try {
+        const response = await axios.post(`${endPoint}/download/local/import`, {
+            images: importImages,
+        })
+        if (response.status !== 200) {
+            throw new Error('画像のインポートに失敗しました')
+        }
+
+        await updateCounter(images.value.length)
+        imageStore.insertImportedPaths(response.data.imported_paths)
+        isImported.value = true
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// ダウンロード(?)数の更新
+const updateCounter = async (get_images_count: number) => {
+    const response = await axios.post(
+        `${endPoint}/userPlatformAccount/update`,
+        {
+            platform: 'local',
+            get_images_count: get_images_count,
+        }
+    )
+    return response
+}
+
+// 画像からタグを生成
+const generateTagsFromImage = async () => {
+    try {
+        const response = await axios.post(`${endPoint}/image/tag/generate`, {
+            images: images.value,
+        })
+
+        if (response.status !== 200) {
+            throw new Error('タグの生成に失敗しました')
+        }
+
+        imageStore.insertImages(response.data.content)
+        isTagged.value = true
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+// 画像にタグを付与して保存
+const saveTagsInImage = async () => {
+    try {
+        const response = await axios.post(`${endPoint}/image/save`, {
+            images: images.value,
+        })
+
+        if (response.status !== 200) {
+            throw new Error('タグの保存に失敗しました')
+        }
+    } catch (error) {
+        console.error(error)
+    }
+}
+</script>
+<template>
+    <HeaderComponent />
+    <main class="main-container" id="page-image-manager">
+        <section class="section-import-image">
+            <ImportImage @switchIsImported="switchIsImported" />
+            <ImportedImageList
+                @loadImage="loadImage"
+                @switch-platform="switchPlatform"
+            />
+        </section>
+        <section class="section-image-list" v-if="images.length !== 0">
+            <h2>画像一覧</h2>
+            <ButtonComponent
+                v-if="!isImported"
+                @click="importImageToApp()"
+                text="アプリにインポート"
+                :buttonClass="'btn-common green'"
+            />
+            <ButtonComponent
+                v-else
+                @click="generateTagsFromImage()"
+                text="タグを生成"
+                :buttonClass="'btn-common blue'"
+            />
+            <div class="image-management">
+                <dl class="image-list">
+                    <VImage
+                        v-for="(image, index) in images"
+                        :key="index"
+                        :image="image"
+                        :index="index"
+                        @select="selectIndex"
+                    />
+                </dl>
+                <ul class="image-detail">
+                    <div class="no-image" v-if="selectedImage === null">
+                        <p>画像が選択されていません</p>
+                    </div>
+                    <div v-else>
+                        <li class="filename">
+                            <p>{{ selectedImage.name }}</p>
+                        </li>
+                        <li class="image">
+                            <img
+                                :src="
+                                    selectedImage.imported_path !== undefined
+                                        ? selectedImage.imported_path
+                                        : selectedImage.path
+                                "
+                                :alt="selectedImage.name"
+                            />
+                        </li>
+                    </div>
+                    <div v-if="selectedImage !== null">
+                        <li class="tags">
+                            <div
+                                v-for="(tag, tagIndex) in selectedImage.tags"
+                                :key="tagIndex"
+                            >
+                                <input
+                                    :id="tag.name_en"
+                                    type="checkbox"
+                                    v-model="tag.is_saved"
+                                />
+                                <label :for="tag.name_en">
+                                    {{ tag.name_en }} (信頼度:
+                                    {{ tag.confidence }})
+                                </label>
+                            </div>
+                        </li>
+                    </div>
+                    <ButtonComponent
+                        v-if="selectedImage !== null"
+                        @click="saveTagsInImage()"
+                        text="タグを付与して保存"
+                        :buttonClass="'btn-common blue'"
+                    />
+                </ul>
+            </div>
+        </section>
+    </main>
+</template>

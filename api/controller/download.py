@@ -2,7 +2,6 @@ from flask import Blueprint, request, jsonify
 
 from api.error.response import res_400, res_404
 import api.service.download.image.main
-import api.service.download.image.twitter
 import api.service.download.zip.downloadZip
 
 downloadController = Blueprint('downloadController', __name__)
@@ -19,7 +18,6 @@ async def downloadImage():
         if response['error']:
             return res_400('Download failed')
                     
-        print(response)    
         return jsonify(response), 200
     except Exception as e:
         return res_400(e)
@@ -38,5 +36,21 @@ def downloadZip():
         response = api.service.download.zip.downloadZip.downloadZip(timestamp, platform)
         
         return res_404 if not response else response, 200
+    except Exception as e:
+        return res_400(e)
+    
+# ローカルからimportしたrawImageを取り込む
+@downloadController.route(f"{basePath}/local/import", methods=['POST'])
+async def importLocalImage():
+    try:
+        query = request.get_json()
+        if not query['images']: 
+            return res_400('No data provided')
+                
+        response = await api.service.download.image.main.download(query['images'], 'local')
+        if response['error']:
+            return res_400('Import failed')
+                    
+        return jsonify(response), 200
     except Exception as e:
         return res_400(e)
