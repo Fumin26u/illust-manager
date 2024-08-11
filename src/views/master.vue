@@ -3,7 +3,6 @@ import HeaderComponent from '@/components/HeaderComponent.vue'
 
 import { ref, computed, onMounted } from 'vue'
 import { useTagStore } from '@/store/tagStore'
-import { createEndPoint } from '@/assets/ts/paths'
 
 import '@/assets/scss/master.scss'
 
