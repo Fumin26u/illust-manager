@@ -48,3 +48,33 @@ def update():
     except Exception as e:
         print(e)
         return res_400()
+    
+@tagController.route(f"{basePath}/update/cluster", methods=['PUT'])
+def updateCluster():
+    try:
+        query = request.json
+        if (
+            not query or 
+            not query['tags'] or
+            not query['category_id']
+        ):
+            raise exception.NoQueryProvidedException()
+        
+        tags = query['tags']
+        categoryId = query['category_id']
+        
+        result = []
+        for tag in tags:
+            result.append(api.service.tag.update({
+                'id': tag['id'],
+                'name_ja': tag['name_ja'],
+                'category_id': categoryId
+            }))
+        print(result)
+        if not result:
+            raise Exception('INTERNAL SERVER ERROR')
+        
+        return jsonify(result), 200
+    except Exception as e:
+        print(e)
+        return res_400()

@@ -19,10 +19,34 @@ export const useTagStore = defineStore('tag', () => {
 
     const updateTag = async (tag: Tag) => {
         const updatedTag = await put(`${endPoint}/tag/update`, tag)
-        // タグの更新
         const index = tags.value.findIndex((t) => t.id === updatedTag.id)
         tags.value[index] = updatedTag
     }
 
-    return { tags, categories, getTags, getCategories, search, updateTag }
+    const updateTagCategoryIds = async (
+        targetTags: Tag[],
+        categoryId: number
+    ) => {
+        const updatedTags = await put(`${endPoint}/tag/update/cluster`, {
+            tags: targetTags,
+            category_id: categoryId,
+        })
+
+        updatedTags.forEach((updatedTag: Tag) => {
+            const index = tags.value.findIndex(
+                (tag) => tag.id === updatedTag.id
+            )
+            tags.value[index] = updatedTag
+        })
+    }
+
+    return {
+        tags,
+        categories,
+        getTags,
+        getCategories,
+        search,
+        updateTag,
+        updateTagCategoryIds,
+    }
 })

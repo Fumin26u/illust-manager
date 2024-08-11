@@ -52,6 +52,13 @@ const update = async () => {
     }
 }
 
+const selectedCategoryId = ref<number>(1)
+const updateTagCategoryIds = async () => {
+    const selectedTags = tags.value.filter((tag) => tag.selected)
+    await tagStore.updateTagCategoryIds(selectedTags, selectedCategoryId.value)
+    dialog.value = false
+}
+
 onMounted(async () => {
     await tagStore.getTags()
     await tagStore.getCategories()
@@ -109,7 +116,11 @@ onMounted(async () => {
                         @click="selectedId = tag.id"
                     >
                         <td class="text-center py-1 checkbox">
-                            <input type="checkbox" v-model="tag.selected" />
+                            <input
+                                type="checkbox"
+                                :id="tag.name_en"
+                                v-model="tag.selected"
+                            />
                         </td>
                         <td class="text-center py-1 id">{{ tag.id }}</td>
                         <td class="text-center py-1 category_id">
@@ -123,15 +134,16 @@ onMounted(async () => {
                         </td>
                     </tr>
                 </tbody>
-                <v-btn color="primary" class="open-dialog">
-                    一括更新
+                <v-container>
+                    <v-btn color="primary" class="open-dialog">一括更新</v-btn>
                     <v-dialog v-model="dialog" activator="parent">
-                        <v-sheet>
-                            <v-sheet class="my-2 mx-5">
+                        <v-card>
+                            <v-card-title>タグの一括更新</v-card-title>
+                            <v-card-text>
                                 <p class="my-4">
                                     選択したタグのカテゴリーを一括更新:
                                 </p>
-                                <select>
+                                <select v-model="selectedCategoryId">
                                     <option
                                         v-for="category in categories"
                                         :key="category.id"
@@ -143,14 +155,14 @@ onMounted(async () => {
                                 <v-btn
                                     color="primary"
                                     block
-                                    @click="dialog = false"
+                                    @click="updateTagCategoryIds()"
                                 >
                                     更新
                                 </v-btn>
-                            </v-sheet>
-                        </v-sheet>
+                            </v-card-text>
+                        </v-card>
                     </v-dialog>
-                </v-btn>
+                </v-container>
             </v-table>
             <v-container class="tag-info">
                 <v-container class="top-button-area">
