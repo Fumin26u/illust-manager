@@ -8,7 +8,6 @@ from selenium.webdriver.common.by import By
 
 # ツイート情報の取得
 def getTweet(driver: webdriver, query, latestGetTweets, url):
-    print(f"driver: {driver} query: {query} latestGetTweets: {latestGetTweets} url: {url}")
     randomSleep()
     # 初期リンク
     initUrl = url
@@ -129,5 +128,6 @@ def __getTweetInfo(article, query, latestGetTweets):
     tweetInfo['text'] = '-'
     # 投稿日時はこの情報から取得できないのでnullに設定
     tweetInfo['created_at'] = None
+    print(tweetInfo)
 
     return tweetInfo
