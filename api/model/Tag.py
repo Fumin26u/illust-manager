@@ -12,6 +12,18 @@ def to_dict(row):
         'updated_at': row['updated_at'].isoformat()
     }
     
+def select_all():
+    db = g.db
+    cursor = db.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM tag')
+    tags = cursor.fetchall()
+    cursor.close()
+    
+    if not tags:
+        return False
+    
+    return [to_dict(tag) for tag in tags]
+    
 def select(tag_id: int):
     db = g.db
     cursor = db.cursor(dictionary=True)

@@ -1,0 +1,41 @@
+@import './style.scss';
+
+#page-master .main-container {
+    @include horizontalAlignFlex(start);
+
+    margin-top: 1em;
+
+    > .tags {
+        width: 64%;
+        cursor: pointer;
+
+        .item {
+            margin: 8px 0;
+            
+            &.selected {
+                background-color: #fffbbb;
+            }
+        }
+    }
+
+    > .tag-info {
+        width: 32%;
+
+        .item, .item * {
+            display: block;
+        }
+
+        > .item {
+            margin: 0 0 1em;
+
+            .title {
+                color: #888;
+            }
+
+            .content {
+                font-size: 18px;
+            }
+        } 
+
+    }
+}
