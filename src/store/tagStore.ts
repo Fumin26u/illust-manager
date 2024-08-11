@@ -21,5 +21,22 @@ export const useTagStore = defineStore('tag', () => {
         }
     }
 
-    return { tags, getTags }
+    const search = async (
+        endPoint = createEndPoint('/api/tag/search'),
+        query: string
+    ) => {
+        try {
+            const response = await axios.get(`${endPoint}?search=${query}`)
+            if (response.status !== 200) {
+                throw new Error('Failed to search tags')
+            }
+
+            tags.value = response.data
+            console.log(tags.value)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    return { tags, getTags, search }
 })

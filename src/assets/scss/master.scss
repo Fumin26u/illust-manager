@@ -1,9 +1,16 @@
 @import './style.scss';
 
-#page-master .main-container {
-    @include horizontalAlignFlex(start);
-
+#page-master.main-container {
     margin-top: 1em;
+}
+
+#page-master.main-container .search-form {
+    display: block;
+    width: 100%;
+}
+
+#page-master.main-container .tags-detail {
+    @include horizontalAlignFlex(start);
 
     > .tags {
         width: 64%;

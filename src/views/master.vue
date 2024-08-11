@@ -32,9 +32,14 @@ const headers = ref([
     { name_en: 'name_en', name_ja: '英名' },
     { name_en: 'name_ja', name_ja: '日本語名' },
 ])
+const searchString = ref<string>('')
 
 const truncateText = (text: string, length = 30) => {
     return text.length > length ? text.slice(0, length) + '...' : text
+}
+
+const search = async () => {
+    await tagStore.search(`${endPoint}/search`, searchString.value)
 }
 
 onMounted(async () => {
@@ -44,13 +49,27 @@ onMounted(async () => {
 
 <template>
     <HeaderComponent />
-    <main id="page-master">
-        <v-container class="main-container">
+    <main id="page-master" class="main-container">
+        <v-form class="search-form">
+            <v-text-field
+                v-model="searchString"
+                :counter="10"
+                label="タグを検索"
+                hide-details
+                required
+            ></v-text-field>
+            <v-btn @click="search()" density="comfortable">検索</v-btn>
+        </v-form>
+        <section class="tags-detail">
             <v-table density="compact" class="tags">
                 <thead>
                     <tr>
-                        <th>checkbox</th>
-                        <th v-for="header in headers" :key="header.name_en">
+                        <th class="text-center">checkbox</th>
+                        <th
+                            v-for="header in headers"
+                            :key="header.name_en"
+                            class="text-center"
+                        >
                             {{ header.name_ja ?? header.name_en }}
                         </th>
                     </tr>
@@ -91,6 +110,6 @@ onMounted(async () => {
                     </v-list-item-subtitle>
                 </v-list-item>
             </v-list>
-        </v-container>
+        </section>
     </main>
 </template>

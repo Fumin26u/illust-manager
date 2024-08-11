@@ -35,3 +35,15 @@ def select(tag_id: int):
         return False
     
     return to_dict(tag)
+
+def selectWithSearch(search: str):
+    db = g.db
+    cursor = db.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM tag WHERE name_en LIKE %s', ('%' + search + '%',))
+    tags = cursor.fetchall()
+    cursor.close()
+    
+    if not tags:
+        return False
+    
+    return [to_dict(tag) for tag in tags]
