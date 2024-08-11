@@ -13,7 +13,7 @@ def to_dict(row):
     }
     
 def select_all():
-    db = g.db
+    db = g.db    
     cursor = db.cursor(dictionary=True)
     cursor.execute('SELECT * FROM tag')
     tags = cursor.fetchall()
@@ -47,6 +47,18 @@ def selectWithSearch(search: str):
         return False
     
     return [to_dict(tag) for tag in tags]
+
+def selectTagWords(tag_id: int):
+    db = g.db
+    cursor = db.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM tag_words WHERE tag_id = %s', (tag_id,))
+    tag_words = cursor.fetchall()
+    cursor.close()
+    
+    if not tag_words:
+        return []
+    
+    return tag_words
 
 def update(params):
     db = g.db

@@ -15,13 +15,36 @@
     > .tags {
         width: 64%;
         cursor: pointer;
+        position: relative;
+        
+        table, thead, tbody, td, th { display: block; }
+        tr { display: flex; }
+
+        thead th, tbody td {
+            &:nth-child(1) { width: 12%; }
+            &:nth-child(2) { width: 12%; }
+            &:nth-child(3) { width: 20%; }
+            &:nth-child(4) { width: 32%; }
+            &:nth-child(5) { width: 24%; }
+        }
+
+        tbody {
+            max-height: 600px;
+            overflow-y: auto;
+        }
 
         .item {
-            margin: 8px 0;
+            padding: 4px 0 0;
             
             &.selected {
                 background-color: #fffbbb;
             }
+        }
+
+        .open-dialog {
+            position: absolute;
+            bottom: 2em;
+            right: 2em;
         }
     }
 
@@ -41,15 +64,17 @@
             display: block;
         }
 
-        .item {
+        .v-list-item {
             margin: 0 0 1em;
 
-            .title {
+            .v-list-item-title {
                 color: #888;
             }
 
-            .content {
+            .v-list-item-subtitle, .content {
                 font-size: 18px;
+                line-height: normal;
+                color: black;
             }
         } 
 

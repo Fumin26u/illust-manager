@@ -2,13 +2,13 @@ export interface Tag {
     selected: boolean
     id: number
     name_en: string
-    name_ja?: string
+    name_ja: string
     post_count: number
-    category: Category
+    category_id: number
     is_deprecated: boolean
     created_at: string
-    updated_at?: string
-    words?: TagWord[]
+    updated_at: string
+    words: TagWord[]
 }
 
 export interface TagWord {

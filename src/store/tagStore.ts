@@ -24,5 +24,5 @@ export const useTagStore = defineStore('tag', () => {
         tags.value[index] = updatedTag
     }
 
-    return { tags, getTags, getCategories, search, updateTag }
+    return { tags, categories, getTags, getCategories, search, updateTag }
 })

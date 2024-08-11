@@ -7,24 +7,26 @@ import { createEndPoint } from '@/assets/ts/paths'
 
 import '@/assets/scss/master.scss'
 
-const endPoint = createEndPoint('/api/tag')
 const tagStore = useTagStore()
+const initTag = {
+    selected: false,
+    id: -1,
+    category_id: 1,
+    name_en: '',
+    name_ja: '',
+    words: [],
+    is_deprecated: false,
+    post_count: 0,
+    created_at: '',
+    updated_at: '',
+}
 
-const tags = computed(() => tagStore.tags)
-const selectedTag = computed(() =>
-    tags.value.find((tag) => tag.id === selectedId.value)
+const tags = computed(() => tagStore.tags ?? [{ ...initTag }])
+const categories = computed(() => tagStore.categories)
+const selectedTag = computed(
+    () =>
+        tags.value.find((tag) => tag.id === selectedId.value) ?? { ...initTag }
 )
-const displaySelectedTag = computed(() => {
-    const tag = tags.value.find((tag) => tag.id === selectedId.value)
-    return [
-        { name: 'id', value: tag?.id, edit: false },
-        { name: 'category_id', value: tag?.category_id, edit: 'select' },
-        { name: '英名', value: tag?.name_en, edit: false },
-        { name: '日本語名', value: tag?.name_ja, edit: 'text' },
-        { name: '登録日時', value: tag?.created_at, edit: false },
-        { name: '更新日時', value: tag?.updated_at, edit: false },
-    ]
-})
 
 const selectedId = ref<number>(-1)
 const headers = ref([
@@ -34,12 +36,16 @@ const headers = ref([
     { name_en: 'name_ja', name_ja: '日本語名' },
 ])
 const searchString = ref<string>('')
+const dialog = ref<boolean>(false)
 
-const truncateText = (text: string, length = 30) => {
+const truncateText = (text: string, length = 24) => {
     return text.length > length ? text.slice(0, length) + '...' : text
 }
 
-const search = async () => await tagStore.search(searchString.value)
+const search = async () => {
+    selectedId.value = -1
+    await tagStore.search(searchString.value)
+}
 const update = async () => {
     if (selectedTag.value) {
         await tagStore.updateTag(selectedTag.value)
@@ -48,6 +54,7 @@ const update = async () => {
 
 onMounted(async () => {
     await tagStore.getTags()
+    await tagStore.getCategories()
 })
 </script>
 
@@ -82,11 +89,12 @@ onMounted(async () => {
             <v-table density="compact" class="tags">
                 <thead>
                     <tr>
-                        <th class="text-center">checkbox</th>
+                        <th class="text-center checkbox">選択</th>
                         <th
                             v-for="header in headers"
                             :key="header.name_en"
                             class="text-center"
+                            :class="header.name_en"
                         >
                             {{ header.name_ja ?? header.name_en }}
                         </th>
@@ -100,19 +108,49 @@ onMounted(async () => {
                         class="item"
                         @click="selectedId = tag.id"
                     >
-                        <td class="text-center py-1">
+                        <td class="text-center py-1 checkbox">
                             <input type="checkbox" v-model="tag.selected" />
                         </td>
-                        <td class="text-center py-1">{{ tag.id }}</td>
-                        <td class="text-center py-1">{{ tag.category_id }}</td>
-                        <td class="text-center py-1">
+                        <td class="text-center py-1 id">{{ tag.id }}</td>
+                        <td class="text-center py-1 category_id">
+                            {{ tag.category_id }}
+                        </td>
+                        <td class="text-center py-1 name_en">
                             {{ truncateText(tag.name_en) }}
                         </td>
-                        <td class="text-center py-1">
+                        <td class="text-center py-1 name_ja">
                             {{ tag.name_ja ?? '未設定' }}
                         </td>
                     </tr>
                 </tbody>
+                <v-btn color="primary" class="open-dialog">
+                    一括更新
+                    <v-dialog v-model="dialog" activator="parent">
+                        <v-sheet>
+                            <v-sheet class="my-2 mx-5">
+                                <p class="my-4">
+                                    選択したタグのカテゴリーを一括更新:
+                                </p>
+                                <select>
+                                    <option
+                                        v-for="category in categories"
+                                        :key="category.id"
+                                        :value="category.id"
+                                    >
+                                        {{ category.name_en }}
+                                    </option>
+                                </select>
+                                <v-btn
+                                    color="primary"
+                                    block
+                                    @click="dialog = false"
+                                >
+                                    更新
+                                </v-btn>
+                            </v-sheet>
+                        </v-sheet>
+                    </v-dialog>
+                </v-btn>
             </v-table>
             <v-container class="tag-info">
                 <v-container class="top-button-area">
@@ -121,23 +159,47 @@ onMounted(async () => {
                     </v-btn>
                 </v-container>
                 <v-list elevation="2">
-                    <v-list-item
-                        v-for="(data, index) in displaySelectedTag"
-                        :key="index"
-                        class="item"
-                    >
-                        <v-list-item-title class="title">
-                            {{ data.name }}
-                        </v-list-item-title>
+                    <v-list-item title="id">
+                        <v-list-item-subtitle class="content">
+                            {{ selectedTag.id ?? '-' }}
+                        </v-list-item-subtitle>
+                    </v-list-item>
+                    <v-list-item title="カテゴリー">
+                        <select v-model="selectedTag.category_id">
+                            <option
+                                v-for="category in categories"
+                                :key="category.id"
+                                :value="category.id"
+                            >
+                                {{ category.name_en }}
+                            </option>
+                        </select>
+                    </v-list-item>
+                    <v-list-item title="英名">
+                        <v-list-item-subtitle class="content">
+                            {{ selectedTag.name_en ?? '-' }}
+                        </v-list-item-subtitle>
+                    </v-list-item>
+                    <v-list-item title="日本語名">
                         <v-text-field
-                            v-if="selectedId !== -1 && data.edit === 'text'"
                             v-model="selectedTag.name_ja"
-                            :value="data.value"
+                            :value="selectedTag.name_ja"
                             variant="underlined"
                             hide-details
                         ></v-text-field>
-                        <v-list-item-subtitle v-else class="content">
-                            {{ data.value ?? '-' }}
+                    </v-list-item>
+                    <v-list-item title="キーワード">
+                        <p
+                            class="content"
+                            v-for="word in selectedTag.words"
+                            :key="word.id"
+                        >
+                            {{ word.name_en }}
+                        </p>
+                    </v-list-item>
+                    <v-list-item title="最終更新日時">
+                        <v-list-item-subtitle class="content">
+                            {{ selectedTag.updated_at ?? '-' }}
                         </v-list-item-subtitle>
                     </v-list-item>
                     <v-container class="top-button-area">

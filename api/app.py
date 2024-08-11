@@ -17,6 +17,7 @@ from api.controller.userPlatformAccount import userPlatformAccountController
 from api.controller.userPlatformAccountDlLog import userPlatformAccountDlLogController
 from api.controller.image import imageController
 from api.controller.tag import tagController
+from api.controller.category import categoryController
 
 app.register_blueprint(userController)
 app.register_blueprint(twitterController)
@@ -26,6 +27,7 @@ app.register_blueprint(userPlatformAccountController)
 app.register_blueprint(userPlatformAccountDlLogController)
 app.register_blueprint(imageController)
 app.register_blueprint(tagController)
+app.register_blueprint(categoryController)
 
 from api.config.origin import ORIGIN
 CORS(app, resources={r"/*": {"origins": ORIGIN}})
