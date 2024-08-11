@@ -51,7 +51,6 @@ def get_db():
 import api.error.response as error_handler
 app.register_error_handler(400, error_handler.res_400)
 app.register_error_handler(401, error_handler.res_401)
-app.register_error_handler(402, error_handler.res_402)
 app.register_error_handler(403, error_handler.res_403)
 app.register_error_handler(404, error_handler.res_404)
 app.register_error_handler(405, error_handler.res_405)

@@ -6,9 +6,6 @@ def res_400(e):
 def res_401(e):
     return jsonify({'error': True, 'message': 'Unauthorized'}), 401
 
-def res_402(e):
-    return jsonify({'error': True, 'message': 'Payment Required'}), 402
-
 def res_403(e):
     return jsonify({'error': True, 'message': 'Forbidden'}), 403
 
