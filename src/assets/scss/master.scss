@@ -28,11 +28,20 @@
     > .tag-info {
         width: 32%;
 
+        > .top-button-area {
+            padding: 0;
+            margin-bottom: 8px;
+
+            button {
+                margin-right: 8px;
+            }
+        }
+
         .item, .item * {
             display: block;
         }
 
-        > .item {
+        .item {
             margin: 0 0 1em;
 
             .title {

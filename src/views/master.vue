@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import HeaderComponent from '@/components/HeaderComponent.vue'
-import ButtonComponent from '@/components/ButtonComponent.vue'
 
 import { ref, computed, onMounted } from 'vue'
 import { useTagStore } from '@/store/tagStore'
 import { createEndPoint } from '@/assets/ts/paths'
-import { Tag } from '@/types/tag'
 
 import '@/assets/scss/master.scss'
 
@@ -13,12 +11,15 @@ const endPoint = createEndPoint('/api/tag')
 const tagStore = useTagStore()
 
 const tags = computed(() => tagStore.tags)
-const selectedTag = computed(() => {
+const selectedTag = computed(() =>
+    tags.value.find((tag) => tag.id === selectedId.value)
+)
+const displaySelectedTag = computed(() => {
     const tag = tags.value.find((tag) => tag.id === selectedId.value)
     return [
         { name: 'id', value: tag?.id, edit: false },
         { name: 'category_id', value: tag?.category_id, edit: 'select' },
-        { name: '英名', value: tag?.name_en, edit: 'text' },
+        { name: '英名', value: tag?.name_en, edit: false },
         { name: '日本語名', value: tag?.name_ja, edit: 'text' },
         { name: '登録日時', value: tag?.created_at, edit: false },
         { name: '更新日時', value: tag?.updated_at, edit: false },
@@ -38,8 +39,11 @@ const truncateText = (text: string, length = 30) => {
     return text.length > length ? text.slice(0, length) + '...' : text
 }
 
-const search = async () => {
-    await tagStore.search(`${endPoint}/search`, searchString.value)
+const search = async () => await tagStore.search(searchString.value)
+const update = async () => {
+    if (selectedTag.value) {
+        await tagStore.updateTag(selectedTag.value)
+    }
 }
 
 onMounted(async () => {
@@ -51,14 +55,28 @@ onMounted(async () => {
     <HeaderComponent />
     <main id="page-master" class="main-container">
         <v-form class="search-form">
-            <v-text-field
-                v-model="searchString"
-                :counter="10"
-                label="タグを検索"
-                hide-details
-                required
-            ></v-text-field>
-            <v-btn @click="search()" density="comfortable">検索</v-btn>
+            <v-col cols="12" sm="10" md="8" lg="6">
+                <v-row>
+                    <v-col cols="9">
+                        <v-text-field
+                            v-model="searchString"
+                            label="タグを検索"
+                            variant="underlined"
+                            hide-details
+                            required
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="3" class="d-flex align-end">
+                        <v-btn
+                            @click="search()"
+                            color="secondary"
+                            density="comfortable"
+                        >
+                            検索
+                        </v-btn>
+                    </v-col>
+                </v-row>
+            </v-col>
         </v-form>
         <section class="tags-detail">
             <v-table density="compact" class="tags">
@@ -96,20 +114,43 @@ onMounted(async () => {
                     </tr>
                 </tbody>
             </v-table>
-            <v-list class="tag-info" elevation="2">
-                <v-list-item
-                    v-for="(data, index) in selectedTag"
-                    :key="index"
-                    class="item"
-                >
-                    <v-list-item-title class="title">
-                        {{ data.name }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle class="content">
-                        {{ data.value ?? '-' }}
-                    </v-list-item-subtitle>
-                </v-list-item>
-            </v-list>
+            <v-container class="tag-info">
+                <v-container class="top-button-area">
+                    <v-btn color="secondary" @click="selectedId = -1">
+                        新規作成
+                    </v-btn>
+                </v-container>
+                <v-list elevation="2">
+                    <v-list-item
+                        v-for="(data, index) in displaySelectedTag"
+                        :key="index"
+                        class="item"
+                    >
+                        <v-list-item-title class="title">
+                            {{ data.name }}
+                        </v-list-item-title>
+                        <v-text-field
+                            v-if="selectedId !== -1 && data.edit === 'text'"
+                            v-model="selectedTag.name_ja"
+                            :value="data.value"
+                            variant="underlined"
+                            hide-details
+                        ></v-text-field>
+                        <v-list-item-subtitle v-else class="content">
+                            {{ data.value ?? '-' }}
+                        </v-list-item-subtitle>
+                    </v-list-item>
+                    <v-container class="top-button-area">
+                        <v-btn
+                            v-if="selectedId !== -1"
+                            color="primary"
+                            @click="update()"
+                        >
+                            更新
+                        </v-btn>
+                    </v-container>
+                </v-list>
+            </v-container>
         </section>
     </main>
 </template>

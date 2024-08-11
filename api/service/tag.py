@@ -8,3 +8,6 @@ def select(tag_id: int):
 
 def selectWithSearch(search: str):
     return api.model.Tag.selectWithSearch(search)
+
+def update(params):
+    return api.model.Tag.update(params)

@@ -22,16 +22,29 @@ def index():
 @tagController.route(f"{basePath}/search", methods=['GET'])
 def search():
     try:
-        search = request.args.get('search')
-        print(search)
-        if not search:
-            raise Exception('INTERNAL SERVER ERROR: search is required')
+        query = request.args.get('query')
         
-        tags = api.service.tag.selectWithSearch(search)
+        tags = api.service.tag.selectWithSearch(query) if query else api.service.tag.select_all()
         if not tags:
             raise Exception('INTERNAL SERVER ERROR: tags are not detected')
         
         return jsonify(tags), 200
+    except Exception as e:
+        print(e)
+        return res_400()
+        
+@tagController.route(f"{basePath}/update", methods=['PUT'])
+def update():
+    try:
+        query = request.json
+        if not query:
+            raise exception.NoQueryProvidedException()
+        
+        tag = api.service.tag.update(query)
+        if not tag:
+            raise Exception('INTERNAL SERVER ERROR')
+        
+        return jsonify(tag), 200
     except Exception as e:
         print(e)
         return res_400()

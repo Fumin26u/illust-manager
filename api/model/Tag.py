@@ -27,7 +27,7 @@ def select_all():
 def select(tag_id: int):
     db = g.db
     cursor = db.cursor(dictionary=True)
-    cursor.execute('SELECT id, name_en FROM tag WHERE id = %s', (tag_id,))
+    cursor.execute('SELECT * FROM tag WHERE id = %s', (tag_id,))
     tag = cursor.fetchone()
     cursor.close()
     
@@ -47,3 +47,20 @@ def selectWithSearch(search: str):
         return False
     
     return [to_dict(tag) for tag in tags]
+
+def update(params):
+    db = g.db
+    
+    sql = '''
+    UPDATE tag
+    SET name_ja = %s, category_id = %s
+    WHERE id = %s
+    '''
+    
+    cursor = db.cursor(dictionary=True)
+    cursor.execute(sql, (params['name_ja'], params['category_id'], params['id']))
+    db.commit()
+    tag = select(params['id'])
+    cursor.close()
+    
+    return tag

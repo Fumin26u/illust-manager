@@ -2,41 +2,27 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { Tag, Category, CategoryMaster } from '@/types/tag'
 import { createEndPoint } from '@/assets/ts/paths'
-import axios from '@/axios'
+import { get, put } from '@/api'
 
 export const useTagStore = defineStore('tag', () => {
     const tags = ref<Tag[]>([])
+    const categories = ref<Category[]>([])
+    const endPoint = createEndPoint('/api')
 
-    const getTags = async (endPoint = createEndPoint('/api/tag')) => {
-        try {
-            const response = await axios.get(`${endPoint}`)
-            if (response.status !== 200) {
-                throw new Error('Failed to fetch tags')
-            }
+    const getTags = async () => (tags.value = await get(`${endPoint}/tag`))
 
-            tags.value = response.data
-            console.log(tags.value)
-        } catch (error) {
-            console.error(error)
-        }
+    const getCategories = async () =>
+        (categories.value = await get(`${endPoint}/category`))
+
+    const search = async (query: string) =>
+        (tags.value = await get(`${endPoint}/tag/search?query=${query}`))
+
+    const updateTag = async (tag: Tag) => {
+        const updatedTag = await put(`${endPoint}/tag/update`, tag)
+        // タグの更新
+        const index = tags.value.findIndex((t) => t.id === updatedTag.id)
+        tags.value[index] = updatedTag
     }
 
-    const search = async (
-        endPoint = createEndPoint('/api/tag/search'),
-        query: string
-    ) => {
-        try {
-            const response = await axios.get(`${endPoint}?search=${query}`)
-            if (response.status !== 200) {
-                throw new Error('Failed to search tags')
-            }
-
-            tags.value = response.data
-            console.log(tags.value)
-        } catch (error) {
-            console.error(error)
-        }
-    }
-
-    return { tags, getTags, search }
+    return { tags, getTags, getCategories, search, updateTag }
 })
