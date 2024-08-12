@@ -35,7 +35,8 @@ const getDirectories = async () => {
             throw new Error('ディレクトリ情報の取得に失敗しました')
         }
         directories.value = response.data.directories
-        selectedDirectory.value = directories.value[0].name
+        selectedDirectory.value =
+            directories.value.length > 0 ? directories.value[0].name : ''
     } catch (error) {
         console.error(error)
     }
@@ -53,30 +54,13 @@ const switchPlatform = (platform: string) => {
 
 <template>
     <div>
-        <h2>インポート済みの画像フォルダを選択</h2>
         <div>
             <span>プラットフォーム: {{ platform }}</span>
-            <input
-                type="radio"
-                :value="'local'"
-                :id="'pf-local'"
-                v-model="platform"
-            />
-            <label for="pf-local">ローカル</label>
-            <input
-                type="radio"
-                :value="'twitter'"
-                :id="'pf-twitter'"
-                v-model="platform"
-            />
-            <label for="pf-twitter">twitter</label>
-            <input
-                type="radio"
-                :value="'pixiv'"
-                :id="'pf-pixiv'"
-                v-model="platform"
-            />
-            <label for="pf-pixiv">pixiv</label>
+            <v-radio-group v-model="platform" inline>
+                <v-radio label="ローカル" value="local"></v-radio>
+                <v-radio label="twitter" value="twitter"></v-radio>
+                <v-radio label="pixiv" value="pixiv"></v-radio>
+            </v-radio-group>
         </div>
         <div>
             <select v-model="selectedDirectory">
@@ -88,10 +72,8 @@ const switchPlatform = (platform: string) => {
                 (ファイル数: {{ fileCount }})
             </span>
         </div>
-        <ButtonComponent
-            @click="loadImage"
-            text="画像を読み込む"
-            :buttonClass="'btn-small green'"
-        />
+        <v-btn @click="loadImage" color="secondary" density="comfortable">
+            画像を読み込む
+        </v-btn>
     </div>
 </template>

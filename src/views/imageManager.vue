@@ -21,8 +21,9 @@ const endPoint = createEndPoint(`/api`)
 const platform = ref<Platform>('local')
 const isImported = ref<boolean>(true)
 const isTagged = ref<boolean>(false)
+const importTabs = ref<string>('local')
 
-const selectedIndex = ref<number>(-1)
+const selectedIndex = ref<number>(0)
 const selectIndex = (index: number) => (selectedIndex.value = index)
 
 const switchPlatform = (pf: Platform) => {
@@ -75,7 +76,11 @@ const importImageToApp = async () => {
         }
 
         await updateCounter(images.value.length)
-        imageStore.insertImportedPaths(response.data.imported_paths)
+        console.log(response.data.imported_paths)
+        imageStore.insertImportedPaths(
+            response.data.imported_paths,
+            platform.value
+        )
         isImported.value = true
     } catch (error) {
         console.error(error)
@@ -131,26 +136,40 @@ const saveTagsInImage = async () => {
     <HeaderComponent />
     <main class="main-container" id="page-image-manager">
         <section class="section-import-image">
-            <ImportImage @switchIsImported="switchIsImported" />
-            <ImportedImageList
-                @loadImage="loadImage"
-                @switch-platform="switchPlatform"
-            />
+            <h2>画像のインポート</h2>
+            <v-card class="v-card-import-image">
+                <v-tabs v-model="importTabs" bg-color="secondary">
+                    <v-tab value="local">ローカル</v-tab>
+                    <v-tab value="app">アプリ内</v-tab>
+                </v-tabs>
+
+                <v-card-text>
+                    <v-tabs-window v-model="importTabs">
+                        <v-tabs-window-item value="local">
+                            <ImportImage @switchIsImported="switchIsImported" />
+                        </v-tabs-window-item>
+                        <v-tabs-window-item value="app">
+                            <ImportedImageList
+                                @loadImage="loadImage"
+                                @switch-platform="switchPlatform"
+                            />
+                        </v-tabs-window-item>
+                    </v-tabs-window>
+                </v-card-text>
+            </v-card>
         </section>
         <section class="section-image-list" v-if="images.length !== 0">
             <h2>画像一覧</h2>
-            <ButtonComponent
+            <v-btn
                 v-if="!isImported"
                 @click="importImageToApp()"
-                text="アプリにインポート"
-                :buttonClass="'btn-common green'"
-            />
-            <ButtonComponent
-                v-else
-                @click="generateTagsFromImage()"
-                text="タグを生成"
-                :buttonClass="'btn-common blue'"
-            />
+                color="secondary"
+            >
+                インポート
+            </v-btn>
+            <v-btn v-else @click="generateTagsFromImage()" color="primary">
+                タグ生成
+            </v-btn>
             <div class="image-management">
                 <dl class="image-list">
                     <VImage
@@ -198,12 +217,13 @@ const saveTagsInImage = async () => {
                             </div>
                         </li>
                     </div>
-                    <ButtonComponent
+                    <v-btn
                         v-if="selectedImage !== null"
                         @click="saveTagsInImage()"
-                        text="タグを付与して保存"
-                        :buttonClass="'btn-common blue'"
-                    />
+                        color="primary"
+                    >
+                        保存
+                    </v-btn>
                 </ul>
             </div>
         </section>

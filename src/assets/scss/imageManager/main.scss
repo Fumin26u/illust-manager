@@ -10,6 +10,12 @@
     margin: 0 1em;
 }
 
+.section-import-image {
+    .v-card-import-image {
+        width: 40%;
+    }
+}
+
 .image-management {
     display: flex;
 
@@ -21,23 +27,24 @@
         justify-content: space-between;
         align-items: flex-start;
         margin: 0 auto;
-        > div {
+        > div.v-card {
+            transition: opacity 0.2s ease-in-out;
+            cursor: pointer;
             width: 30%;
             margin: 1em 8px;
-            border-top: 1px dashed #888;
+
+            &:hover {
+                opacity: 0.8;
+            }
+
             > dt, > dd {
                 width: 100%;
                 margin: 0 auto;
             }
-            > dt {
-                font-size: 16px;
-            }
-            > dd {
-                max-height: 320px;
-                overflow-y: auto;
-                > img {
-                    width: 100%;
-                }
+
+            .img-text {
+                font-size: 14px;
+                line-height: normal;
             }
         }
     }

@@ -6,6 +6,7 @@ import { useUserStore } from '@/store/userStore'
 import App from './App.vue'
 import router from './router'
 
+import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'

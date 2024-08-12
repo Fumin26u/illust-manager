@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { Image, ImageTag } from '@/types/image'
 import { formatCurrentTime, formatUnixTime } from '@/assets/ts/formatDate'
 import { apiOrigin } from '@/assets/ts/paths'
+import { extractPath } from '@/assets/ts/extractPath'
 
 export const useImageStore = defineStore('image', () => {
     const images = ref<Image[]>([])
@@ -32,12 +33,17 @@ export const useImageStore = defineStore('image', () => {
                 directory: rawImage.directory,
             }
         })
-        console.log(images.value)
     }
 
-    const insertImportedPaths = (imported_paths: string[]) => {
+    const insertImportedPaths = (
+        imported_paths: string[],
+        platform: string
+    ) => {
         images.value.forEach((image, index) => {
-            image.imported_path = imported_paths[index]
+            // api/ 以下のパスを取得
+            const path = extractPath(imported_paths[index], 'images/', false)
+            image.imported_path = `${apiOrigin}/api/image/${platform}/${path}`
+            console.log(`${apiOrigin}/api/image/${platform}/${path}`)
         })
     }
 

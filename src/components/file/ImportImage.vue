@@ -7,22 +7,26 @@ const imageStore = useImageStore()
 
 const importImage = (event: Event) => {
     const input = event.target as HTMLInputElement
-    imageStore.rawImages = []
+    imageStore.images = []
     if (input.files) {
         const files = Array.from(input.files)
         files.forEach((file) => {
-            imageStore.getRawImageInfo(file)
+            imageStore.getImageInfo(file)
         })
     }
+    console.log(imageStore.images)
     emit('switchIsImported', false)
 }
 </script>
 
 <template>
     <div>
-        <h2>画像のインポート</h2>
-        <div>
-            <input type="file" webkitdirectory @change="importImage" />
-        </div>
+        <v-file-input
+            type="file"
+            variant="solo-inverted"
+            label="フォルダを選択"
+            webkitdirectory
+            @change="importImage"
+        />
     </div>
 </template>

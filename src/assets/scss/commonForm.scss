@@ -18,9 +18,6 @@
     dt {
         width: 144px;
     }
-    dd.radio-list > div {
-        @include horizontalAlign;
-    }
     input[type='text'],
     input[type='number'] {
         width: 240px;
