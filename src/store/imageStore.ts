@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { Image, ImageTag } from '@/types/image'
+import { Tag } from '@/types/tag'
 import { formatCurrentTime, formatUnixTime } from '@/assets/ts/formatDate'
 import { apiOrigin } from '@/assets/ts/paths'
 import { extractPath } from '@/assets/ts/extractPath'
@@ -43,7 +44,6 @@ export const useImageStore = defineStore('image', () => {
             // api/ 以下のパスを取得
             const path = extractPath(imported_paths[index], 'images/', false)
             image.imported_path = `${apiOrigin}/api/image/${platform}/${path}`
-            console.log(`${apiOrigin}/api/image/${platform}/${path}`)
         })
     }
 
@@ -64,7 +64,17 @@ export const useImageStore = defineStore('image', () => {
             }
         })
         images.value = Array.from(map.values())
-        console.log(images.value)
+    }
+
+    const addTag = (index: number, tag: Tag) => {
+        if (!images.value[index] || images.value[index].tags === undefined)
+            return
+
+        images.value[index].tags?.unshift({
+            name_en: tag.name_en,
+            confidence: '100.00',
+            is_saved: true,
+        })
     }
 
     return {
@@ -73,5 +83,6 @@ export const useImageStore = defineStore('image', () => {
         loadImages,
         insertImportedPaths,
         insertImages,
+        addTag,
     }
 })

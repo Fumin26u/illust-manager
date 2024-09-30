@@ -23,6 +23,7 @@ def select(user_platform_account_id, limit=100):
     
     cursor.execute(subquery, (user_platform_account_id,))
     max_downloaded_at = cursor.fetchone()['MAX(downloaded_at)']
+    print(max_downloaded_at)
     
     # メインクエリを実行して結果を取得
     sql = '''
@@ -52,4 +53,7 @@ def create(user_platform_account_id, post_id, downloaded_at):
     cursor.execute(sql, (user_platform_account_id, post_id, downloaded_at))
     db.commit()
     
+    user_platform_account_id = cursor.lastrowid
     cursor.close()
+    
+    return user_platform_account_id

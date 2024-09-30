@@ -14,7 +14,6 @@ const importImage = (event: Event) => {
             imageStore.getImageInfo(file)
         })
     }
-    console.log(imageStore.images)
     emit('switchIsImported', false)
 }
 </script>

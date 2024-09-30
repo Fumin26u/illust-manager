@@ -36,6 +36,18 @@ def select(tag_id: int):
     
     return to_dict(tag)
 
+def selectByCategory(category_id: int):
+    db = g.db
+    cursor = db.cursor(dictionary=True)
+    cursor.execute('SELECT * FROM tag WHERE category_id = %s', (category_id,))
+    tags = cursor.fetchall()
+    cursor.close()
+    
+    if not tags:
+        return False
+    
+    return [to_dict(tag) for tag in tags]
+
 def selectWithSearch(search: str):
     db = g.db
     cursor = db.cursor(dictionary=True)

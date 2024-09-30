@@ -11,6 +11,11 @@ export const useTagStore = defineStore('tag', () => {
 
     const getTags = async () => (tags.value = await get(`${endPoint}/tag`))
 
+    const getTagsByCategory = async (categoryId: number) =>
+        (tags.value = await get(
+            `${endPoint}/tag/category?category_id=${categoryId}`
+        ))
+
     const getCategories = async () =>
         (categories.value = await get(`${endPoint}/category`))
 
@@ -44,6 +49,7 @@ export const useTagStore = defineStore('tag', () => {
         tags,
         categories,
         getTags,
+        getTagsByCategory,
         getCategories,
         search,
         updateTag,

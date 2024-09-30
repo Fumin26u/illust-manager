@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import HeaderComponent from '@/components/HeaderComponent.vue'
-import ButtonComponent from '@/components/ButtonComponent.vue'
 import ImportImage from '@/components/file/ImportImage.vue'
 import ImportedImageList from '@/components/file/ImportedImageList.vue'
 import VImage from '@/components/file/VImage.vue'
@@ -9,12 +8,15 @@ import axios from '@/axios'
 import { ref, computed } from 'vue'
 import { createEndPoint } from '@/assets/ts/paths'
 import { useImageStore } from '@/store/imageStore'
+import { useTagStore } from '@/store/tagStore'
 import { convertImageToBase64 } from '@/assets/ts/base64'
 
 import '@/assets/scss/imageManager/main.scss'
 
 const imageStore = useImageStore()
 const images = computed(() => imageStore.images)
+const tagStore = useTagStore()
+const tags = computed(() => tagStore.tags)
 
 type Platform = 'local' | 'twitter' | 'pixiv'
 const endPoint = createEndPoint(`/api`)
@@ -76,7 +78,6 @@ const importImageToApp = async () => {
         }
 
         await updateCounter(images.value.length)
-        console.log(response.data.imported_paths)
         imageStore.insertImportedPaths(
             response.data.imported_paths,
             platform.value
@@ -111,10 +112,19 @@ const generateTagsFromImage = async () => {
         }
 
         imageStore.insertImages(response.data.content)
+        tagStore.getTagsByCategory(1)
         isTagged.value = true
     } catch (error) {
         console.error(error)
     }
+}
+
+// 画像にタグを追加
+const selectedTagId = ref<number>(0)
+const addTag = () => {
+    const tag = tags.value.find((tag) => tag.id === selectedTagId.value)
+    if (tag === undefined) return
+    imageStore.addTag(selectedIndex.value, tag)
 }
 
 // 画像にタグを付与して保存
@@ -184,22 +194,43 @@ const saveTagsInImage = async () => {
                     <div class="no-image" v-if="selectedImage === null">
                         <p>画像が選択されていません</p>
                     </div>
-                    <div v-else>
-                        <li class="filename">
-                            <p>{{ selectedImage.name }}</p>
-                        </li>
-                        <li class="image">
-                            <img
+                    <div class="image-card" v-else>
+                        <v-card>
+                            <v-img
+                                class="bg-grey-lighten-3 img-content"
+                                max-height="400"
                                 :src="
                                     selectedImage.imported_path !== undefined
                                         ? selectedImage.imported_path
                                         : selectedImage.path
                                 "
                                 :alt="selectedImage.name"
-                            />
-                        </li>
+                                cover
+                            ></v-img>
+                            <v-card-title class="img-text">
+                                {{ selectedImage.name }}
+                            </v-card-title>
+                        </v-card>
                     </div>
-                    <div v-if="selectedImage !== null">
+                    <div class="add-tag">
+                        <v-autocomplete
+                            label="タグを選択"
+                            class="tag-selector"
+                            :items="tags"
+                            item-value="id"
+                            item-title="name_en"
+                            variant="underlined"
+                            v-model="selectedTagId"
+                        ></v-autocomplete>
+                        <v-btn
+                            @click="addTag"
+                            color="secondary"
+                            class="btn-add-tag"
+                        >
+                            追加
+                        </v-btn>
+                    </div>
+                    <div class="tag-list" v-if="selectedImage !== null">
                         <li class="tags">
                             <div
                                 v-for="(tag, tagIndex) in selectedImage.tags"

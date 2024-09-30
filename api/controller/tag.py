@@ -19,6 +19,22 @@ def index():
         print(e)
         return res_400()
     
+@tagController.route(f"{basePath}/category", methods=['GET'])
+def getTagsByCategory():
+    try:
+        categoryId = request.args.get('category_id')
+        if not categoryId:
+            raise exception.NoQueryProvidedException()
+        
+        tags = api.service.tag.selectByCategory(categoryId)
+        if not tags:
+            raise Exception('INTERNAL SERVER ERROR: tags are not detected')
+        
+        return jsonify(tags), 200
+    except Exception as e:
+        print(e)
+        return res_400()
+    
 @tagController.route(f"{basePath}/search", methods=['GET'])
 def search():
     try:
