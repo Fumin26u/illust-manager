@@ -86,7 +86,6 @@ def updateCluster():
                 'name_ja': tag['name_ja'],
                 'category_id': categoryId
             }))
-        print(result)
         if not result:
             raise Exception('INTERNAL SERVER ERROR')
         

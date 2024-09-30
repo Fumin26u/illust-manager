@@ -23,7 +23,6 @@ def select(user_platform_account_id, limit=100):
     
     cursor.execute(subquery, (user_platform_account_id,))
     max_downloaded_at = cursor.fetchone()['MAX(downloaded_at)']
-    print(max_downloaded_at)
     
     # メインクエリを実行して結果を取得
     sql = '''
