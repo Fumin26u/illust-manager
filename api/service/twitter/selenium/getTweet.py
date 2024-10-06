@@ -128,6 +128,5 @@ def __getTweetInfo(article, query, latestGetTweets):
     tweetInfo['text'] = '-'
     # 投稿日時はこの情報から取得できないのでnullに設定
     tweetInfo['created_at'] = None
-    print(tweetInfo)
 
     return tweetInfo

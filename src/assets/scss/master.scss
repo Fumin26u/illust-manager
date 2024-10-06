@@ -1,0 +1,82 @@
+@import './style.scss';
+
+#page-master.main-container {
+    margin-top: 1em;
+}
+
+#page-master.main-container .search-form {
+    display: block;
+    width: 100%;
+}
+
+#page-master.main-container .tags-detail {
+    @include horizontalAlignFlex(start);
+
+    > .tags {
+        width: 64%;
+        cursor: pointer;
+        position: relative;
+        
+        table, thead, tbody, td, th { display: block; }
+        tr { display: flex; }
+
+        thead th, tbody td {
+            &:nth-child(1) { width: 12%; }
+            &:nth-child(2) { width: 12%; }
+            &:nth-child(3) { width: 20%; }
+            &:nth-child(4) { width: 32%; }
+            &:nth-child(5) { width: 24%; }
+        }
+
+        tbody {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .item {
+            padding: 4px 0 0;
+            
+            &.selected {
+                background-color: #fffbbb;
+            }
+        }
+
+        .open-dialog {
+            position: absolute;
+            bottom: 2em;
+            right: 2em;
+        }
+    }
+
+    > .tag-info {
+        width: 32%;
+
+        > .top-button-area {
+            padding: 0;
+            margin-bottom: 8px;
+
+            button {
+                margin-right: 8px;
+            }
+        }
+
+        .item, .item * {
+            display: block;
+        }
+
+        .v-list-item {
+            margin: 0 0 1em;
+
+            .v-list-item-title {
+                color: #888;
+            }
+
+            .v-list-item-subtitle, .content {
+                font-size: 18px;
+                line-height: normal;
+                color: black;
+            }
+        } 
+
+    }
+}

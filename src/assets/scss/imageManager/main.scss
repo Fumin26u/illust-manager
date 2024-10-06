@@ -10,52 +10,71 @@
     margin: 0 1em;
 }
 
+.section-import-image {
+    .v-card-import-image {
+        width: 40%;
+    }
+}
+
 .image-management {
     display: flex;
 
     .image-list {
         border-right: 2px dashed $border-color;
-        width: 70%;
+        width: 60%;
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: flex-start;
         margin: 0 auto;
-        > div {
+        max-height: 600px;
+        overflow-y: auto;
+
+        > div.v-card {
+            transition: opacity 0.2s ease-in-out;
+            cursor: pointer;
             width: 30%;
             margin: 1em 8px;
-            border-top: 1px dashed #888;
+
+            &:hover {
+                opacity: 0.8;
+            }
+
             > dt, > dd {
                 width: 100%;
                 margin: 0 auto;
             }
-            > dt {
-                font-size: 16px;
-            }
-            > dd {
-                max-height: 320px;
-                overflow-y: auto;
-                > img {
-                    width: 100%;
-                }
+
+            .img-text {
+                font-size: 14px;
+                line-height: normal;
             }
         }
     }
 
     .image-detail {
-        width: 30%;
+        width: 36%;
         margin: 0 1em;
-        div > li {
+
+        div > li.tags {
             display: block;
-            
-            &.image {
-                max-height: 320px;
-                overflow-y: auto;
-                img {
-                    display: block;
-                    width: 100%;
-                }
+        }
+
+        div.add-tag {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1em 0;
+
+            .btn-add-tag {
+                width: 20%;
+                margin-left: 8px;
             }
+        }
+
+        div.tag-list {
+            max-height: 280px;
+            overflow-y: auto;
         }
     }
 }

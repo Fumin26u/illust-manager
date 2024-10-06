@@ -8,6 +8,7 @@ cmd.md
 memo.md
 .env
 api/db/sql/*
+docker-compose.yaml
 
 # local env files
 .env.local

@@ -52,4 +52,7 @@ def create(user_platform_account_id, post_id, downloaded_at):
     cursor.execute(sql, (user_platform_account_id, post_id, downloaded_at))
     db.commit()
     
+    user_platform_account_id = cursor.lastrowid
     cursor.close()
+    
+    return user_platform_account_id
