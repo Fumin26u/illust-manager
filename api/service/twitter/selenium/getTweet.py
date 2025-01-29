@@ -25,7 +25,7 @@ def getTweet(driver: webdriver, query, latestGetTweets, url):
     gotTweetIds = []
     
     while tweetRemains > 0:
-        
+        print('tweetRemains: ', tweetRemains)
         randomSleep()
         articles = driver.find_elements(By.TAG_NAME, 'article')
         
@@ -33,6 +33,7 @@ def getTweet(driver: webdriver, query, latestGetTweets, url):
         for article in articles:
             # ツイートの取得数上限に達した場合は取得を中断
             if tweetRemains == 0:
+                print('ツイートの取得数上限に達しました。')
                 return tweetInfo
             
             result = __getTweetInfo(article, query, latestGetTweets)
