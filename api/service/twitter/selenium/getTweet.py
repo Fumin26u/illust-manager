@@ -59,10 +59,11 @@ doneTweetList = []
 def __getTweetInfo(article, query, latestGetTweets):
     tweetInfo = dict()
     
-    try:
-        imageBlockSelector = '.css-175oi2r.r-16y2uox.r-1pi2tsx.r-13qz1uu'
-        imageBlocks = article.find_elements(By.CSS_SELECTOR, imageBlockSelector)
-    except NoSuchElementException:
+    # 画像ブロックを取得
+    imageBlockSelector = '.css-175oi2r.r-16y2uox.r-1pi2tsx.r-13qz1uu'
+    imageBlocks = article.find_elements(By.CSS_SELECTOR, imageBlockSelector)
+
+    if not imageBlocks:
         print('指定した要素が存在しません。')
         randomSleep()
         return 'continue'
@@ -115,15 +116,18 @@ def __getTweetInfo(article, query, latestGetTweets):
         
     # ユーザー名取得
     userBlockSelector = '.css-175oi2r.r-zl2h9q'
-    userBlock = article.find_element(By.CSS_SELECTOR, userBlockSelector)
-    
-    # ユーザー名テキストを囲むspan共通のcssセレクタを利用しタグを取得
-    # userBlockSpanSelector = '.css-1qaijid.r-dnmrzs.r-1udh08x.r-3s2u2q.r-bcqeeo.r-qvutc0.r-1tl8opc'
     userBlockSpanSelector = '.css-1jxf684.r-dnmrzs.r-1udh08x.r-3s2u2q.r-bcqeeo.r-1ttztb7.r-qvutc0.r-1tl8opc'
-    userBlockSpans = userBlock.find_elements(By.CSS_SELECTOR, userBlockSpanSelector)
-    
-    # 取得したspan要素の1番目がユーザー名
-    tweetInfo['user'] = userBlockSpans[0].text
+
+    # userBlock を探す（見つからなければ None にする）
+    userBlocks = article.find_elements(By.CSS_SELECTOR, userBlockSelector)
+
+    if userBlocks:
+        # userBlock が見つかった場合
+        userBlockSpans = userBlocks[0].find_elements(By.CSS_SELECTOR, userBlockSpanSelector)
+        tweetInfo['user'] = userBlockSpans[0].text if userBlockSpans else ""
+    else:
+        # userBlock が見つからなかった場合
+        tweetInfo['user'] = ""
 
     # # ツイート内容を取得
     tweetInfo['text'] = '-'
