@@ -4,6 +4,10 @@ from api.error.response import res_400, res_404
 import api.service.twitter.main
 import api.service.userPlatformAccount
 import api.error.exception as exception
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 twitterController = Blueprint('twitterController', __name__)
 platform = 'twitter'
@@ -34,5 +38,5 @@ def getPost():
         
         return res_404 if not tweets else jsonify(tweets), 200
     except Exception as e:
-        print(e)
+        logger.debug(e)
         return res_400()
