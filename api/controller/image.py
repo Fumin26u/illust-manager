@@ -21,7 +21,7 @@ def getDirectories():
         return jsonify({'error': False, 'directories': response}), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @imageController.route(f"{basePath}/load", methods=['POST'])
 def loadImages():
@@ -35,7 +35,7 @@ def loadImages():
         return jsonify({'error': False, 'images': response}), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @imageController.route(f"{basePath}/<platform>/<directory>/<filename>", methods=['GET'])
 def getImage(platform, directory, filename):
@@ -48,7 +48,7 @@ def getImage(platform, directory, filename):
         return send_from_directory(targetImageDirPath, filename)
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @imageController.route(f"{basePath}/tag/generate", methods=['POST'])
 def generateTagsFromImage():
@@ -65,7 +65,7 @@ def generateTagsFromImage():
         return jsonify({'error': False, 'content': response}), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @imageController.route(f"{basePath}/save", methods=['POST'])
 def saveImage():

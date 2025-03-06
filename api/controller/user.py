@@ -9,14 +9,14 @@ basePath = '/api/user'
 @userController.route(f"{basePath}", methods=['GET'])
 def index():
     try:
-        user = api.service.user.getUser(g.user_id)
+        user = api.service.user.getUser(1)
         if not user:
             raise Exception('INTERNAL SERVER ERROR: user is not detected')
         
         return jsonify(user), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @userController.route(f"{basePath}", methods=['POST'])
 def create():
@@ -26,7 +26,7 @@ def create():
         return jsonify({'user_id': user_id}), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @userController.route(f"{basePath}/<int:user_id>", methods=['PUT'])
 def update(user_id):
@@ -42,4 +42,4 @@ def update(user_id):
         return jsonify({'user_id': user_id}), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)

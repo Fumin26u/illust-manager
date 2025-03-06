@@ -16,4 +16,4 @@ def index():
         return jsonify(categories), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)

@@ -18,7 +18,7 @@ def getUserPlatformAccount():
         return jsonify(userPlatformAccount), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
 
 @pixivController.route(f"{basePath}/getPost", methods=['POST'])
 async def getPost():
@@ -31,4 +31,4 @@ async def getPost():
         return jsonify(illust), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)

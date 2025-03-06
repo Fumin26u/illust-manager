@@ -33,4 +33,4 @@ async def insert():
         return jsonify({'error': False, 'content': 'insert done'}), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)

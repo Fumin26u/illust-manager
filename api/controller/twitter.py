@@ -23,7 +23,7 @@ def getUserPlatformAccount():
         return jsonify(userPlatformAccount), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
 
 @twitterController.route(f"{basePath}/getPost", methods=['POST'])
 def getPost():
@@ -39,4 +39,4 @@ def getPost():
         return res_404 if not tweets else jsonify(tweets), 200
     except Exception as e:
         logger.debug(e)
-        return res_400()
+        return res_400(e)

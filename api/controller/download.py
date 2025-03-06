@@ -23,7 +23,7 @@ async def downloadImage():
         return jsonify(response), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @downloadController.route(f"{basePath}/zip", methods=['GET'])
 def downloadZip():
@@ -41,7 +41,7 @@ def downloadZip():
         return res_404 if not response else response, 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 # ローカルからimportしたrawImageを取り込む
 @downloadController.route(f"{basePath}/local/import", methods=['POST'])
@@ -58,4 +58,4 @@ async def importLocalImage():
         return jsonify(response), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)

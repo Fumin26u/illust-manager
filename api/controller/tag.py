@@ -17,7 +17,7 @@ def index():
         return jsonify(tags), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @tagController.route(f"{basePath}/category", methods=['GET'])
 def getTagsByCategory():
@@ -33,7 +33,7 @@ def getTagsByCategory():
         return jsonify(tags), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @tagController.route(f"{basePath}/search", methods=['GET'])
 def search():
@@ -47,7 +47,7 @@ def search():
         return jsonify(tags), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
         
 @tagController.route(f"{basePath}/update", methods=['PUT'])
 def update():
@@ -63,7 +63,7 @@ def update():
         return jsonify(tag), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
     
 @tagController.route(f"{basePath}/update/cluster", methods=['PUT'])
 def updateCluster():
@@ -92,4 +92,4 @@ def updateCluster():
         return jsonify(result), 200
     except Exception as e:
         print(e)
-        return res_400()
+        return res_400(e)
